@@ -69,7 +69,7 @@
 
         .hero-title {
             font-family: 'Spy Agency', 'Arial', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-size: clamp(3.75rem, 12vw, 9rem); /* 50% bigger: was clamp(2.5rem, 8vw, 6rem) */
             font-weight: normal; /* Spy Agency only has normal weight */
             margin-bottom: 1rem;
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
@@ -80,9 +80,10 @@
         }
 
         .hero-subtitle {
-            font-size: 1.5rem;
+            font-size: 2.25rem; /* 50% bigger: was 1.5rem */
             margin-bottom: 2rem;
             opacity: 0.9;
+            line-height: 1.2; /* Better line spacing for the line break */
         }
 
         @keyframes gradientShift {
@@ -92,13 +93,13 @@
 
         .cta-button {
             display: inline-block;
-            padding: 1rem 2rem;
+            padding: 1.5rem 3rem; /* 50% bigger padding: was 1rem 2rem */
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px;
+            border-radius: 75px; /* 50% bigger: was 50px */
             color: white;
             text-decoration: none;
-            font-size: 1.1rem;
+            font-size: 1.65rem; /* 50% bigger: was 1.1rem */
             font-weight: 500; /* Orbitron Medium */
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
@@ -471,11 +472,11 @@
         <h4>4D Projection Controls</h4>
         <div class="control-group">
             <label for="fov-control">FOV:</label>
-            <input type="number" id="fov-control" value="12" step="1" min="10" max="120">
+            <input type="number" id="fov-control" value="7" step="1" min="2" max="120">
         </div>
         <div class="control-group">
             <label for="perspective-control">4D Scale:</label>
-            <input type="number" id="perspective-control" value="2.1" step="0.1" min="0.1" max="10">
+            <input type="number" id="perspective-control" value="2.3" step="0.1" min="0.1" max="10">
         </div>
         <div class="control-group">
             <label for="cameraz-control">Camera Z:</label>
@@ -500,7 +501,7 @@
         <canvas id="hypercube-canvas"></canvas>
         <div class="hero-content">
             <h1 class="hero-title">TRUE FIASCO</h1>
-            <p class="hero-subtitle">Explore higher dimensions through immersive visualization</p>
+            <p class="hero-subtitle">Explore higher dimensions through<br>immersive visualization</p>
             <a href="#tutorials" class="cta-button">Start Learning</a>
         </div>
     </section>
@@ -685,10 +686,10 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // Calculate responsive font sizes based on window size
-            const baseFontSize = Math.min(window.innerWidth * 0.08, 96);
-            const subtitleFontSize = Math.min(window.innerWidth * 0.024, 24);
-            const buttonFontSize = Math.min(window.innerWidth * 0.018, 18);
+            // Calculate responsive font sizes based on window size (50% bigger)
+            const baseFontSize = Math.min(window.innerWidth * 0.12, 144); // 50% bigger: was 0.08, 96
+            const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36); // 50% bigger: was 0.024, 24
+            const buttonFontSize = Math.min(window.innerWidth * 0.027, 27); // 50% bigger: was 0.018, 18
             
             // Position text to match the hero section layout
             const centerX = canvas.width / 2;
@@ -701,10 +702,15 @@
             const titleY = centerY - 60;
             ctx.fillText('TRUE FIASCO', centerX, titleY);
             
-            // Draw subtitle with Orbitron Regular (400)
+            // Draw subtitle with line break
             ctx.font = `400 ${subtitleFontSize}px Orbitron`;
+            const subtitleLine1 = 'Explore higher dimensions through';
+            const subtitleLine2 = 'immersive visualization';
             const subtitleY = titleY + baseFontSize * 0.8 + 20;
-            ctx.fillText('Explore higher dimensions through immersive visualization', centerX, subtitleY);
+            const lineSpacing = subtitleFontSize * 1.2; // 20% more than font size for line spacing
+            
+            ctx.fillText(subtitleLine1, centerX, subtitleY);
+            ctx.fillText(subtitleLine2, centerX, subtitleY + lineSpacing);
             
             // Draw CTA button outline (we'll make it hollow so light can go through)
             ctx.strokeStyle = 'white';
@@ -714,14 +720,14 @@
             
             const buttonText = 'Start Learning';
             const buttonMetrics = ctx.measureText(buttonText);
-            const buttonWidth = buttonMetrics.width + 60;
-            const buttonHeight = 50;
-            const buttonY = subtitleY + subtitleFontSize + 60;
+            const buttonWidth = buttonMetrics.width + 90; // 50% bigger: was 60
+            const buttonHeight = 75; // 50% bigger: was 50
+            const buttonY = subtitleY + lineSpacing + subtitleFontSize + 60; // Account for two-line subtitle
             const buttonX = centerX;
             
             // Draw button border
             ctx.beginPath();
-            ctx.roundRect(buttonX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 25);
+            ctx.roundRect(buttonX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 37); // 50% bigger radius: was 25
             ctx.stroke();
             
             // Draw button text
@@ -944,8 +950,8 @@
                 u_textTexture: { value: textTexture },
                 u_rotation: { value: new THREE.Vector3(0, 0, 0) },
                 u_lineWidth: { value: 0.02 },
-                u_fov: { value: 12.0 },
-                u_perspective: { value: 2.1 },
+                u_fov: { value: 7.0 }, // Changed from 10.0 to 7.0
+                u_perspective: { value: 2.3 }, // Changed from 2.1 to 2.3
                 u_cameraZ: { value: 10.0 }
             };
 
@@ -1033,17 +1039,18 @@
         let buttonBounds = null;
         
         function updateButtonBounds() {
-            // Calculate button bounds for click detection
-            const subtitleFontSize = Math.min(window.innerWidth * 0.024, 24);
-            const baseFontSize = Math.min(window.innerWidth * 0.08, 96);
+            // Calculate button bounds for click detection (updated for bigger text and two-line subtitle)
+            const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36); // 50% bigger
+            const baseFontSize = Math.min(window.innerWidth * 0.12, 144); // 50% bigger
+            const lineSpacing = subtitleFontSize * 1.2; // Same spacing as canvas
             
             const centerY = window.innerHeight / 2;
             const titleY = centerY - 60;
             const subtitleY = titleY + baseFontSize * 0.8 + 20;
-            const buttonY = subtitleY + subtitleFontSize + 60;
+            const buttonY = subtitleY + lineSpacing + subtitleFontSize + 60; // Account for two-line subtitle
             
-            const buttonWidth = 180;
-            const buttonHeight = 50;
+            const buttonWidth = 270; // 50% bigger: was 180
+            const buttonHeight = 75; // 50% bigger: was 50
             const buttonX = window.innerWidth / 2;
             
             buttonBounds = {
