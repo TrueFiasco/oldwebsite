@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRUE FIASCO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.cdnfonts.com/css/spy-agency" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Spy Agency';
+            src: url('./fonts/spyagencycond.ttf') format('truetype');
+            font-weight: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Orbitron';
+            src: url('./fonts/Orbitron-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Orbitron';
+            src: url('./fonts/Orbitron-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
     <style>
         * {
             margin: 0;
@@ -14,7 +34,7 @@
         }
 
         body {
-            font-family: 'Spy Agency', 'Courier New', monospace;
+            font-family: 'Orbitron', 'Arial', sans-serif;
             background: #0a0a0a;
             color: #ffffff;
             overflow-x: hidden;
@@ -48,8 +68,9 @@
         }
 
         .hero-title {
+            font-family: 'Spy Agency', 'Arial', sans-serif;
             font-size: clamp(2.5rem, 8vw, 6rem);
-            font-weight: bold;
+            font-weight: normal; /* Spy Agency only has normal weight */
             margin-bottom: 1rem;
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
             background-size: 200% 200%;
@@ -78,6 +99,7 @@
             color: white;
             text-decoration: none;
             font-size: 1.1rem;
+            font-weight: 500; /* Orbitron Medium */
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
@@ -569,8 +591,56 @@
         const historyLength = 30; // 0.5 seconds at 60fps
         const maxSlowVelocity = 0.25;
 
+        // Function to wait for fonts to load
+        function waitForFonts() {
+            return new Promise((resolve) => {
+                const testCanvas = document.createElement('canvas');
+                const testCtx = testCanvas.getContext('2d');
+                
+                function checkFonts() {
+                    // Test Spy Agency
+                    testCtx.font = '48px "Spy Agency", serif';
+                    const spyAgencyWidth = testCtx.measureText('TRUE FIASCO').width;
+                    
+                    testCtx.font = '48px serif';
+                    const serifWidth = testCtx.measureText('TRUE FIASCO').width;
+                    
+                    // Test Orbitron
+                    testCtx.font = '500 48px Orbitron, sans-serif';
+                    const orbitronWidth = testCtx.measureText('Start Learning').width;
+                    
+                    testCtx.font = '500 48px sans-serif';
+                    const sansSerifWidth = testCtx.measureText('Start Learning').width;
+                    
+                    // If both fonts have loaded (widths are different from fallbacks)
+                    if (Math.abs(spyAgencyWidth - serifWidth) > 1 && 
+                        Math.abs(orbitronWidth - sansSerifWidth) > 1) {
+                        console.log('Both fonts loaded successfully!');
+                        resolve();
+                    } else {
+                        console.log('Waiting for fonts to load...');
+                        setTimeout(checkFonts, 100);
+                    }
+                }
+                
+                checkFonts();
+                
+                // Fallback timeout after 5 seconds
+                setTimeout(() => {
+                    console.log('Font loading timeout reached');
+                    resolve();
+                }, 5000);
+            });
+        }
+
         // Function to create text texture
-        function createTextTexture() {
+        async function createTextTexture() {
+            console.log('Creating text texture...');
+            
+            // Wait for fonts to load first
+            await waitForFonts();
+            console.log('Fonts loaded! Creating canvas...');
+            
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
@@ -624,20 +694,23 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            // Draw main title
-            ctx.font = `bold ${baseFontSize}px 'Spy Agency', 'Courier New', monospace`;
+            // Draw main title with Spy Agency
+            ctx.font = `${baseFontSize}px "Spy Agency"`;
+            console.log('Title font:', ctx.font);
+            console.log('Title text width:', ctx.measureText('TRUE FIASCO').width);
             const titleY = centerY - 60;
             ctx.fillText('TRUE FIASCO', centerX, titleY);
             
-            // Draw subtitle
-            ctx.font = `${subtitleFontSize}px 'Spy Agency', 'Courier New', monospace`;
+            // Draw subtitle with Orbitron Regular (400)
+            ctx.font = `400 ${subtitleFontSize}px Orbitron`;
             const subtitleY = titleY + baseFontSize * 0.8 + 20;
             ctx.fillText('Explore higher dimensions through immersive visualization', centerX, subtitleY);
             
             // Draw CTA button outline (we'll make it hollow so light can go through)
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 2;
-            ctx.font = `${buttonFontSize}px 'Spy Agency', 'Courier New', monospace`;
+            ctx.font = `500 ${buttonFontSize}px Orbitron`; // Medium weight
+            console.log('Button font:', ctx.font);
             
             const buttonText = 'Start Learning';
             const buttonMetrics = ctx.measureText(buttonText);
@@ -657,7 +730,7 @@
             return canvas;
         }
 
-        function initHypercube() {
+        async function initHypercube() {
             scene = new THREE.Scene();
             camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
             
@@ -682,8 +755,8 @@
             );
             vertexTexture.needsUpdate = true;
             
-            // Create text texture
-            const textCanvas = createTextTexture();
+            // Create text texture (now waits for fonts)
+            const textCanvas = await createTextTexture();
             let textTexture = null;
             if (textCanvas) {
                 textTexture = new THREE.CanvasTexture(textCanvas);
@@ -945,10 +1018,10 @@
             renderer.render(scene, camera);
         }
 
-        function updateTextTexture() {
+        async function updateTextTexture() {
             if (!uniforms || !uniforms.u_textTexture) return;
             
-            const textCanvas = createTextTexture();
+            const textCanvas = await createTextTexture();
             if (textCanvas) {
                 const newTextTexture = new THREE.CanvasTexture(textCanvas);
                 newTextTexture.needsUpdate = true;
@@ -1058,14 +1131,18 @@
         }
 
         // Initialize
-        initHypercube();
-        animate();
-        
-        // Update text texture after a short delay to ensure layout is settled
-        setTimeout(() => {
-            updateTextTexture();
+        async function init() {
+            await initHypercube();
+            animate();
             updateButtonBounds();
-        }, 100);
+        }
+        
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
 
         // Event listeners
         window.addEventListener('resize', onWindowResize);
