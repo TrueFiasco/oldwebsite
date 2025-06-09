@@ -330,6 +330,9 @@
     <script>
         // Three.js shader background
         let scene, camera, renderer, uniforms;
+        let clickState = 0; // 0: point2 tracks mouse, 1: point1 tracks mouse
+        let point1 = { x: window.innerWidth/2, y: window.innerHeight/2 }; // Center point
+        let point2 = { x: window.innerWidth/2, y: window.innerHeight/2 }; // Mouse point
         
         function initShader() {
             scene = new THREE.Scene();
@@ -348,34 +351,79 @@
                 }
             `;
             
-            // Fragment shader with animated gradient
+            // Fragment shader with line distance field
             const fragmentShader = `
                 uniform float u_time;
                 uniform vec2 u_resolution;
+                uniform vec2 u_point1;
+                uniform vec2 u_point2;
+                uniform float u_clickState;
+                
+                // Distance from point to line segment
+                float distanceToLine(vec2 p, vec2 a, vec2 b) {
+                    vec2 pa = p - a;
+                    vec2 ba = b - a;
+                    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+                    return length(pa - ba * h);
+                }
                 
                 void main() {
                     vec2 st = gl_FragCoord.xy / u_resolution.xy;
-                    vec3 color = vec3(0.0);
                     
-                    // Create flowing gradient
-                    float wave1 = sin(st.x * 3.0 + u_time * 0.5) * 0.5 + 0.5;
-                    float wave2 = sin(st.y * 2.0 + u_time * 0.3) * 0.5 + 0.5;
+                    // Convert points to normalized coordinates
+                    vec2 pointA = u_point1 / u_resolution.xy;
+                    vec2 pointB = u_point2 / u_resolution.xy;
                     
-                    color.r = wave1 * 0.8 + 0.1;
-                    color.g = wave2 * 0.6 + 0.2;
-                    color.b = (wave1 + wave2) * 0.4 + 0.3;
+                    // Calculate distance from current pixel to the line
+                    float dist = distanceToLine(st, pointA, pointB);
                     
-                    // Add some sparkle
-                    float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
-                    color += sparkle * 0.1;
+                    // Create visual effect based on distance
+                    float intensity = smoothstep(0.0, 0.1, dist);
                     
-                    gl_FragColor = vec4(color * 0.3, 0.8);
+                    // Color based on distance
+                    vec3 lineColor = vec3(0.2, 0.8, 1.0); // Cyan line
+                    vec3 bgColor = vec3(0.05, 0.05, 0.1); // Dark background
+                    
+                    // Mix colors based on distance
+                    vec3 color = mix(lineColor, bgColor, intensity);
+                    
+                    // Add some glow effect
+                    float glow = exp(-dist * 20.0) * 0.5;
+                    color += glow * vec3(0.3, 0.6, 1.0);
+                    
+                    // Add time-based pulse on the line
+                    float pulse = sin(u_time * 3.0) * 0.5 + 0.5;
+                    if (dist < 0.005) {
+                        color = mix(color, vec3(1.0, 1.0, 1.0), pulse * 0.7);
+                    }
+                    
+                    // Add point indicators
+                    float point1Dist = distance(st, pointA);
+                    float point2Dist = distance(st, pointB);
+                    
+                    // Highlight the active (tracking) point
+                    if (u_clickState == 0.0 && point2Dist < 0.02) {
+                        color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for active point
+                    } else if (u_clickState == 1.0 && point1Dist < 0.02) {
+                        color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for active point
+                    }
+                    
+                    // Show static points in white
+                    if ((u_clickState == 1.0 && point2Dist < 0.015) || 
+                        (u_clickState == 0.0 && point1Dist < 0.015)) {
+                        color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for static point
+                    }
+                    
+                    gl_FragColor = vec4(color, 0.8);
                 }
             `;
             
             uniforms = {
                 u_time: { value: 1.0 },
-                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                u_point1: { value: new THREE.Vector2(point1.x, point1.y) },
+                u_point2: { value: new THREE.Vector2(point2.x, point2.y) },
+                u_clickState: { value: 0.0 }
             };
             
             const material = new THREE.ShaderMaterial({
@@ -402,11 +450,55 @@
             uniforms.u_resolution.value.y = window.innerHeight;
         }
         
+        function onMouseMove(event) {
+            const mouseX = event.clientX;
+            const mouseY = window.innerHeight - event.clientY; // Flip Y coordinate
+            
+            if (clickState === 0) {
+                // Point2 tracks mouse
+                point2.x = mouseX;
+                point2.y = mouseY;
+                uniforms.u_point2.value.x = mouseX;
+                uniforms.u_point2.value.y = mouseY;
+            } else {
+                // Point1 tracks mouse  
+                point1.x = mouseX;
+                point1.y = mouseY;
+                uniforms.u_point1.value.x = mouseX;
+                uniforms.u_point1.value.y = mouseY;
+            }
+        }
+        
+        function onClick(event) {
+            const mouseX = event.clientX;
+            const mouseY = window.innerHeight - event.clientY;
+            
+            if (clickState === 0) {
+                // Pin point2 at current mouse position, point1 starts tracking
+                point2.x = mouseX;
+                point2.y = mouseY;
+                uniforms.u_point2.value.x = mouseX;
+                uniforms.u_point2.value.y = mouseY;
+                clickState = 1;
+            } else {
+                // Pin point1 at current mouse position, point2 starts tracking  
+                point1.x = mouseX;
+                point1.y = mouseY;
+                uniforms.u_point1.value.x = mouseX;
+                uniforms.u_point1.value.y = mouseY;
+                clickState = 0;
+            }
+            
+            uniforms.u_clickState.value = clickState;
+        }
+        
         // Initialize
         initShader();
         animate();
         
         window.addEventListener('resize', onWindowResize);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('click', onClick);
         
         // Smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
