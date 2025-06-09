@@ -53,12 +53,56 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradientShift 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hero-title::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, transparent 0%, #ff3333 50%, transparent 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 15px #ff3333);
+            pointer-events: none;
+        }
+
+        .hero-title.beam-lit::before {
+            opacity: 1;
         }
 
         .hero-subtitle {
             font-size: 1.5rem;
             margin-bottom: 2rem;
             opacity: 0.9;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hero-subtitle::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, transparent 0%, #ff4444 50%, transparent 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 10px #ff4444);
+            pointer-events: none;
+        }
+
+        .hero-subtitle.beam-lit::before {
+            opacity: 1;
         }
 
         @keyframes gradientShift {
@@ -358,7 +402,7 @@
                 }
             `;
             
-            // Fragment shader with line distance field
+            // Fragment shader with line distance field and beam-to-text god rays
             const fragmentShader = `
                 uniform float u_time;
                 uniform vec2 u_resolution;
@@ -366,6 +410,8 @@
                 uniform vec2 u_point2;
                 uniform vec2 u_mouse;
                 uniform float u_clickCount;
+                uniform vec2 u_textPositions[10];
+                uniform float u_textCount;
                 
                 // Distance from point to line segment
                 float distanceToLine(vec2 p, vec2 a, vec2 b) {
@@ -373,6 +419,70 @@
                     vec2 ba = b - a;
                     float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
                     return length(pa - ba * h);
+                }
+                
+                // Get closest point on line segment
+                vec2 closestPointOnLine(vec2 p, vec2 a, vec2 b) {
+                    vec2 pa = p - a;
+                    vec2 ba = b - a;
+                    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+                    return a + h * ba;
+                }
+                
+                // God rays from beam to text
+                float beamToTextRays(vec2 st, vec2 lineStart, vec2 lineEnd, vec2 textPos, float time) {
+                    // Find closest point on line to this pixel
+                    vec2 linePoint = closestPointOnLine(st, lineStart, lineEnd);
+                    
+                    // Direction from line to text
+                    vec2 beamToText = normalize(textPos - linePoint);
+                    
+                    // Direction from line to current pixel
+                    vec2 lineToPixel = normalize(st - linePoint);
+                    
+                    // How aligned is this pixel with the beam-to-text direction?
+                    float alignment = max(0.0, dot(lineToPixel, beamToText));
+                    
+                    // Distance from line
+                    float distFromLine = length(st - linePoint);
+                    
+                    // Distance along the ray toward text
+                    float rayProgress = dot(st - linePoint, beamToText);
+                    
+                    // Only show rays going toward the text
+                    if (rayProgress < 0.0) return 0.0;
+                    
+                    // Cone effect - rays spread out from line
+                    float coneWidth = 0.1 + rayProgress * 0.2;
+                    float coneIntensity = 1.0 - smoothstep(0.0, coneWidth, distFromLine);
+                    
+                    // Animated beam flicker
+                    float flicker = sin(time * 8.0 + rayProgress * 20.0) * 0.3 + 0.7;
+                    
+                    // Multiple beam rays within the cone
+                    float beamPattern = 0.0;
+                    for (int i = 0; i < 5; i++) {
+                        float angle = float(i) * 0.2 - 0.4; // -0.4 to 0.4 radians
+                        vec2 rayDir = vec2(
+                            beamToText.x * cos(angle) - beamToText.y * sin(angle),
+                            beamToText.x * sin(angle) + beamToText.y * cos(angle)
+                        );
+                        
+                        float rayAlignment = max(0.0, dot(lineToPixel, rayDir));
+                        float rayIntensity = pow(rayAlignment, 30.0);
+                        
+                        float phase = time * 6.0 + float(i) * 0.8;
+                        float pulse = sin(phase) * 0.4 + 0.6;
+                        
+                        beamPattern += rayIntensity * pulse;
+                    }
+                    
+                    // Distance falloff from text position
+                    float distToText = length(st - textPos);
+                    float textProximity = exp(-distToText * 8.0);
+                    
+                    // Only show rays when close to text
+                    return alignment * coneIntensity * beamPattern * flicker * textProximity * 0.3;
                 }
                 
                 void main() {
@@ -384,6 +494,7 @@
                     vec2 mouse = u_mouse / u_resolution.xy;
                     
                     float dist;
+                    vec2 lineStart, lineEnd;
                     
                     // Determine interaction state based on click count
                     float clickMod2 = mod(u_clickCount, 2.0);
@@ -391,17 +502,23 @@
                     if (clickMod2 == 0.0) {
                         // Even clicks - draw line between the two points
                         dist = distanceToLine(st, pointA, pointB);
+                        lineStart = pointA;
+                        lineEnd = pointB;
                     } else {
                         // Odd clicks - draw two lines from each point to mouse
                         float distToLine1 = distanceToLine(st, pointA, mouse);
                         float distToLine2 = distanceToLine(st, pointB, mouse);
-                        dist = min(distToLine1, distToLine2); // Show closest line
+                        dist = min(distToLine1, distToLine2);
+                        
+                        // For god rays, we'll handle both lines
+                        lineStart = pointA;
+                        lineEnd = pointB; // We'll do both lines separately
                     }
                     
                     // Create visual effect based on distance
                     float intensity = smoothstep(0.0, 0.1, dist);
                     
-                    // Color based on distance
+                    // Base colors
                     vec3 lineColor = vec3(0.2, 0.8, 1.0); // Cyan line
                     vec3 bgColor = vec3(0.05, 0.05, 0.1); // Dark background
                     
@@ -416,6 +533,27 @@
                     float pulse = sin(u_time * 3.0) * 0.5 + 0.5;
                     if (dist < 0.005) {
                         color = mix(color, vec3(1.0, 1.0, 1.0), pulse * 0.7);
+                    }
+                    
+                    // GOD RAYS FROM BEAM TO TEXT POSITIONS
+                    for (int i = 0; i < 10; i++) {
+                        if (float(i) >= u_textCount) break;
+                        
+                        vec2 textPos = u_textPositions[i];
+                        
+                        if (clickMod2 == 0.0) {
+                            // Single line - rays from line to text
+                            float rays = beamToTextRays(st, lineStart, lineEnd, textPos, u_time);
+                            vec3 rayColor = vec3(1.0, 0.4, 0.1); // Orange rays
+                            color += rays * rayColor;
+                        } else {
+                            // Dual lines - rays from both lines to text
+                            float rays1 = beamToTextRays(st, pointA, mouse, textPos, u_time);
+                            float rays2 = beamToTextRays(st, pointB, mouse, textPos, u_time);
+                            
+                            vec3 rayColor = vec3(1.0, 0.4, 0.1); // Orange rays
+                            color += (rays1 + rays2) * rayColor;
+                        }
                     }
                     
                     // Fix aspect ratio for circular points
@@ -434,30 +572,30 @@
                         if (clickMod4 == 0.0) {
                             // point1 is tracking (orange), point2 is pinned (white)
                             if (point1Dist < 0.02) {
-                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for tracking point1
+                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8);
                             }
                             if (point2Dist < 0.015) {
-                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point2
+                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6);
                             }
                         } else {
                             // point2 is tracking (orange), point1 is pinned (white)
                             if (point2Dist < 0.02) {
-                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for tracking point2
+                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8);
                             }
                             if (point1Dist < 0.015) {
-                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point1
+                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6);
                             }
                         }
                     } else {
                         // Odd clicks - both points are pinned, show mouse cursor too
                         if (point1Dist < 0.015) {
-                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point1
+                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6);
                         }
                         if (point2Dist < 0.015) {
-                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point2
+                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6);
                         }
                         if (mouseDist < 0.012) {
-                            color = mix(color, vec3(0.8, 0.8, 0.8), 0.5); // Gray for mouse position
+                            color = mix(color, vec3(0.8, 0.8, 0.8), 0.5);
                         }
                     }
                     
@@ -471,7 +609,9 @@
                 u_point1: { value: new THREE.Vector2(point1.x, point1.y) },
                 u_point2: { value: new THREE.Vector2(point2.x, point2.y) },
                 u_mouse: { value: new THREE.Vector2(window.innerWidth/2, window.innerHeight/2) },
-                u_clickCount: { value: 0.0 }
+                u_clickCount: { value: 0.0 },
+                u_textPositions: { value: Array(10).fill().map(() => new THREE.Vector2(0, 0)) },
+                u_textCount: { value: 0.0 }
             };
             
             const material = new THREE.ShaderMaterial({
@@ -519,6 +659,9 @@
                     uniforms.u_point2.value.x = currentX;
                     uniforms.u_point2.value.y = currentY;
                 }
+                
+                // Update text interactions during animation
+                updateTextInteractions();
             }
             
             renderer.render(scene, camera);
@@ -528,6 +671,140 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             uniforms.u_resolution.value.x = window.innerWidth;
             uniforms.u_resolution.value.y = window.innerHeight;
+            updateTextPositions(); // Recalculate text positions on resize
+        }
+        
+        // Text interaction functions
+        function updateTextPositions() {
+            const textElements = document.querySelectorAll('.hero-title, .hero-subtitle, .section h2, .tutorial-card h3, .tutorial-card p');
+            const positions = [];
+            
+            textElements.forEach((element, index) => {
+                // Add text content as data attribute for pseudo-elements
+                element.setAttribute('data-text', element.textContent);
+                
+                if (index < 10) { // Limit to 10 elements for shader array
+                    const rect = element.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = window.innerHeight - (rect.top + rect.height / 2); // Flip Y for shader
+                    
+                    positions.push(new THREE.Vector2(centerX / window.innerWidth, centerY / window.innerHeight));
+                }
+            });
+            
+            // Update shader uniforms
+            for (let i = 0; i < 10; i++) {
+                if (i < positions.length) {
+                    uniforms.u_textPositions.value[i] = positions[i];
+                } else {
+                    uniforms.u_textPositions.value[i] = new THREE.Vector2(-1, -1); // Off-screen
+                }
+            }
+            uniforms.u_textCount.value = Math.min(positions.length, 10);
+        }
+        
+        function getClosestPointOnLine(px, py, x1, y1, x2, y2) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = dx * dx + dy * dy;
+            
+            if (length === 0) return { x: x1, y: y1 };
+            
+            const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / length));
+            return {
+                x: x1 + t * dx,
+                y: y1 + t * dy
+            };
+        }
+        
+        function distanceToLineSegment(px, py, x1, y1, x2, y2) {
+            const closest = getClosestPointOnLine(px, py, x1, y1, x2, y2);
+            const dx = px - closest.x;
+            const dy = py - closest.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function updateTextInteractions() {
+            const textElements = document.querySelectorAll('.hero-title, .hero-subtitle, .section h2, .tutorial-card h3, .tutorial-card p');
+            const glowThreshold = 150; // Distance in pixels for UV effect
+            
+            textElements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                
+                let minDistance = Infinity;
+                let closestBeamPoint = { x: 0, y: 0 };
+                
+                // Calculate distance to current line(s) and find closest beam point
+                if (clickCount % 2 === 0) {
+                    // Single line between two points
+                    const beamPoint = getClosestPointOnLine(
+                        rect.left + rect.width / 2, rect.top + rect.height / 2,
+                        point1.x, window.innerHeight - point1.y, 
+                        point2.x, window.innerHeight - point2.y
+                    );
+                    minDistance = Math.sqrt(
+                        (rect.left + rect.width / 2 - beamPoint.x) ** 2 + 
+                        (rect.top + rect.height / 2 - beamPoint.y) ** 2
+                    );
+                    closestBeamPoint = beamPoint;
+                } else {
+                    // Two lines from points to mouse
+                    const mouseX = uniforms.u_mouse.value.x;
+                    const mouseY = window.innerHeight - uniforms.u_mouse.value.y;
+                    
+                    const beamPoint1 = getClosestPointOnLine(
+                        rect.left + rect.width / 2, rect.top + rect.height / 2,
+                        point1.x, window.innerHeight - point1.y, 
+                        mouseX, mouseY
+                    );
+                    const dist1 = Math.sqrt(
+                        (rect.left + rect.width / 2 - beamPoint1.x) ** 2 + 
+                        (rect.top + rect.height / 2 - beamPoint1.y) ** 2
+                    );
+                    
+                    const beamPoint2 = getClosestPointOnLine(
+                        rect.left + rect.width / 2, rect.top + rect.height / 2,
+                        point2.x, window.innerHeight - point2.y, 
+                        mouseX, mouseY
+                    );
+                    const dist2 = Math.sqrt(
+                        (rect.left + rect.width / 2 - beamPoint2.x) ** 2 + 
+                        (rect.top + rect.height / 2 - beamPoint2.y) ** 2
+                    );
+                    
+                    if (dist1 < dist2) {
+                        minDistance = dist1;
+                        closestBeamPoint = beamPoint1;
+                    } else {
+                        minDistance = dist2;
+                        closestBeamPoint = beamPoint2;
+                    }
+                }
+                
+                // Apply UV light effect if within threshold
+                if (minDistance < glowThreshold) {
+                    // Calculate position of beam intersection relative to text element
+                    const relativeX = ((closestBeamPoint.x - rect.left) / rect.width) * 100;
+                    const relativeY = ((closestBeamPoint.y - rect.top) / rect.height) * 100;
+                    
+                    // Calculate UV beam radius - closer = wider beam, further = narrower
+                    const maxRadius = 80; // Maximum beam radius in pixels
+                    const minRadius = 20; // Minimum beam radius 
+                    const intensity = 1 - (minDistance / glowThreshold);
+                    const beamRadius = minRadius + (maxRadius - minRadius) * intensity;
+                    
+                    // Set CSS custom properties for the UV effect
+                    element.style.setProperty('--beam-x', `${Math.max(0, Math.min(100, relativeX))}%`);
+                    element.style.setProperty('--beam-y', `${Math.max(0, Math.min(100, relativeY))}%`);
+                    element.style.setProperty('--beam-radius', `${beamRadius}px`);
+                    
+                    element.classList.add('beam-lit');
+                } else {
+                    // Outside threshold - turn off UV effect
+                    element.style.setProperty('--beam-radius', '0px');
+                    element.classList.remove('beam-lit');
+                }
+            });
         }
         
         function onMouseMove(event) {
@@ -560,7 +837,9 @@
                     uniforms.u_point2.value.y = mouseY;
                 }
             }
-            // On odd click counts (1, 3, 5, 7...), points don't move but mouse position is tracked for line drawing
+            
+            // Update text interactions
+            updateTextInteractions();
         }
         
         function onClick(event) {
@@ -569,7 +848,7 @@
             
             // Determine which point was tracking before this click
             if (clickCount % 2 === 0) {
-                // We're going from tracking to pinned state
+                // We're going from tracking to pinned state (even -> odd)
                 if (clickCount % 4 === 0) {
                     // Point1 was tracking, pin it at click location
                     point1.x = mouseX;
@@ -583,16 +862,43 @@
                     uniforms.u_point2.value.x = mouseX;
                     uniforms.u_point2.value.y = mouseY;
                 }
+            } else {
+                // We're going from pinned to tracking state (odd -> even)
+                // INSTANT SNAP: Immediately move the unpinned point to current mouse position
+                const nextClickCount = clickCount + 1;
+                
+                if (nextClickCount % 4 === 0) {
+                    // Point1 will start tracking - snap it to mouse immediately
+                    point1.x = mouseX;
+                    point1.y = mouseY;
+                    uniforms.u_point1.value.x = mouseX;
+                    uniforms.u_point1.value.y = mouseY;
+                } else {
+                    // Point2 will start tracking - snap it to mouse immediately
+                    point2.x = mouseX;
+                    point2.y = mouseY;
+                    uniforms.u_point2.value.x = mouseX;
+                    uniforms.u_point2.value.y = mouseY;
+                }
+                
+                // No animation needed - instant snap!
+                isAnimating = false;
             }
             
             // Increment click count and update uniform
             clickCount++;
             uniforms.u_clickCount.value = clickCount;
+            
+            // Update text interactions after state change
+            updateTextInteractions();
         }
         
         // Initialize
         initShader();
         animate();
+        
+        // Initialize text positions for god rays
+        setTimeout(updateTextPositions, 100); // Small delay to ensure DOM is ready
         
         window.addEventListener('resize', onWindowResize);
         window.addEventListener('mousemove', onMouseMove);
