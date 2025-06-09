@@ -330,9 +330,16 @@
     <script>
         // Three.js shader background
         let scene, camera, renderer, uniforms;
-        let clickState = 0; // 0: point2 tracks mouse, 1: point1 tracks mouse
+        let clickCount = 0; // Track total number of clicks
         let point1 = { x: window.innerWidth/2, y: window.innerHeight/2 }; // Center point
         let point2 = { x: window.innerWidth/2, y: window.innerHeight/2 }; // Mouse point
+        
+        // Animation variables
+        let isAnimating = false;
+        let animationProgress = 0;
+        let animationStartPos = { x: 0, y: 0 };
+        let animationTargetPos = { x: 0, y: 0 };
+        let animatingPoint = null; // 'point1' or 'point2'
         
         function initShader() {
             scene = new THREE.Scene();
@@ -357,7 +364,8 @@
                 uniform vec2 u_resolution;
                 uniform vec2 u_point1;
                 uniform vec2 u_point2;
-                uniform float u_clickState;
+                uniform vec2 u_mouse;
+                uniform float u_clickCount;
                 
                 // Distance from point to line segment
                 float distanceToLine(vec2 p, vec2 a, vec2 b) {
@@ -373,9 +381,22 @@
                     // Convert points to normalized coordinates
                     vec2 pointA = u_point1 / u_resolution.xy;
                     vec2 pointB = u_point2 / u_resolution.xy;
+                    vec2 mouse = u_mouse / u_resolution.xy;
                     
-                    // Calculate distance from current pixel to the line
-                    float dist = distanceToLine(st, pointA, pointB);
+                    float dist;
+                    
+                    // Determine interaction state based on click count
+                    float clickMod2 = mod(u_clickCount, 2.0);
+                    
+                    if (clickMod2 == 0.0) {
+                        // Even clicks - draw line between the two points
+                        dist = distanceToLine(st, pointA, pointB);
+                    } else {
+                        // Odd clicks - draw two lines from each point to mouse
+                        float distToLine1 = distanceToLine(st, pointA, mouse);
+                        float distToLine2 = distanceToLine(st, pointB, mouse);
+                        dist = min(distToLine1, distToLine2); // Show closest line
+                    }
                     
                     // Create visual effect based on distance
                     float intensity = smoothstep(0.0, 0.1, dist);
@@ -397,21 +418,47 @@
                         color = mix(color, vec3(1.0, 1.0, 1.0), pulse * 0.7);
                     }
                     
-                    // Add point indicators
-                    float point1Dist = distance(st, pointA);
-                    float point2Dist = distance(st, pointB);
+                    // Fix aspect ratio for circular points
+                    float aspect = u_resolution.x / u_resolution.y;
+                    vec2 aspectCorrect = vec2(aspect, 1.0);
                     
-                    // Highlight the active (tracking) point
-                    if (u_clickState == 0.0 && point2Dist < 0.02) {
-                        color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for active point
-                    } else if (u_clickState == 1.0 && point1Dist < 0.02) {
-                        color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for active point
-                    }
+                    // Add point indicators with proper circular shape
+                    float point1Dist = length((st - pointA) * aspectCorrect);
+                    float point2Dist = length((st - pointB) * aspectCorrect);
+                    float mouseDist = length((st - mouse) * aspectCorrect);
                     
-                    // Show static points in white
-                    if ((u_clickState == 1.0 && point2Dist < 0.015) || 
-                        (u_clickState == 0.0 && point1Dist < 0.015)) {
-                        color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for static point
+                    float clickMod4 = mod(u_clickCount, 4.0);
+                    
+                    if (clickMod2 == 0.0) {
+                        // Even clicks - one point is tracking
+                        if (clickMod4 == 0.0) {
+                            // point1 is tracking (orange), point2 is pinned (white)
+                            if (point1Dist < 0.02) {
+                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for tracking point1
+                            }
+                            if (point2Dist < 0.015) {
+                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point2
+                            }
+                        } else {
+                            // point2 is tracking (orange), point1 is pinned (white)
+                            if (point2Dist < 0.02) {
+                                color = mix(color, vec3(1.0, 0.5, 0.0), 0.8); // Orange for tracking point2
+                            }
+                            if (point1Dist < 0.015) {
+                                color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point1
+                            }
+                        }
+                    } else {
+                        // Odd clicks - both points are pinned, show mouse cursor too
+                        if (point1Dist < 0.015) {
+                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point1
+                        }
+                        if (point2Dist < 0.015) {
+                            color = mix(color, vec3(1.0, 1.0, 1.0), 0.6); // White for pinned point2
+                        }
+                        if (mouseDist < 0.012) {
+                            color = mix(color, vec3(0.8, 0.8, 0.8), 0.5); // Gray for mouse position
+                        }
                     }
                     
                     gl_FragColor = vec4(color, 0.8);
@@ -423,7 +470,8 @@
                 u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
                 u_point1: { value: new THREE.Vector2(point1.x, point1.y) },
                 u_point2: { value: new THREE.Vector2(point2.x, point2.y) },
-                u_clickState: { value: 0.0 }
+                u_mouse: { value: new THREE.Vector2(window.innerWidth/2, window.innerHeight/2) },
+                u_clickCount: { value: 0.0 }
             };
             
             const material = new THREE.ShaderMaterial({
@@ -441,6 +489,38 @@
         function animate() {
             requestAnimationFrame(animate);
             uniforms.u_time.value += 0.01;
+            
+            // Handle point animation
+            if (isAnimating) {
+                animationProgress += 0.08; // Animation speed (higher = faster)
+                
+                if (animationProgress >= 1.0) {
+                    // Animation complete
+                    animationProgress = 1.0;
+                    isAnimating = false;
+                }
+                
+                // Smooth easing function (ease-out)
+                const easedProgress = 1 - Math.pow(1 - animationProgress, 3);
+                
+                // Interpolate position
+                const currentX = animationStartPos.x + (animationTargetPos.x - animationStartPos.x) * easedProgress;
+                const currentY = animationStartPos.y + (animationTargetPos.y - animationStartPos.y) * easedProgress;
+                
+                // Update the animating point
+                if (animatingPoint === 'point1') {
+                    point1.x = currentX;
+                    point1.y = currentY;
+                    uniforms.u_point1.value.x = currentX;
+                    uniforms.u_point1.value.y = currentY;
+                } else if (animatingPoint === 'point2') {
+                    point2.x = currentX;
+                    point2.y = currentY;
+                    uniforms.u_point2.value.x = currentX;
+                    uniforms.u_point2.value.y = currentY;
+                }
+            }
+            
             renderer.render(scene, camera);
         }
         
@@ -454,42 +534,60 @@
             const mouseX = event.clientX;
             const mouseY = window.innerHeight - event.clientY; // Flip Y coordinate
             
-            if (clickState === 0) {
-                // Point2 tracks mouse
-                point2.x = mouseX;
-                point2.y = mouseY;
-                uniforms.u_point2.value.x = mouseX;
-                uniforms.u_point2.value.y = mouseY;
-            } else {
-                // Point1 tracks mouse  
-                point1.x = mouseX;
-                point1.y = mouseY;
-                uniforms.u_point1.value.x = mouseX;
-                uniforms.u_point1.value.y = mouseY;
+            // Always update mouse position for shader (needed for odd click states)
+            uniforms.u_mouse.value.x = mouseX;
+            uniforms.u_mouse.value.y = mouseY;
+            
+            // Update animation target if we're animating
+            if (isAnimating) {
+                animationTargetPos.x = mouseX;
+                animationTargetPos.y = mouseY;
             }
+            
+            // Only update point positions on even click counts (and not during animation)
+            if (clickCount % 2 === 0 && !isAnimating) {
+                if (clickCount % 4 === 0) {
+                    // Point1 tracks mouse (0, 4, 8, 12...)
+                    point1.x = mouseX;
+                    point1.y = mouseY;
+                    uniforms.u_point1.value.x = mouseX;
+                    uniforms.u_point1.value.y = mouseY;
+                } else {
+                    // Point2 tracks mouse (2, 6, 10, 14...)
+                    point2.x = mouseX;
+                    point2.y = mouseY;
+                    uniforms.u_point2.value.x = mouseX;
+                    uniforms.u_point2.value.y = mouseY;
+                }
+            }
+            // On odd click counts (1, 3, 5, 7...), points don't move but mouse position is tracked for line drawing
         }
         
         function onClick(event) {
             const mouseX = event.clientX;
             const mouseY = window.innerHeight - event.clientY;
             
-            if (clickState === 0) {
-                // Pin point2 at current mouse position, point1 starts tracking
-                point2.x = mouseX;
-                point2.y = mouseY;
-                uniforms.u_point2.value.x = mouseX;
-                uniforms.u_point2.value.y = mouseY;
-                clickState = 1;
-            } else {
-                // Pin point1 at current mouse position, point2 starts tracking  
-                point1.x = mouseX;
-                point1.y = mouseY;
-                uniforms.u_point1.value.x = mouseX;
-                uniforms.u_point1.value.y = mouseY;
-                clickState = 0;
+            // Determine which point was tracking before this click
+            if (clickCount % 2 === 0) {
+                // We're going from tracking to pinned state
+                if (clickCount % 4 === 0) {
+                    // Point1 was tracking, pin it at click location
+                    point1.x = mouseX;
+                    point1.y = mouseY;
+                    uniforms.u_point1.value.x = mouseX;
+                    uniforms.u_point1.value.y = mouseY;
+                } else {
+                    // Point2 was tracking, pin it at click location  
+                    point2.x = mouseX;
+                    point2.y = mouseY;
+                    uniforms.u_point2.value.x = mouseX;
+                    uniforms.u_point2.value.y = mouseY;
+                }
             }
             
-            uniforms.u_clickState.value = clickState;
+            // Increment click count and update uniform
+            clickCount++;
+            uniforms.u_clickCount.value = clickCount;
         }
         
         // Initialize
