@@ -29,17 +29,18 @@
         }
 
         #hypercube-canvas {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .hero-content {
             position: relative;
-            z-index: 2;
+            z-index: 10;
             max-width: 800px;
             padding: 2rem;
         }
@@ -90,6 +91,10 @@
             padding: 5rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
         }
 
         .section h2 {
@@ -269,6 +274,7 @@
             font-size: 0.9rem;
             min-width: 250px;
             display: none; /* Hidden by default */
+            pointer-events: auto; /* Ensure it can be interacted with */
         }
 
         .controls-panel h4 {
@@ -305,6 +311,46 @@
             outline: none;
             border-color: #4ecdc4;
             background: rgba(255, 255, 255, 0.15);
+        }
+
+        .button-group {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4ecdc4;
+            transform: translateY(-1px);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button.disabled {
+            background: rgba(255, 100, 100, 0.3);
+            border-color: rgba(255, 100, 100, 0.5);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .control-button.disabled:hover {
+            background: rgba(255, 100, 100, 0.4);
+            border-color: rgba(255, 100, 100, 0.7);
         }
 
         .settings-toggle {
@@ -412,6 +458,13 @@
             <input type="number" id="cameraz-control" value="10" step="1" min="-100" max="50">
         </div>
         
+        <div class="button-group">
+            <button class="control-button" id="reset-rotation">Reset Rotation</button>
+            <button class="control-button" id="stop-rx">Stop RX Velocity</button>
+            <button class="control-button" id="stop-ry">Stop RY Velocity</button>
+            <button class="control-button" id="stop-rw">Stop RW Velocity</button>
+        </div>
+        
         <div class="info-section">
             <h4>4D Hypercube Controls</h4>
             <p>• Move mouse to rotate in 3D space</p>
@@ -505,6 +558,9 @@
         let angles = { rx: 0, ry: 0, rw: 0 };
         let wheelVelocity = 0;
         
+        // Toggle states for velocity control
+        let velocityEnabled = { rx: true, ry: true, rw: true };
+        
         // Smoothing filters
         let mouseHistory = [];
         let wheelHistory = [];
@@ -555,24 +611,24 @@
                 uniform float u_cameraZ; // -30
                 
                 // 4D rotation matrices
-                mat4 rotateXY(float angle) {
+                mat4 rotateX(float angle) {
                     float c = cos(angle);
                     float s = sin(angle);
                     return mat4(
-                        c, -s, 0.0, 0.0,
-                        s, c, 0.0, 0.0,
-                        0.0, 0.0, 1.0, 0.0,
+                        1.0, 0.0, 0.0, 0.0,
+                        0.0, c, -s, 0.0,
+                        0.0, s, c, 0.0,
                         0.0, 0.0, 0.0, 1.0
                     );
                 }
                 
-                mat4 rotateXZ(float angle) {
+                mat4 rotateY(float angle) {
                     float c = cos(angle);
                     float s = sin(angle);
                     return mat4(
-                        c, 0.0, -s, 0.0,
+                        c, 0.0, s, 0.0,
                         0.0, 1.0, 0.0, 0.0,
-                        s, 0.0, c, 0.0,
+                        -s, 0.0, c, 0.0,
                         0.0, 0.0, 0.0, 1.0
                     );
                 }
@@ -624,7 +680,7 @@
                     st.x *= u_resolution.x / u_resolution.y;
                     
                     // Create rotation matrix
-                    mat4 rotation = rotateWZ(u_rotation.z) * rotateXZ(u_rotation.x) * rotateXY(u_rotation.y);
+                    mat4 rotation = rotateWZ(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
                     
                     float minDist = 1000.0;
                     
@@ -710,25 +766,41 @@
             uniforms.u_rotation.value.y = angles.ry;
             uniforms.u_rotation.value.z = angles.rw;
             
-            // Apply velocity to angles
-            angles.rx += velocity.x + slowVelocity.x;
-            angles.ry += velocity.y + slowVelocity.y;
-            angles.rw += wheelVelocity;
+            // Apply velocity to angles (only if enabled)
+            if (velocityEnabled.rx) {
+                angles.rx += velocity.x + slowVelocity.x;
+            }
+            if (velocityEnabled.ry) {
+                angles.ry += velocity.y + slowVelocity.y;
+            }
+            if (velocityEnabled.rw) {
+                angles.rw += wheelVelocity;
+            }
             
             // Apply gaussian smoothing to fast velocity (velocity decay)
-            velocity.x *= 0.95;
-            velocity.y *= 0.95;
+            if (velocityEnabled.rx) {
+                velocity.x *= 0.95;
+            }
+            if (velocityEnabled.ry) {
+                velocity.y *= 0.95;
+            }
             
             // Apply wheel velocity decay
-            wheelVelocity *= 0.92;
+            if (velocityEnabled.rw) {
+                wheelVelocity *= 0.92;
+            }
             
             // Update slow velocity based on mouse position
             const targetSlowVelX = normalizedMouse.y * 0.0125; // Remember: U controls Y rotation (1/4 acceleration)
             const targetSlowVelY = normalizedMouse.x * 0.0125; // V controls X rotation (1/4 acceleration)
             
-            // Accelerate towards target with max velocity constraint
-            slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
-            slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+            // Accelerate towards target with max velocity constraint (only if enabled)
+            if (velocityEnabled.rx) {
+                slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
+            }
+            if (velocityEnabled.ry) {
+                slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+            }
             
             // Clamp slow velocity
             const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
@@ -750,9 +822,13 @@
             const deltaX = (newMousePos.x - mousePos.x) * 2.0; // Double the slope
             const deltaY = (newMousePos.y - mousePos.y) * 2.0;
             
-            // Add to velocity with gaussian filtering effect
-            velocity.x += deltaY * 0.15; // Remember: mouse Y controls X rotation (halved velocity)
-            velocity.y += deltaX * 0.15; // Mouse X controls Y rotation (halved velocity)
+            // Add to velocity with gaussian filtering effect (only if enabled)
+            if (velocityEnabled.rx) {
+                velocity.x += deltaY * 0.15; // Remember: mouse Y controls X rotation (halved velocity)
+            }
+            if (velocityEnabled.ry) {
+                velocity.y += deltaX * 0.15; // Mouse X controls Y rotation (halved velocity)
+            }
             
             // Update mouse position
             mousePos = newMousePos;
@@ -763,9 +839,11 @@
         }
 
         function onWheel(event) {
-            // Add wheel input with filtering
-            const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
-            wheelVelocity += wheelDelta * 0.1;
+            // Add wheel input with filtering (only if enabled)
+            if (velocityEnabled.rw) {
+                const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
+                wheelVelocity += wheelDelta * 0.1;
+            }
         }
 
         function onWindowResize() {
@@ -780,8 +858,8 @@
 
         // Event listeners
         window.addEventListener('resize', onWindowResize);
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('wheel', onWheel);
+        document.addEventListener('mousemove', onMouseMove); // Changed to document since canvas has pointer-events: none
+        document.addEventListener('wheel', onWheel); // Changed to document
 
         // Settings toggle functionality
         document.getElementById('settings-toggle').addEventListener('click', function() {
@@ -804,6 +882,54 @@
 
         document.getElementById('cameraz-control').addEventListener('input', function(e) {
             uniforms.u_cameraZ.value = parseFloat(e.target.value);
+        });
+
+        // Reset and control buttons
+        document.getElementById('reset-rotation').addEventListener('click', function() {
+            angles.rx = 0;
+            angles.ry = 0;
+            angles.rw = 0;
+        });
+
+        document.getElementById('stop-rx').addEventListener('click', function() {
+            velocityEnabled.rx = !velocityEnabled.rx;
+            const button = document.getElementById('stop-rx');
+            if (velocityEnabled.rx) {
+                button.textContent = 'Stop RX Velocity';
+                button.classList.remove('disabled');
+            } else {
+                button.textContent = 'Enable RX Velocity';
+                button.classList.add('disabled');
+                velocity.x = 0;
+                slowVelocity.x = 0;
+            }
+        });
+
+        document.getElementById('stop-ry').addEventListener('click', function() {
+            velocityEnabled.ry = !velocityEnabled.ry;
+            const button = document.getElementById('stop-ry');
+            if (velocityEnabled.ry) {
+                button.textContent = 'Stop RY Velocity';
+                button.classList.remove('disabled');
+            } else {
+                button.textContent = 'Enable RY Velocity';
+                button.classList.add('disabled');
+                velocity.y = 0;
+                slowVelocity.y = 0;
+            }
+        });
+
+        document.getElementById('stop-rw').addEventListener('click', function() {
+            velocityEnabled.rw = !velocityEnabled.rw;
+            const button = document.getElementById('stop-rw');
+            if (velocityEnabled.rw) {
+                button.textContent = 'Stop RW Velocity';
+                button.classList.remove('disabled');
+            } else {
+                button.textContent = 'Enable RW Velocity';
+                button.classList.add('disabled');
+                wheelVelocity = 0;
+            }
         });
 
         // Smooth scrolling for navigation
