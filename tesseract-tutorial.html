@@ -289,19 +289,27 @@
     }
 
     .parameter-dialog {
-      position: absolute;
+      position: fixed;
       background: #1a1a2e;
       border: 1px solid #444;
       border-radius: 8px;
       padding: 1rem;
-      max-width: 300px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-      z-index: 100;
+      max-width: 400px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+      z-index: 1000;
       display: none;
+      pointer-events: none;
     }
 
     .parameter-dialog.active {
       display: block;
+    }
+
+    .parameter-dialog img {
+      width: 100%;
+      max-width: 350px;
+      border-radius: 5px;
+      margin-top: 0.5rem;
     }
 
     .parameter-item {
@@ -444,7 +452,7 @@
   <!-- Hero Section with Hypercube -->
   <div class="hero-section">
     <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
-    <button class="nav-btn close-btn" onclick="window.close()" style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
+    <button class="nav-btn close-btn" onclick="window.history.back()" style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
     <div class="hero-content" style="opacity: 0; pointer-events: none;">
       <h1 class="hero-title">TESSERACT</h1>
       <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
@@ -456,8 +464,7 @@
     <!-- Tutorial Header -->
     <div class="tutorial-header">
       <div class="tutorial-nav">
-        <button class="nav-btn" onclick="previousSection()">← Previous</button>
-        <button class="nav-btn" onclick="nextSection()">Next →</button>
+        <span style="color: #ccc; font-size: 0.9rem;">Use scroll wheel to navigate</span>
       </div>
       <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
     </div>
@@ -1320,26 +1327,7 @@
     }
 
     function closeTutorial() {
-      tutorialOpen = false;
-      document.getElementById('tutorialContainer').classList.remove('active');
-    }
-
-    function nextSection() {
-      if (currentSection < totalSections - 1) {
-        currentSection++;
-        updateTutorial();
-      }
-    }
-
-    function previousSection() {
-      if (currentSection > 0) {
-        currentSection--;
-        updateTutorial();
-      }
-    }
-
-    function goToSection(section) {
-      currentSection = section;
+      currentSection = 0; // Go back to hero page
       updateTutorial();
     }
 
