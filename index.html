@@ -454,6 +454,25 @@
                 margin: 2rem auto;
             }
         }
+
+        /* Tutorial transition effect */
+        .tutorial-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .tutorial-transition.active {
+            transform: translateY(0);
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
@@ -508,17 +527,18 @@
 
     <section id="tutorials" class="section">
         <h2>Featured Tutorials</h2>
-        <div class="tutorial-card">
-            <h3>Tesseract in Touch Tutorial, using GLSL</h3>
-            <div class="hypercube-preview" onclick="openTesseractTutorial()" style="cursor: pointer; height: 200px; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; border-radius: 10px; margin: 1rem 0;">
-                <div style="text-align: center; color: #00ffff;">
-                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎲</div>
-                    <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Interactive 4D Hypercube</p>
-                    <p style="opacity: 0.7; font-size: 0.9rem;">Click to start tutorial</p>
+        <div class="tutorials-grid">
+            <div class="tutorial-card">
+                <h3>Tesseract in Touch Tutorial, using GLSL</h3>
+                <div class="hypercube-preview" onclick="openTesseractTutorial()" style="cursor: pointer; height: 200px; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; border-radius: 10px; margin: 1rem 0;">
+                    <div style="text-align: center; color: #00ffff;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎲</div>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Interactive 4D Hypercube</p>
+                        <p style="opacity: 0.7; font-size: 0.9rem;">Click to start tutorial</p>
+                    </div>
                 </div>
+                <p>Deep dive into 4D geometry and visualization techniques. Learn how to project hypercubes into 3D space and create interactive mathematical visualizations using GLSL shaders and CHOP networks in TouchDesigner.</p>
             </div>
-            <p>Deep dive into 4D geometry and visualization techniques. Learn how to project hypercubes into 3D space and create interactive mathematical visualizations using GLSL shaders and CHOP networks in TouchDesigner.</p>
-        </div>
 
             <div class="tutorial-card">
                 <h3>Advanced Shader Techniques</h3>
@@ -563,6 +583,9 @@
         </div>
     </section>
 
+    <!-- Tutorial transition overlay -->
+    <div class="tutorial-transition" id="tutorialTransition"></div>
+
     <script>
         // Hypercube vertices from TouchDesigner (33 points in Euler cycle)
         const hypercubeVertices = [
@@ -590,6 +613,9 @@
         let wheelHistory = [];
         const historyLength = 30; // 0.5 seconds at 60fps
         const maxSlowVelocity = 0.25;
+
+        // Tutorial navigation state
+        let tutorialTransitioning = false;
 
         // Function to wait for fonts to load
         function waitForFonts() {
@@ -1090,6 +1116,9 @@
         }
 
         function onMouseMove(event) {
+            // Don't process mouse movement during tutorial transition
+            if (tutorialTransitioning) return;
+            
             const newMousePos = {
                 x: event.clientX / window.innerWidth,
                 y: event.clientY / window.innerHeight
@@ -1129,11 +1158,32 @@
         }
 
         function onWheel(event) {
+            // Don't process wheel during tutorial transition
+            if (tutorialTransitioning) return;
+            
             // Add wheel input with filtering (only if enabled)
             if (velocityEnabled.rw) {
                 const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
                 wheelVelocity += wheelDelta * 0.07;
             }
+        }
+
+        // Tutorial function - this was missing!
+        function openTesseractTutorial() {
+            if (tutorialTransitioning) return; // Prevent multiple clicks during transition
+            
+            tutorialTransitioning = true;
+            
+            // Show transition overlay
+            const transition = document.getElementById('tutorialTransition');
+            transition.classList.add('active');
+            
+            // Wait for transition, then navigate
+            setTimeout(() => {
+                // Check if the tutorial file exists in the same directory
+                // You can change this filename to match your actual tutorial file name
+                window.location.href = 'Tesseract Tutorial - Interactive TouchDesigner Guide.html';
+            }, 250); // Half-way through the transition
         }
 
         // Initialize
