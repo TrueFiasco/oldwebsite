@@ -1,4 +1,47 @@
-<!DOCTYPE html>
+'math1-params': {
+          title: 'Math1 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/math1.png'
+        },
+        'mousein1-wheel': {
+          title: 'MouseIn1 CHOP - Wheel Channel',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/mousein1.png'
+        },
+        'select2-params': {
+          title: 'Select2 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/select2.png'
+        },
+        'filter2-params': {
+          title: 'Filter2 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/filter2.png'
+        },
+        'filter3-params': {
+          title: 'Filter3 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/filter3.png'
+        },
+        'filter4-params': {
+          title: 'Filter4 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/filter4.png'
+        },
+        'vert_rotation': {
+          title: 'Vertex Rotation GLSL',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/vert_rotation.png'
+        },
+        'vert_perspective': {
+          title: 'Vertex Perspective GLSL',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/vert_perspective.png'
+        },
+        'transform1': {
+          title: 'Transform1 TOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/transform1.png'
+        },
+        'reorder1': {
+          title: 'Reorder1 CHOP Parameters',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/reorder1.png'
+        },
+        'line_mindist': {
+          title: 'Line Min Distance SDF',
+          image: 'Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png'
+        },<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -401,10 +444,10 @@
   <!-- Hero Section with Hypercube -->
   <div class="hero-section">
     <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
+    <button class="nav-btn close-btn" onclick="window.close()" style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
     <div class="hero-content" style="opacity: 0; pointer-events: none;">
       <h1 class="hero-title">TESSERACT</h1>
-      <p class="hero-subtitle">in Touch Tutorial, using GLSL</p>
-      <p style="opacity: 0.6; font-size: 1rem;">Click to start the interactive tutorial</p>
+      <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
     </div>
   </div>
 
@@ -480,23 +523,6 @@
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png" 
                  alt="CHOP Network Overview" 
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 50%; left: 15%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'panel1')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 50%; left: 30%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'mousein1')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 50%; left: 45%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'select1')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 50%; left: 60%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'math-ops')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 50%; left: 75%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'final-null')"
-                   onmouseleave="hideParameterDialog()"></div>
-            </div>
           </div>
         </div>
 
@@ -523,12 +549,6 @@
                  alt="Input Processing CHOPs" 
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 60%; left: 20%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'panel1-detailed')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 60%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'mousein1-detailed')"
-                   onmouseleave="hideParameterDialog()"></div>
               <div class="hotspot" style="top: 60%; left: 80%; pointer-events: auto;" 
                    onmouseenter="showParameterDialog(this, 'select1-detailed')"
                    onmouseleave="hideParameterDialog()"></div>
@@ -564,9 +584,6 @@
               <div class="hotspot" style="top: 60%; left: 25%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
                    onmouseenter="showParameterDialog(this, 'math3-params')"
                    onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 60%; left: 55%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'slope1-params')"
-                   onmouseleave="hideParameterDialog()"></div>
               <div class="hotspot" style="top: 60%; left: 85%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
                    onmouseenter="showParameterDialog(this, 'filter1-params')"
                    onmouseleave="hideParameterDialog()"></div>
@@ -597,7 +614,7 @@
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
               <div class="hotspot" style="top: 60%; left: 35%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'math-center-params')"
+                   onmouseenter="showParameterDialog(this, 'math1-params')"
                    onmouseleave="hideParameterDialog()"></div>
               <div class="hotspot" style="top: 60%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
                    onmouseenter="showParameterDialog(this, 'speed2-params')"
@@ -654,14 +671,20 @@
                  alt="Mouse Wheel Processing" 
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 60%; left: 20%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'mousewheel-select')"
+              <div class="hotspot" style="top: 60%; left: 10%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 60%; left: 30%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'select2-params')"
                    onmouseleave="hideParameterDialog()"></div>
               <div class="hotspot" style="top: 60%; left: 50%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'filter-chain')"
+                   onmouseenter="showParameterDialog(this, 'filter4-params')"
                    onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 60%; left: 80%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'trail-comparison')"
+              <div class="hotspot" style="top: 60%; left: 70%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter3-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 60%; left: 90%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter2-params')"
                    onmouseleave="hideParameterDialog()"></div>
             </div>
           </div>
@@ -687,14 +710,6 @@
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
                  alt="Final Merge and Null" 
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 60%; left: 30%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'merge-final')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 60%; left: 70%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'null-final')"
-                   onmouseleave="hideParameterDialog()"></div>
-            </div>
           </div>
         </div>
 
@@ -727,11 +742,6 @@
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png" 
                  alt="Data Input Methods" 
                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 60%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'table-dat-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-            </div>
           </div>
         </div>
 
@@ -755,13 +765,13 @@
               <button class="action-btn" onclick="showCode('rotation-glsl')">View Rotation GLSL</button>
             </div>
           </div>
-          <div class="section-visual">
+          <div class="section-visual full-width">
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png" 
                  alt="Rotation GLSL Shader" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                 style="width: 100%; height: auto; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
               <div class="hotspot" style="top: 35%; left: 40%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'rotation-uniforms')"
+                   onmouseenter="showParameterDialog(this, 'vert_rotation')"
                    onmouseleave="hideParameterDialog()"></div>
             </div>
           </div>
@@ -784,13 +794,13 @@
               <button class="action-btn" onclick="showCode('perspective-glsl')">View Perspective GLSL</button>
             </div>
           </div>
-          <div class="section-visual">
+          <div class="section-visual full-width">
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png" 
                  alt="Perspective Projection" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                 style="width: 100%; height: auto; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
               <div class="hotspot" style="top: 40%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'perspective-uniforms')"
+                   onmouseenter="showParameterDialog(this, 'vert_perspective')"
                    onmouseleave="hideParameterDialog()"></div>
             </div>
           </div>
@@ -812,13 +822,16 @@
               <li>Closed loop formation</li>
             </ul>
           </div>
-          <div class="section-visual">
+          <div class="section-visual full-width">
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png" 
                  alt="Point to Line Conversion" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                 style="width: 100%; height: auto; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 45%; left: 45%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'transform-top-params')"
+              <div class="hotspot" style="top: 45%; left: 35%; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'transform1')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 45%; left: 65%; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'reorder1')"
                    onmouseleave="hideParameterDialog()"></div>
             </div>
           </div>
@@ -844,13 +857,13 @@
               <button class="action-btn" onclick="showCode('sdf-glsl')">View SDF GLSL</button>
             </div>
           </div>
-          <div class="section-visual">
+          <div class="section-visual full-width">
             <img src="Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png" 
                  alt="SDF Uneven Capsule Shader" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+                 style="width: 100%; height: auto; object-fit: contain; border-radius: 10px;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
               <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'sdf-component')"
+                   onmouseenter="showParameterDialog(this, 'line_mindist')"
                    onmouseleave="hideParameterDialog()"></div>
             </div>
           </div>
@@ -919,8 +932,8 @@
 
   <script>
     // Tutorial State
-    let currentSection = 0;
-    const totalSections = 14; // Updated from 15 to 14 (removed Container Settings)
+    let currentSection = 0; // 0 = hero page, 1-14 = tutorial sections
+    const totalSections = 15; // Hero + 14 tutorial sections
     let tutorialOpen = false;
 
     // Animation and interaction variables
@@ -1144,10 +1157,15 @@
       const titleY = centerY - 30;
       ctx.fillText('TESSERACT', centerX, titleY);
       
-      // Draw subtitle
+      // Draw subtitle with line breaks
       ctx.font = `400 ${subtitleFontSize}px Orbitron`;
+      const subtitleLine1 = 'TouchDesigner Tutorial using GLSL';
+      const subtitleLine2 = 'click to start';
       const subtitleY = titleY + baseFontSize * 0.8 + 20;
-      ctx.fillText('in Touch Tutorial, using GLSL', centerX, subtitleY);
+      const lineSpacing = subtitleFontSize * 1.2;
+      
+      ctx.fillText(subtitleLine1, centerX, subtitleY);
+      ctx.fillText(subtitleLine2, centerX, subtitleY + lineSpacing);
       
       return new THREE.CanvasTexture(canvas);
     }
@@ -1260,6 +1278,29 @@
       wheelVelocity += wheelDelta * 0.07;
     }
 
+    function updateTutorial() {
+      const scroller = document.getElementById('tutorialScroller');
+      const heroSection = document.querySelector('.hero-section');
+      const tutorialContainer = document.getElementById('tutorialContainer');
+      const progressBar = document.getElementById('progressBar');
+      
+      if (currentSection === 0) {
+        // Show hero page
+        tutorialContainer.classList.remove('active');
+        progressBar.style.display = 'none';
+        tutorialOpen = false;
+      } else {
+        // Show tutorial section (currentSection 1-14 maps to tutorial sections 0-13)
+        tutorialContainer.classList.add('active');
+        progressBar.style.display = 'flex';
+        tutorialOpen = true;
+        const offset = (currentSection - 1) * -100; // Subtract 1 because section 0 is hero
+        scroller.style.transform = `translateX(${offset}vw)`;
+      }
+      
+      updateProgressBar();
+    }
+
     async function updateTesseractTextTexture() {
       if (!uniforms || !uniforms.u_textTexture) return;
       
@@ -1272,7 +1313,9 @@
     // Tutorial Functions
     function openTutorial() {
       tutorialOpen = true;
+      currentSection = 1; // Start at first tutorial section (not hero)
       document.getElementById('tutorialContainer').classList.add('active');
+      updateTutorial();
       initProgressBar();
     }
 
@@ -1311,11 +1354,15 @@
       const progressBar = document.getElementById('progressBar');
       progressBar.innerHTML = '';
       
-      for (let i = 0; i < totalSections; i++) {
+      // Create 14 dots for tutorial sections (don't include hero in progress bar)
+      for (let i = 1; i <= 14; i++) {
         const dot = document.createElement('div');
         dot.className = 'progress-dot';
         if (i === currentSection) dot.classList.add('active');
-        dot.onclick = () => goToSection(i);
+        dot.onclick = () => {
+          currentSection = i;
+          updateTutorial();
+        };
         progressBar.appendChild(dot);
       }
     }
@@ -1323,7 +1370,8 @@
     function updateProgressBar() {
       const dots = document.querySelectorAll('.progress-dot');
       dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentSection);
+        // index 0 = tutorial section 1, etc.
+        dot.classList.toggle('active', (index + 1) === currentSection);
       });
     }
 
