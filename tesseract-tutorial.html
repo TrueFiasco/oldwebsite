@@ -281,6 +281,16 @@
       cursor: pointer;
       box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
       animation: pulse 2s infinite;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    .hotspot:hover {
+      transform: scale(1.3);
+      background: #ff00ff;
+      box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
     }
 
     @keyframes pulse {
@@ -431,7 +441,25 @@
       border-radius: 0 5px 5px 0;
     }
 
-    /* Responsive */
+    /* Temporary Mouse Position Debug Box */
+    .mouse-position-debug {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 14px;
+      z-index: 2000;
+      display: none;
+      border: 2px solid #fff;
+    }
+
+    .mouse-position-debug.active {
+      display: block;
+    }
     @media (max-width: 768px) {
       .tutorial-section {
         flex-direction: column;
@@ -449,6 +477,11 @@
   </style>
 </head>
 <body>
+  <!-- Mouse Position Debug Box -->
+  <div class="mouse-position-debug" id="mouseDebug">
+    Mouse Position: <span id="mouseCoords">0%, 0%</span>
+  </div>
+
   <!-- Hero Section with Hypercube -->
   <div class="hero-section">
     <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
@@ -558,7 +591,8 @@
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
               <div class="hotspot" style="top: 60%; left: 80%; pointer-events: auto;" 
                    onmouseenter="showParameterDialog(this, 'select1-detailed')"
-                   onmouseleave="hideParameterDialog()"></div>
+                   onmouseleave="hideParameterDialog()"
+                   onclick="console.log('Hotspot clicked!')"></div>
             </div>
           </div>
         </div>
@@ -1472,7 +1506,9 @@
     }
 
     function hideParameterDialog() {
-      document.getElementById('parameterDialog').classList.remove('active');
+      console.log('Hiding parameter dialog'); // Debug log
+      const dialog = document.getElementById('parameterDialog');
+      dialog.classList.remove('active');
     }
 
     // Code Modal Functions
@@ -1643,6 +1679,7 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
       await initHypercube();
       animate();
       initProgressBar();
+      initMousePositionTracker(); // Add mouse position tracker
     }
     
     // Start when DOM is ready
@@ -1650,6 +1687,37 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
       document.addEventListener('DOMContentLoaded', init);
     } else {
       init();
+    }
+
+    // Mouse Position Tracker for Hotspot Positioning
+    function initMousePositionTracker() {
+      const debugBox = document.getElementById('mouseDebug');
+      const coordsSpan = document.getElementById('mouseCoords');
+      
+      // Find all images in tutorial sections with hotspots
+      const images = document.querySelectorAll('.section-visual img');
+      
+      images.forEach(img => {
+        img.addEventListener('mouseenter', () => {
+          debugBox.classList.add('active');
+        });
+        
+        img.addEventListener('mouseleave', () => {
+          debugBox.classList.remove('active');
+        });
+        
+        img.addEventListener('mousemove', (e) => {
+          const rect = img.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          
+          coordsSpan.textContent = `${Math.round(x)}%, ${Math.round(y)}%`;
+          
+          // Update debug box position to follow mouse
+          debugBox.style.left = `${e.clientX + 20}px`;
+          debugBox.style.top = `${e.clientY - 60}px`;
+        });
+      });
     }
 
     // Event listeners
