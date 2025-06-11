@@ -169,15 +169,25 @@
     }
 
     /* Network sections that share the same image */
+    <style>
     .network-section {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    	opacity: 0;
+    	transition: opacity 0.7s ease;
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	width: 100%;
+    	height: 100%;
+    	pointer-events: none;
+    	z-index: 1;
     }
+
+.network-section.active {
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 2;
+}
+</style>
 
     .network-section.active {
       opacity: 1;
@@ -1469,50 +1479,40 @@
       wheelVelocity += wheelDelta * 0.07;
     }
 
+    <script>
     function updateTutorial() {
-      const scroller = document.getElementById('tutorialScroller');
-      const heroSection = document.querySelector('.hero-section');
-      const tutorialContainer = document.getElementById('tutorialContainer');
-      const progressBar = document.getElementById('progressBar');
-      
-      if (currentSection === 0) {
-        // Show hero page
-        tutorialContainer.classList.remove('active');
-        progressBar.style.display = 'none';
-        tutorialOpen = false;
-        hideAllNetworkSections();
-      } else {
-        // Show tutorial section
-        tutorialContainer.classList.add('active');
-        progressBar.style.display = 'flex';
-        tutorialOpen = true;
-        
-        // Check if we're in network sections (3-8)
-        if (currentSection >= 3 && currentSection <= 8) {
-          // Handle network sections with fade transitions
-          handleNetworkSections(currentSection);
-          // Position scroller to show the network container (which is at position 2)
-          const networkOffset = 2 * -100;
-          scroller.style.transform = `translateX(${networkOffset}vw)`;
-        } else {
-          // Normal horizontal scrolling for other sections
-          let offset;
-          if (currentSection < 3) {
-            // Sections 1-2: normal positioning (0-based indexing, so section 1 = 0, section 2 = 1)
-            offset = (currentSection - 1) * -100;
-          } else {
-            // Sections 9-14: they come after the network container
-            // Network container is at position 2, so section 9 should be at position 3
-            offset = (currentSection - 6) * -100; // 9-6=3, 10-6=4, etc.
-          }
-          scroller.style.transform = `translateX(${offset}vw)`;
-          // Hide all network sections when not in network range
-          hideAllNetworkSections();
-        }
-      }
-      
-      updateProgressBar();
+    	const scroller = document.getElementById('tutorialScroller');
+    	const tutorialContainer = document.getElementById('tutorialContainer');
+    	const progressBar = document.getElementById('progressBar');
+    
+    	if (currentSection === 0) {
+    		tutorialContainer.classList.remove('active');
+    		progressBar.style.display = 'none';
+    		tutorialOpen = false;
+    		hideAllNetworkSections();
+    	} else {
+    		tutorialContainer.classList.add('active');
+    		progressBar.style.display = 'flex';
+    		tutorialOpen = true;
+    
+    		if (currentSection >= 3 && currentSection <= 8) {
+    			handleNetworkSections(currentSection);
+    			scroller.style.transform = `translateX(-200vw)`; // Lock to network container
+    		} else {
+    			hideAllNetworkSections();
+    			let offset;
+    			if (currentSection < 3) {
+    				offset = (currentSection - 1) * -100;
+    			} else {
+    				offset = (currentSection - 6) * -100;
+    			}
+    			scroller.style.transform = `translateX(${offset}vw)`;
+    		}
+    	}
+    
+    	updateProgressBar();
     }
+    
 
     function handleNetworkSections(section) {
       // Hide all network sections first
