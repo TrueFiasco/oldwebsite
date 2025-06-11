@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tesseract Tutorial - Interactive TouchDesigner Guide</title>
+  <style>
+    @font-face {
+      font-family: 'Spy Agency';
+      src: url('./fonts/spyagencycond.ttf') format('truetype');
+      font-weight: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Orbitron';
+      src: url('./fonts/Orbitron-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'Orbitron';
+      src: url('./fonts/Orbitron-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-display: swap;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section with Hypercube */
+    .hero-section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      cursor: pointer;
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section:hover {
+      transform: scale(1.02);
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: 'Spy Agency', 'Arial', sans-serif;
+      font-size: clamp(3.75rem, 12vw, 9rem);
+      font-weight: normal;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease-in-out infinite;
+    }
+
+    .hero-subtitle {
+      font-family: 'Orbitron', 'Arial', sans-serif;
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      line-height: 1.2;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hypercube-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Tutorial Container */
+    .tutorial-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.5s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tutorial-container.active {
+      transform: translateY(0);
+    }
+
+    /* Tutorial Header */
+    .tutorial-header {
+      background: #1a1a2e;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .tutorial-nav {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: #333;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: #555;
+    }
+
+    .close-btn {
+      background: #ff4757;
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Tutorial Content */
+    .tutorial-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .tutorial-scroller {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s ease;
+      will-change: transform;
+    }
+
+    .tutorial-section {
+      min-width: 100vw;
+      height: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      position: relative;
+    }
+
+    .section-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 2rem;
+    }
+
+    .section-content.with-screenshot {
+      flex: 0 1 auto;
+      max-height: 60%;
+    }
+
+    .section-content.top-right {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      width: 300px;
+      max-height: 50%;
+      background: rgba(26, 26, 46, 0.9);
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+    }
+
+    .section-visual {
+      flex: 0 0 300px;
+      background: #222;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      margin-top: auto;
+    }
+
+    .section-visual.full-width {
+      flex: 1;
+      min-height: 400px;
+    }
+
+    .screenshot-container {
+      width: 100%;
+      height: 300px;
+      background: #333;
+      border-radius: 5px;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      position: relative;
+    }
+
+    /* Hotspot System */
+    .hotspot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+
+    .parameter-dialog {
+      position: absolute;
+      background: #1a1a2e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 1rem;
+      max-width: 300px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      z-index: 100;
+      display: none;
+    }
+
+    .parameter-dialog.active {
+      display: block;
+    }
+
+    .parameter-item {
+      margin: 0.5rem 0;
+      padding: 0.3rem;
+      background: #333;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Code Snippet Modal */
+    .code-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .code-modal.active {
+      display: flex;
+    }
+
+    .code-content {
+      background: #1a1a2e;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 80%;
+      max-height: 80%;
+      overflow: auto;
+    }
+
+    .code-block {
+      background: #0d1117;
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      color: #c9d1d9;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .action-btn {
+      background: linear-gradient(45deg, #00ffff, #0080ff);
+      border: none;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 128, 255, 0.4);
+    }
+
+    /* Progress Indicator */
+    .progress-bar {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .progress-dot.active {
+      background: #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+    }
+
+    /* Typography */
+    h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #00ffff; }
+    h2 { font-size: 2rem; margin-bottom: 0.8rem; color: #ff6b6b; }
+    h3 { font-size: 1.5rem; margin-bottom: 0.6rem; color: #4ecdc4; }
+    
+    p { line-height: 1.6; margin-bottom: 1rem; }
+    
+    .highlight {
+      background: rgba(255, 255, 0, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .tip {
+      background: #2c3e50;
+      border-left: 4px solid #3498db;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 5px 5px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .tutorial-section {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section with Hypercube -->
+  <div class="hero-section">
+    <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
+    <div class="hero-content" style="opacity: 0; pointer-events: none;">
+      <h1 class="hero-title">TESSERACT</h1>
+      <p class="hero-subtitle">in Touch Tutorial, using GLSL</p>
+      <p style="opacity: 0.6; font-size: 1rem;">Click to start the interactive tutorial</p>
+    </div>
+  </div>
+
+  <!-- Tutorial Container -->
+  <div class="tutorial-container" id="tutorialContainer">
+    <!-- Tutorial Header -->
+    <div class="tutorial-header">
+      <div class="tutorial-nav">
+        <button class="nav-btn" onclick="previousSection()">← Previous</button>
+        <button class="nav-btn" onclick="nextSection()">Next →</button>
+      </div>
+      <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
+    </div>
+
+    <!-- Tutorial Content -->
+    <div class="tutorial-content">
+      <div class="tutorial-scroller" id="tutorialScroller">
+        
+        <!-- Section 1: Overview -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>TESSERACT Overview</h1>
+            <p>Welcome to this interactive tutorial on creating a 4D hypercube (tesseract) in TouchDesigner using GLSL shaders. This project demonstrates advanced techniques for 4D rotation, perspective projection, and real-time interaction.</p>
+            
+            <h3>What We'll Cover:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>CHOP Networks:</strong> Mouse input processing and rotation control</li>
+              <li><strong>4D Mathematics:</strong> Rotation matrices and perspective projection</li>
+              <li><strong>GLSL Shaders:</strong> Vertex transformation and SDF rendering</li>
+              <li><strong>Interactive Controls:</strong> Real-time parameter manipulation</li>
+            </ul>
+
+            <h3>Key Resources:</h3>
+            <p>This tutorial references concepts from:</p>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><a href="https://en.wikipedia.org/wiki/Tesseract" style="color: #00ffff;">Tesseract mathematics</a></li>
+              <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" style="color: #00ffff;">4D projection techniques</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" style="color: #00ffff;">4D rotation matrices</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix" style="color: #00ffff;">3D rotation matrices</a></li>
+              <li><a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
+              <li><a href="https://docs.derivative.ca/GLSL_TOP" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
+            </ul>
+
+            <div class="tip">
+              <strong>Pro Tip:</strong> Understanding 4D rotations requires thinking beyond our 3D intuition. We'll break this down step by step!
+            </div>
+
+            <div class="action-buttons">
+              <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: The CHOP Network -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>The CHOP Network</h1>
+            <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
+            
+            <div style="display: flex; gap: 4rem; margin: 2rem 0;">
+              <div>
+                <h3>Input Sources:</h3>
+                <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
+              </div>
+              <div>
+                <h3>Network Flow:</h3>
+                <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>CHOP Network - Horizontal Layout (Hover over nodes to see parameters)</p>
+                <div class="hotspot" style="top: 50%; left: 15%;" 
+                     onmouseenter="showParameterDialog(this, 'panel1')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 50%; left: 30%;" 
+                     onmouseenter="showParameterDialog(this, 'mousein1')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 50%; left: 45%;" 
+                     onmouseenter="showParameterDialog(this, 'select1')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 50%; left: 60%;" 
+                     onmouseenter="showParameterDialog(this, 'math-ops')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 50%; left: 75%;" 
+                     onmouseenter="showParameterDialog(this, 'final-null')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Input Data 1 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Input Data 1: Mouse UV Control</h1>
+            <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
+
+            <h3>Key CHOPs:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
+              <li><strong>mousein1:</strong> Raw mouse input data</li>
+              <li><strong>select1:</strong> Filters specific channels</li>
+            </ul>
+
+            <div class="tip">
+              <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
+            </div>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Input Processing CHOPs - Hover over operators to see parameters</p>
+                <div class="hotspot" style="top: 60%; left: 20%;" 
+                     onmouseenter="showParameterDialog(this, 'panel1-detailed')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 50%;" 
+                     onmouseenter="showParameterDialog(this, 'mousein1-detailed')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 80%;" 
+                     onmouseenter="showParameterDialog(this, 'select1-detailed')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Rangeling CHOPs 1 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
+            <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
+
+            <h3>Processing Chain:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>math3:</strong> Mathematical operations on input</li>
+              <li><strong>slope1:</strong> Calculates velocity from position changes</li>
+              <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
+            </ul>
+
+            <p><strong>Note:</strong> The slope values remain unchanged from their defaults.</p>
+
+            <div class="tip">
+              <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
+            </div>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Velocity Processing CHOPs - math3, slope1, filter1 highlighted (others greyed)</p>
+                <div class="hotspot" style="top: 60%; left: 25%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'math3-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 55%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'slope1-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 85%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'filter1-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Rangeling CHOPs 2 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
+            <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
+
+            <h3>Process:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li>Add -0.5 to center the UV coordinates</li>
+              <li>Scale down for gentle interaction</li>
+              <li>Use as constant force rather than velocity burst</li>
+              <li>Convert acceleration to velocity with speed2</li>
+            </ul>
+
+            <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Centering and Scaling CHOPs - math (center), speed2 highlighted (others greyed)</p>
+                <div class="hotspot" style="top: 60%; left: 35%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'math-center-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 65%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'speed2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Rangeling CHOPs 3 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Rangeling CHOPs 3: Angular Velocity</h1>
+            <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
+
+            <h3>Key CHOPs:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>math2:</strong> Combines velocity and position inputs</li>
+              <li><strong>speed3:</strong> Integrates angular velocity to position</li>
+            </ul>
+
+            <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Angular Velocity CHOPs - math2, speed3 highlighted (others greyed)</p>
+                <div class="hotspot" style="top: 60%; left: 40%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'math2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 70%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'speed3-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Rangeling CHOPs 4 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
+            <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
+
+            <div class="tip">
+              <strong>Pro Tip:</strong> "If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP."
+            </div>
+
+            <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Mouse Wheel Processing - filter chain highlighted (others greyed)</p>
+                <div class="hotspot" style="top: 60%; left: 20%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'mousewheel-select')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 50%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'filter-chain')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 80%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'trail-comparison')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 8: Rangeling CHOPs 5 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Rangeling CHOPs 5: Merging and Null</h1>
+            <p>Merging everything together and ending it with a null.</p>
+
+            <div class="tip">
+              <strong>Golden Rule:</strong> "Always end your CHOP network with a null and try to merge as much together as makes sense."
+            </div>
+
+            <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
+
+            <h3>Final Output:</h3>
+            <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Final Merge and Null - merge, null highlighted (others greyed)</p>
+                <div class="hotspot" style="top: 60%; left: 30%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'merge-final')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 60%; left: 70%; box-shadow: 0 0 20px #00ffff;" 
+                     onmouseenter="showParameterDialog(this, 'null-final')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 9: Input Data 2 -->
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
+            <h1>Input Data 2: Saved Data from TSV</h1>
+            <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
+
+            <h3>Data Storage Options:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
+              <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
+              <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
+              <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
+            </ul>
+
+            <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
+
+            <div class="action-buttons">
+              <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
+            </div>
+
+            <div class="tip">
+              <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
+            </div>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Data Input Methods - table DAT highlighted (hover for parameters)</p>
+                <div class="hotspot" style="top: 60%; left: 50%;" 
+                     onmouseenter="showParameterDialog(this, 'table-dat-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 10: Rotation Vertex GLSL -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>Rotation Vertex GLSL</h1>
+            <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
+
+            <h3>GLSL Components:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li>3 rotation matrices as helper functions</li>
+              <li>Individual rotations (order dependent)</li>
+              <li>4D point multiplication</li>
+              <li>Rotated point output</li>
+            </ul>
+
+            <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
+
+            <div class="action-buttons">
+              <button class="action-btn" onclick="showCode('rotation-glsl')">View Rotation GLSL</button>
+            </div>
+          </div>
+          <div class="section-visual">
+            <div class="screenshot-container">
+              <div style="text-align: center;">
+                <p>Rotation GLSL Shader</p>
+                <div class="hotspot" style="top: 35%; left: 40%;" 
+                     onmouseenter="showParameterDialog(this, 'rotation-uniforms')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 11: Perspective GLSL -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>Perspective GLSL</h1>
+            <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
+
+            <h3>Perspective Pipeline:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
+              <li><strong>3D to 2D:</strong> Standard perspective projection</li>
+              <li><strong>Camera controls:</strong> FOV, position, and depth</li>
+            </ul>
+
+            <div class="action-buttons">
+              <button class="action-btn" onclick="showCode('perspective-glsl')">View Perspective GLSL</button>
+            </div>
+          </div>
+          <div class="section-visual">
+            <div class="screenshot-container">
+              <div style="text-align: center;">
+                <p>Perspective Projection</p>
+                <div class="hotspot" style="top: 40%; left: 50%;" 
+                     onmouseenter="showParameterDialog(this, 'perspective-uniforms')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 12: 2D Points to 2D Lines -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>2D Points to 2D Lines</h1>
+            <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
+
+            <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
+
+            <h3>Line Generation:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li>Convert point cloud to line segments</li>
+              <li>Use Euler cycle for proper connectivity</li>
+              <li>Transform TOP with repeat mode</li>
+              <li>Closed loop formation</li>
+            </ul>
+          </div>
+          <div class="section-visual">
+            <div class="screenshot-container">
+              <div style="text-align: center;">
+                <p>Point to Line Conversion</p>
+                <div class="hotspot" style="top: 45%; left: 45%;" 
+                     onmouseenter="showParameterDialog(this, 'transform-top-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 13: SDF Uneven Capsule -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>SDF Uneven Capsule</h1>
+            <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
+
+            <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
+
+            <h3>SDF Rendering:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li>Distance field calculation</li>
+              <li>Variable capsule radius</li>
+              <li>Efficient GPU rendering</li>
+              <li>Smooth antialiasing</li>
+            </ul>
+
+            <div class="action-buttons">
+              <button class="action-btn" onclick="showCode('sdf-glsl')">View SDF GLSL</button>
+            </div>
+          </div>
+          <div class="section-visual">
+            <div class="screenshot-container">
+              <div style="text-align: center;">
+                <p>SDF Uneven Capsule Shader</p>
+                <div class="hotspot" style="top: 50%; left: 50%;" 
+                     onmouseenter="showParameterDialog(this, 'sdf-component')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 14: Post Processing -->
+        <div class="tutorial-section">
+          <div class="section-content">
+            <h1>Post Processing</h1>
+            <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
+
+            <h3>Post Effects Chain:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>Limits:</strong> Clamp value ranges</li>
+              <li><strong>Ramps:</strong> Smooth gradients</li>
+              <li><strong>Threshold:</strong> Binary decisions</li>
+              <li><strong>Lookups:</strong> Color mapping</li>
+            </ul>
+
+            <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
+          </div>
+          <div class="section-visual">
+            <div class="screenshot-container">
+              <div style="text-align: center;">
+                <p>Post Processing Chain</p>
+                <div class="hotspot" style="top: 30%; left: 20%;" 
+                     onmouseenter="showParameterDialog(this, 'limits-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 50%; left: 50%;" 
+                     onmouseenter="showParameterDialog(this, 'ramp-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 70%; left: 80%;" 
+                     onmouseenter="showParameterDialog(this, 'lookup-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 15: Container Settings -->
+        <div class="tutorial-section">
+          <div class="section-content top-right">
+            <h1>Container Settings</h1>
+            <p>Finishing it off with an <span class="highlight">out TOP</span>, and referencing that to the parent container background.</p>
+
+            <h3>Final Steps:</h3>
+            <ul style="margin-left: 1rem; line-height: 1.6;">
+              <li>Out TOP for clean output</li>
+              <li>Parent container reference</li>
+              <li>Background setup</li>
+              <li>Performance optimization</li>
+            </ul>
+
+            <h3>Container Parameters:</h3>
+            <div class="parameter-item">Background: out1</div>
+            <div class="parameter-item">Resolution: 1920x1080</div>
+            <div class="parameter-item">Aspect: Fill</div>
+            <div class="parameter-item">Blend Mode: Over</div>
+
+            <div class="tip">
+              <strong>Complete!</strong> You've now built a fully interactive 4D hypercube in TouchDesigner using GLSL shaders. The combination of CHOP processing, mathematical transformations, and GPU rendering creates a smooth, real-time 4D visualization.
+            </div>
+
+            <p>Congratulations on completing the Tesseract tutorial! You now have the knowledge to create your own 4D visualizations and understand the pipeline from input to final render.</p>
+          </div>
+
+          <div class="section-visual full-width">
+            <div class="screenshot-container" style="height: 100%; width: 100%;">
+              <div style="text-align: center; padding: 1rem;">
+                <p>Final Out TOP Setup</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Parameter Dialog -->
+  <div class="parameter-dialog" id="parameterDialog">
+    <h4 id="parameterTitle">Parameters</h4>
+    <div id="parameterContent"></div>
+  </div>
+
+  <!-- Code Modal -->
+  <div class="code-modal" id="codeModal">
+    <div class="code-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 id="codeTitle">Code Snippet</h3>
+        <button class="nav-btn" onclick="closeCodeModal()">×</button>
+      </div>
+      <div id="codeContent"></div>
+    </div>
+  </div>
+
+  <!-- Three.js for Hypercube -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    // Tutorial State
+    let currentSection = 0;
+    const totalSections = 15;
+    let tutorialOpen = false;
+
+    // Animation and interaction variables
+    let scene, camera, renderer, uniforms;
+    let mousePos = { x: 0, y: 0 };
+    let normalizedMouse = { x: 0, y: 0 };
+    let velocity = { x: 0, y: 0 };
+    let slowVelocity = { x: 0, y: 0 };
+    let angles = { rx: 0, ry: 0, rw: 0 };
+    let wheelVelocity = 0;
+    const maxSlowVelocity = 0.25;
+
+    // Initialize hypercube visualization with text interaction
+    async function initHypercube() {
+      const canvas = document.getElementById('hypercube-canvas');
+      scene = new THREE.Scene();
+      camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      // Create vertex texture (33 points Euler cycle)
+      const vertexData = new Float32Array(33 * 4);
+      const vertices = [
+        [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
+        [0,1,0,1], [0,1,0,0], [0,1,1,0], [0,1,1,1], [1,1,1,1], [1,1,1,0], [1,1,0,0], [1,1,0,1],
+        [1,1,1,1], [1,0,1,1], [1,0,1,0], [1,0,0,0], [1,0,0,1], [1,0,1,1], [0,0,1,1], [0,0,1,0],
+        [1,0,1,0], [1,1,1,0], [0,1,1,0], [0,0,1,0], [0,0,0,0], [1,0,0,0], [1,1,0,0], [0,1,0,0],
+        [0,0,0,0]
+      ];
+      
+      vertices.forEach((vertex, i) => {
+        vertexData[i * 4] = (vertex[0] - 0.5) * 2;
+        vertexData[i * 4 + 1] = (vertex[1] - 0.5) * 2;
+        vertexData[i * 4 + 2] = (vertex[2] - 0.5) * 2;
+        vertexData[i * 4 + 3] = (vertex[3] - 0.5) * 2;
+      });
+      
+      const vertexTexture = new THREE.DataTexture(
+        vertexData, 33, 1, THREE.RGBAFormat, THREE.FloatType
+      );
+      vertexTexture.needsUpdate = true;
+      
+      // Create text texture
+      const textTexture = await createTesseractTextTexture();
+      
+      // Fragment shader with text interaction (based on original)
+      const fragmentShader = `
+        uniform float u_time;
+        uniform vec2 u_resolution;
+        uniform sampler2D u_vertices;
+        uniform sampler2D u_textTexture;
+        uniform vec3 u_rotation;
+        uniform float u_lineWidth;
+        uniform float u_fov;
+        uniform float u_perspective;
+        uniform float u_cameraZ;
+        
+        // 4D rotation matrices
+        mat4 rotateX(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, -s, 0.0, 0.0, s, c, 0.0, 0.0, 0.0, 0.0, 1.0);
+        }
+        
+        mat4 rotateY(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(c, 0.0, s, 0.0, 0.0, 1.0, 0.0, 0.0, -s, 0.0, c, 0.0, 0.0, 0.0, 0.0, 1.0);
+        }
+        
+        mat4 rotateWY(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, 0.0, -s, 0.0, 0.0, 1.0, 0.0, 0.0, s, 0.0, c);
+        }
+        
+        float distanceToLineSegment(vec2 p, vec2 a, vec2 b) {
+          vec2 pa = p - a; vec2 ba = b - a;
+          float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+          return length(pa - ba * h);
+        }
+        
+        vec2 project4DTo2D(vec4 point4D) {
+          vec3 pos3D = point4D.xyz * (point4D.w + u_perspective);
+          vec3 camPos = vec3(0.0, 0.0, u_cameraZ);
+          vec3 relPos = pos3D - camPos;
+          float f = 1.0 / tan(radians(u_fov) * 0.5);
+          vec2 projected = vec2(f * relPos.x / relPos.z, f * relPos.y / relPos.z);
+          return projected * 0.1;
+        }
+        
+        void main() {
+          vec2 st = gl_FragCoord.xy / u_resolution.xy;
+          vec2 screenSt = st;
+          st = (st - 0.5) * 2.0;
+          st.x *= u_resolution.x / u_resolution.y;
+          
+          // Sample text texture
+          vec4 textSample = texture2D(u_textTexture, screenSt);
+          float textMask = textSample.r;
+          
+          // Create rotation matrix
+          mat4 rotation = rotateWY(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
+          
+          float minDist = 1000.0;
+          
+          // Process line segments
+          for (int i = 0; i < 32; i++) {
+            vec4 vertex1 = texture2D(u_vertices, vec2((float(i) + 0.5) / 33.0, 0.5));
+            vec4 vertex2 = texture2D(u_vertices, vec2((float(i + 1) + 0.5) / 33.0, 0.5));
+            
+            vertex1 = rotation * vertex1;
+            vertex2 = rotation * vertex2;
+            
+            vec2 p1 = project4DTo2D(vertex1);
+            vec2 p2 = project4DTo2D(vertex2);
+            
+            float dist = distanceToLineSegment(st, p1, p2);
+            minDist = min(minDist, dist);
+          }
+          
+          float intensity = smoothstep(0.0, u_lineWidth, minDist);
+          
+          // Color scheme
+          vec3 lineColor = vec3(0.2, 0.8, 1.0);
+          vec3 glowColor = vec3(0.6, 0.3, 1.0);
+          vec3 bgColor = vec3(0.05, 0.05, 0.15);
+          
+          vec3 color = mix(lineColor, bgColor, intensity);
+          float glow = exp(-minDist * 30.0) * 0.5;
+          color += glow * glowColor;
+          
+          // Text interaction effects (matching original)
+          if (textMask > 0.1) {
+            float textGlow = exp(-minDist * 20.0) * 2.0;
+            vec3 textGlowColor = vec3(1.0, 0.8, 0.2);
+            color += textGlow * textGlowColor * textMask;
+            
+            if (minDist < u_lineWidth * 2.0) {
+              vec3 textLineColor = vec3(1.0, 0.9, 0.3);
+              float textInfluence = (1.0 - minDist / (u_lineWidth * 2.0)) * textMask;
+              color = mix(color, textLineColor, textInfluence * 0.7);
+            }
+            
+            // Energetic sparkles around text
+            float sparkleFreq = 15.0;
+            float sparkle = sin(st.x * sparkleFreq + u_time * 3.0) * sin(st.y * sparkleFreq + u_time * 2.5);
+            sparkle = pow(max(sparkle, 0.0), 3.0);
+            color += sparkle * 0.3 * textMask * vec3(1.0, 0.8, 0.4);
+          }
+          
+          // Pulsing effect
+          float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
+          if (minDist < u_lineWidth * 0.5) {
+            float pulseMult = textMask > 0.1 ? 0.6 : 0.3;
+            color = mix(color, vec3(1.0), pulse * pulseMult);
+          }
+          
+          // Sparkle on non-text areas
+          float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
+          color += sparkle * 0.05 * (1.0 - intensity) * (1.0 - textMask);
+          
+          gl_FragColor = vec4(color, 0.8);
+        }
+      `;
+
+      const vertexShader = `void main() { gl_Position = vec4(position, 1.0); }`;
+
+      uniforms = {
+        u_time: { value: 0.0 },
+        u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        u_vertices: { value: vertexTexture },
+        u_textTexture: { value: textTexture },
+        u_rotation: { value: new THREE.Vector3(0, 0, 0) },
+        u_lineWidth: { value: 0.02 },
+        u_fov: { value: 7.0 },
+        u_perspective: { value: 2.3 },
+        u_cameraZ: { value: 10.0 }
+      };
+
+      const material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        transparent: true
+      });
+
+      const plane = new THREE.PlaneGeometry(2, 2);
+      const mesh = new THREE.Mesh(plane, material);
+      scene.add(mesh);
+      
+      // Add mouse interaction
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('wheel', onWheel);
+      canvas.addEventListener('click', openTutorial);
+      canvas.style.cursor = 'pointer';
+    }
+
+    // Create text texture for TESSERACT
+    async function createTesseractTextTexture() {
+      // Wait for fonts to load
+      await waitForFonts();
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      const baseFontSize = Math.min(window.innerWidth * 0.12, 144);
+      const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      // Draw TESSERACT title
+      ctx.font = `${baseFontSize}px "Spy Agency"`;
+      const titleY = centerY - 30;
+      ctx.fillText('TESSERACT', centerX, titleY);
+      
+      // Draw subtitle
+      ctx.font = `400 ${subtitleFontSize}px Orbitron`;
+      const subtitleY = titleY + baseFontSize * 0.8 + 20;
+      ctx.fillText('in Touch Tutorial, using GLSL', centerX, subtitleY);
+      
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    async function waitForFonts() {
+      return new Promise((resolve) => {
+        const testCanvas = document.createElement('canvas');
+        const testCtx = testCanvas.getContext('2d');
+        
+        function checkFonts() {
+          testCtx.font = '48px "Spy Agency", serif';
+          const spyAgencyWidth = testCtx.measureText('TESSERACT').width;
+          testCtx.font = '48px serif';
+          const serifWidth = testCtx.measureText('TESSERACT').width;
+          
+          if (Math.abs(spyAgencyWidth - serifWidth) > 1) {
+            resolve();
+          } else {
+            setTimeout(checkFonts, 100);
+          }
+        }
+        checkFonts();
+        setTimeout(resolve, 5000); // Fallback
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      // Update time
+      uniforms.u_time.value += 0.016;
+      
+      // Update rotations
+      uniforms.u_rotation.value.x = angles.rx;
+      uniforms.u_rotation.value.y = angles.ry;
+      uniforms.u_rotation.value.z = angles.rw;
+      
+      // Apply velocity to angles
+      angles.rx += velocity.x + slowVelocity.x;
+      angles.ry += velocity.y + slowVelocity.y;
+      angles.rw += wheelVelocity;
+      
+      // Apply velocity decay
+      velocity.x *= 0.95;
+      velocity.y *= 0.95;
+      wheelVelocity *= 0.96;
+      
+      // Update slow velocity based on mouse position
+      const targetSlowVelX = normalizedMouse.y * 0.0125;
+      const targetSlowVelY = normalizedMouse.x * 0.0125;
+      
+      slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
+      slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+      
+      // Clamp slow velocity
+      const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
+      if (slowSpeed > maxSlowVelocity) {
+        slowVelocity.x = (slowVelocity.x / slowSpeed) * maxSlowVelocity;
+        slowVelocity.y = (slowVelocity.y / slowSpeed) * maxSlowVelocity;
+      }
+      
+      renderer.render(scene, camera);
+    }
+
+    function onMouseMove(event) {
+      // Only process mouse movement if tutorial is not open
+      if (tutorialOpen) return;
+      
+      const newMousePos = {
+        x: event.clientX / window.innerWidth,
+        y: event.clientY / window.innerHeight
+      };
+      
+      // Calculate mouse velocity
+      const deltaX = (newMousePos.x - mousePos.x) * 2.0;
+      const deltaY = (newMousePos.y - mousePos.y) * 2.0;
+      
+      // Add to velocity
+      velocity.x += deltaY * 0.15;
+      velocity.y += deltaX * 0.15;
+      
+      // Update mouse position
+      mousePos = newMousePos;
+      
+      // Update normalized mouse position
+      normalizedMouse.x = (mousePos.x - 0.5) * 2;
+      normalizedMouse.y = (mousePos.y - 0.5) * 2;
+    }
+
+    function onWheel(event) {
+      if (tutorialOpen) {
+        // Use wheel for tutorial navigation when tutorial is open
+        event.preventDefault();
+        const delta = event.deltaY;
+        
+        if (delta > 0) {
+          // Scroll down - next section (with wrap around)
+          currentSection = (currentSection + 1) % totalSections;
+        } else {
+          // Scroll up - previous section (with wrap around)
+          currentSection = (currentSection - 1 + totalSections) % totalSections;
+        }
+        
+        updateTutorial();
+        return;
+      }
+      
+      // Only process wheel for 4D rotation if tutorial is not open
+      const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
+      wheelVelocity += wheelDelta * 0.07;
+    }
+
+    async function updateTesseractTextTexture() {
+      if (!uniforms || !uniforms.u_textTexture) return;
+      
+      const textTexture = await createTesseractTextTexture();
+      if (textTexture) {
+        uniforms.u_textTexture.value = textTexture;
+      }
+    }
+
+    // Tutorial Functions
+    function openTutorial() {
+      tutorialOpen = true;
+      document.getElementById('tutorialContainer').classList.add('active');
+      initProgressBar();
+    }
+
+    function closeTutorial() {
+      tutorialOpen = false;
+      document.getElementById('tutorialContainer').classList.remove('active');
+    }
+
+    function nextSection() {
+      if (currentSection < totalSections - 1) {
+        currentSection++;
+        updateTutorial();
+      }
+    }
+
+    function previousSection() {
+      if (currentSection > 0) {
+        currentSection--;
+        updateTutorial();
+      }
+    }
+
+    function goToSection(section) {
+      currentSection = section;
+      updateTutorial();
+    }
+
+    function updateTutorial() {
+      const scroller = document.getElementById('tutorialScroller');
+      const offset = currentSection * -100;
+      scroller.style.transform = `translateX(${offset}vw)`;
+      updateProgressBar();
+    }
+
+    function initProgressBar() {
+      const progressBar = document.getElementById('progressBar');
+      progressBar.innerHTML = '';
+      
+      for (let i = 0; i < totalSections; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (i === currentSection) dot.classList.add('active');
+        dot.onclick = () => goToSection(i);
+        progressBar.appendChild(dot);
+      }
+    }
+
+    function updateProgressBar() {
+      const dots = document.querySelectorAll('.progress-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSection);
+      });
+    }
+
+    // Parameter Dialog Functions
+    function showParameterDialog(element, type) {
+      const dialog = document.getElementById('parameterDialog');
+      const title = document.getElementById('parameterTitle');
+      const content = document.getElementById('parameterContent');
+      
+      // Sample parameter data - you'll replace this with actual data
+      const parameterData = {
+        'panel1': {
+          title: 'Panel1 CHOP',
+          params: [
+            'Panel: /project1/panel1',
+            'Channel Names: u v',
+            'Sample Rate: 60',
+            'Cook Type: Always'
+          ]
+        },
+        'panel1-detailed': {
+          title: 'Panel1 CHOP - Detailed Parameters',
+          params: [
+            'Panel: /project1/panel1',
+            'Channel Names: u v',
+            'Sample Rate: 60 Hz',
+            'Cook Type: Always',
+            'Output UV coordinates: 0-1 range',
+            'Mouse tracking: Active',
+            'Resolution: 1920x1080'
+          ]
+        },
+        'mousein1': {
+          title: 'Mouse In CHOP',
+          params: [
+            'Mouse: Left',
+            'Outputs: tx ty wheel',
+            'Active: On',
+            'Sample Rate: 60'
+          ]
+        },
+        'mousein1-detailed': {
+          title: 'Mouse In CHOP - Detailed Parameters',
+          params: [
+            'Mouse Button: Left',
+            'Outputs: tx ty wheel rollu rollv',
+            'Active: On',
+            'Sample Rate: 60 Hz',
+            'Position Scale: 1.0',
+            'Wheel Scale: 1.0',
+            'Filter: None'
+          ]
+        },
+        'select1-detailed': {
+          title: 'Select1 CHOP - Channel Selection',
+          params: [
+            'Channels: u v tx ty',
+            'Channel Names: rollu rollv',
+            'From Input: On',
+            'Rename From: u v',
+            'Rename To: rollu rollv',
+            'Start/End: Use All'
+          ]
+        },
+        'math-ops': {
+          title: 'Math Operations Chain',
+          params: [
+            'Math3: Velocity processing',
+            'Slope1: Rate of change',
+            'Filter1: Smoothing',
+            'Speed2: Acceleration to velocity'
+          ]
+        },
+        'final-null': {
+          title: 'Final Null CHOP',
+          params: [
+            'Name: null1',
+            'Cook Type: Always',
+            'Channels: 6 (rotWXYZ, rotXYZ)',
+            'Clean output point'
+          ]
+        }
+        // Add more parameter sets as needed
+      };
+      
+      const data = parameterData[type] || { title: 'Parameters', params: ['Custom parameters will be shown here'] };
+      
+      title.textContent = data.title;
+      content.innerHTML = data.params.map(param => `<div class="parameter-item">${param}</div>`).join('');
+      
+      // Position dialog near the hotspot
+      const rect = element.getBoundingClientRect();
+      dialog.style.left = `${rect.left + 30}px`;
+      dialog.style.top = `${rect.top - 50}px`;
+      dialog.classList.add('active');
+    }
+
+    function hideParameterDialog() {
+      document.getElementById('parameterDialog').classList.remove('active');
+    }
+
+    // Code Modal Functions
+    function showCode(type) {
+      const modal = document.getElementById('codeModal');
+      const title = document.getElementById('codeTitle');
+      const content = document.getElementById('codeContent');
+      
+      const codeSnippets = {
+        'rotation-glsl': {
+          title: 'HyperCube Rotation GLSL',
+          content: `<div class="code-block">
+<pre>uniform vec3 rotWXYZ;  // 4D rotations (RWX, WRY, WRZ)
+uniform vec3 rotXYZ;   // 3D rotations (RX, RY, RZ)
+
+// 4D rotation matrices for W-X, W-Y, W-Z planes
+mat4 rotateWX(float angle) {
+    float c = cos(angle); float s = sin(angle);
+    return mat4(c, -s, 0.0, 0.0,
+                s, c, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0);
+}
+
+// Combined rotation matrix
+mat4 rotationMatrix = 
+    rotateZ(rotXYZ.z) * rotateY(rotXYZ.y) * rotateX(rotXYZ.x) * 
+    rotateWZ(rotWXYZ.z) * rotateWY(rotWXYZ.y) * rotateWX(rotWXYZ.x);
+
+vec4 rotatedPoint = rotationMatrix * point;</pre>
+</div>`
+        },
+        'perspective-glsl': {
+          title: 'Perspective Projection GLSL',
+          content: `<div class="code-block">
+<pre>uniform float fov;     // Field of view in degrees
+uniform vec2 resolution;
+uniform float cameraZ; // Camera Z position
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    vec3 pos = texture(sTD2DInputs[0], uv).rgb;
+    
+    // Perspective projection
+    vec3 camPos = vec3(0.0, 0.0, cameraZ);
+    vec3 relPos = pos - camPos;
+    
+    float f = 1.0 / tan(radians(fov) * 0.5);
+    vec2 projected;
+    projected.x = f * relPos.x / relPos.z;
+    projected.y = f * relPos.y / relPos.z;
+    
+    vec2 normXY = projected * 0.5 + 0.5;
+    fragColor = vec4(normXY, 0.0, 1.0);
+}</pre>
+</div>`
+        },
+        'sdf-glsl': {
+          title: 'SDF Uneven Capsule GLSL',
+          content: `<div class="code-block">
+<pre>float cro(in vec2 a, in vec2 b) { return a.x*b.y - a.y*b.x; }
+
+float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float rb) {
+    p -= pa; pb -= pa;
+    float h = dot(pb,pb);
+    vec2 q = vec2(dot(p,vec2(pb.y,-pb.x)), dot(p,pb))/h;
+    
+    q.x = abs(q.x);
+    float b = ra-rb;
+    vec2 c = vec2(sqrt(h-b*b),b);
+    
+    float k = cro(c,q);
+    float m = dot(c,q);
+    float n = dot(q,q);
+    
+    if(k < 0.0) return sqrt(h*(n)) - ra;
+    else if(k > c.x) return sqrt(h*(n+1.0-2.0*q.y)) - rb;
+    return m - ra;
+}</pre>
+</div>`
+        }
+      };
+      
+      const snippet = codeSnippets[type];
+      if (snippet) {
+        title.textContent = snippet.title;
+        content.innerHTML = snippet.content;
+        modal.classList.add('active');
+      }
+    }
+
+    function closeCodeModal() {
+      document.getElementById('codeModal').classList.remove('active');
+    }
+
+    // Download project files function
+    function downloadProjectFiles() {
+      // You can replace these URLs with your actual Google Drive or GitHub links
+      const projectFiles = {
+        touchdesigner: 'https://drive.google.com/file/d/your-td-file-id/view',
+        tsv: 'https://drive.google.com/file/d/your-tsv-file-id/view', 
+        glsl: 'https://github.com/yourusername/tesseract-tutorial'
+      };
+      
+      // Create a temporary element to show download options
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; align-items: center;
+        justify-content: center; z-index: 1000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: #1a1a2e; padding: 2rem; border-radius: 10px; max-width: 500px;">
+          <h3 style="margin-bottom: 1rem; color: #00ffff;">Download Project Files</h3>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <a href="${projectFiles.touchdesigner}" target="_blank" 
+               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
+              📁 TouchDesigner Project File (.toe)
+            </a>
+            <a href="${projectFiles.tsv}" target="_blank"
+               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
+              📊 Hypercube Data (TSV)
+            </a>
+            <a href="${projectFiles.glsl}" target="_blank"
+               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
+              💻 GLSL Code Snippets (GitHub)
+            </a>
+            <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                    style="background: #ff4757; border: none; color: white; padding: 0.5rem; border-radius: 5px; cursor: pointer;">
+              Close
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+      };
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!tutorialOpen) return;
+      
+      if (e.key === 'ArrowLeft') {
+        previousSection();
+      } else if (e.key === 'ArrowRight') {
+        nextSection();
+      } else if (e.key === 'Escape') {
+        closeTutorial();
+      }
+    });
+
+    // Window resize handler
+    function onWindowResize() {
+      if (camera && renderer && uniforms) {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        uniforms.u_resolution.value.x = window.innerWidth;
+        uniforms.u_resolution.value.y = window.innerHeight;
+        updateTesseractTextTexture();
+      }
+    }
+
+    // Initialize
+    async function init() {
+      await initHypercube();
+      animate();
+      initProgressBar();
+    }
+    
+    // Start when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // Event listeners
+    window.addEventListener('resize', onWindowResize);
+  </script>
+</body>
+</html>
