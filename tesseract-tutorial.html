@@ -223,7 +223,7 @@
       left: 0;
       width: 100%;
       height: 400px;
-      background: #222;
+      background: rgb(25, 27, 31);
       border-radius: 10px 10px 0 0;
       overflow: hidden;
       z-index: 1500;
@@ -828,7 +828,7 @@
       },
       8: { 
         aspectRatio: "1852:571", 
-        offset: {x: 0, y: 0},
+        offset: {x: 0.1, y: 0},
         image: "Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png",
         hotspots: []
       },
@@ -865,7 +865,7 @@
       },
       13: { 
         aspectRatio: "1920:571", 
-        offset: {x: 1.0, y: 0},
+        offset: {x: 1.1, y: 0},
         image: "Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png",
         hotspots: [
           { top: "50%", left: "50%", type: "line_mindist" }
@@ -922,8 +922,13 @@
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
 
-      // Find currently active image
-      const currentImage = imageContainer.querySelector('.tutorial-image');
+      // Find ALL existing images (not just one) to properly clean up
+      const existingImages = imageContainer.querySelectorAll('.tutorial-image');
+      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null; // Get the most recent one
+      
+      console.log(`Transitioning from section ${oldSection} to ${newSection}`);
+      console.log(`Found ${existingImages.length} existing images`);
+      console.log(`Offset: x=${config.offset.x}, y=${config.offset.y}`);
       
       // Create new image element
       const newImage = document.createElement('img');
@@ -936,19 +941,22 @@
         // FADE ONLY: Start centered but invisible
         newImage.style.transform = 'translate(0, 0)';
         newImage.style.opacity = '0';
-        newImage.style.zIndex = '2'; // New image on top
+        newImage.style.zIndex = '10'; // Higher z-index for new image
+        console.log('Setting up FADE transition');
       } else {
         // SLIDE + FADE: Start off-screen based on offset
         const startX = config.offset.x * 100; // 100% = full screen width to the right
         const startY = config.offset.y * 100;
         newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
-        newImage.style.zIndex = '2'; // New image on top for smooth sliding
+        newImage.style.zIndex = '10'; // Higher z-index for new image
+        console.log(`Setting up SLIDE transition: start at ${startX}%, ${startY}%`);
       }
 
       // Set old image z-index
       if (currentImage) {
-        currentImage.style.zIndex = '1'; // Old image behind
+        currentImage.style.zIndex = '5'; // Old image behind
+        console.log('Set old image z-index to 5');
       }
 
       // Add new image to container
@@ -965,27 +973,38 @@
         // ANIMATE NEW IMAGE IN
         newImage.style.opacity = '1';                    // Fade in
         newImage.style.transform = 'translate(0, 0)';    // Move to center
+        console.log('Started new image animation');
 
         // ANIMATE OLD IMAGE OUT (if it exists)
         if (currentImage) {
           if (config.offset.x === 0 && config.offset.y === 0) {
             // FADE ONLY: Old image just fades out (no movement)
             currentImage.style.opacity = '0';
+            console.log('Fading out old image');
           } else {
             // SLIDE + FADE: Old image slides out opposite direction
             const exitX = -config.offset.x * 100; // Negative = slides left
             const exitY = -config.offset.y * 100;
             currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
             currentImage.style.opacity = '0';
+            console.log(`Sliding out old image to ${exitX}%, ${exitY}%`);
           }
-
-          // Remove old image after transition completes
-          setTimeout(() => {
-            if (currentImage.parentNode === imageContainer) {
-              imageContainer.removeChild(currentImage);
-            }
-          }, 800); // Match CSS transition duration
         }
+
+        // CLEAN UP ALL OLD IMAGES after transition completes
+        setTimeout(() => {
+          // Remove ALL images except the new one
+          const allImages = imageContainer.querySelectorAll('.tutorial-image');
+          console.log(`Cleanup: Found ${allImages.length} images, removing all except new one`);
+          allImages.forEach(img => {
+            if (img !== newImage && img.parentNode === imageContainer) {
+              imageContainer.removeChild(img);
+              console.log('Removed old image');
+            }
+          });
+          const remainingImages = imageContainer.querySelectorAll('.tutorial-image');
+          console.log(`After cleanup: ${remainingImages.length} images remaining`);
+        }, 850); // Slightly longer than transition duration to ensure completion
       }, 10); // Small delay to ensure styles are applied
     }
 
