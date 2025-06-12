@@ -1306,13 +1306,6 @@
         progressBar.style.display = 'flex';
         tutorialOpen = true;
         
-        // Check if we're in network sections (3-8) for faster transitions
-        if (currentSection >= 3 && currentSection <= 8) {
-          scroller.classList.add('network-mode');
-        } else {
-          scroller.classList.remove('network-mode');
-        }
-        
         // Normal horizontal scrolling for all sections
         const offset = (currentSection - 1) * -100;
         scroller.style.transform = `translateX(${offset}vw)`;
