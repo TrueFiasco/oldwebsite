@@ -936,22 +936,32 @@
         // FADE ONLY: Start centered but invisible
         newImage.style.transform = 'translate(0, 0)';
         newImage.style.opacity = '0';
+        newImage.style.zIndex = '2'; // New image on top
       } else {
         // SLIDE + FADE: Start off-screen based on offset
         const startX = config.offset.x * 100; // 100% = full screen width to the right
         const startY = config.offset.y * 100;
         newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
+        newImage.style.zIndex = '2'; // New image on top for smooth sliding
+      }
+
+      // Set old image z-index
+      if (currentImage) {
+        currentImage.style.zIndex = '1'; // Old image behind
       }
 
       // Add new image to container
       imageContainer.appendChild(newImage);
 
+      // Force a reflow to ensure initial position is applied
+      newImage.offsetHeight;
+
       // Update hotspots for this section
       updateHotspots(config.hotspots);
 
-      // Trigger transition on next frame
-      requestAnimationFrame(() => {
+      // Use a small timeout to ensure the browser has processed the initial styles
+      setTimeout(() => {
         // ANIMATE NEW IMAGE IN
         newImage.style.opacity = '1';                    // Fade in
         newImage.style.transform = 'translate(0, 0)';    // Move to center
@@ -976,7 +986,7 @@
             }
           }, 800); // Match CSS transition duration
         }
-      });
+      }, 10); // Small delay to ensure styles are applied
     }
 
     function updateHotspots(hotspots) {
