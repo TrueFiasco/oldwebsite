@@ -164,12 +164,17 @@
     .tutorial-scroller {
       display: flex;
       height: 100%;
-      transition: transform 0.2s ease; /* Faster transition for network sections */
+      transition: transform 0.5s ease;
       will-change: transform;
     }
 
-    .tutorial-scroller.network-mode {
-      transition: transform 0.1s ease; /* Even faster for network sections */
+    /* Network sections (3-8) have instant image transitions */
+    .tutorial-section.network-section .section-visual img {
+      transition: none !important; /* Instant image appearance */
+    }
+
+    .tutorial-section.network-section .section-visual {
+      transition: none !important; /* Instant visual container */
     }
 
     .tutorial-section {
@@ -529,7 +534,7 @@
         </div>
 
         <!-- Section 3: Input Data 1 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Input Data 1: Mouse UV Control</h1>
             <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
@@ -559,7 +564,7 @@
         </div>
 
         <!-- Section 4: Rangeling CHOPs 1 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
             <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
@@ -594,7 +599,7 @@
         </div>
 
         <!-- Section 5: Rangeling CHOPs 2 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
             <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
@@ -626,7 +631,7 @@
         </div>
 
         <!-- Section 6: Rangeling CHOPs 3 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 3: Angular Velocity</h1>
             <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
@@ -656,7 +661,7 @@
         </div>
 
         <!-- Section 7: Rangeling CHOPs 4 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
             <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
@@ -693,7 +698,7 @@
         </div>
 
         <!-- Section 8: Rangeling CHOPs 5 -->
-        <div class="tutorial-section">
+        <div class="tutorial-section network-section">
           <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 5: Merging and Null</h1>
             <p>Merging everything together and ending it with a null.</p>
@@ -1332,11 +1337,6 @@
       document.getElementById('tutorialContainer').classList.add('active');
       initProgressBar();
       updateTutorial();
-      
-      // Initialize first network section if we start at section 3
-      if (currentSection === 3) {
-        handleNetworkSections(3);
-      }
     }
 
     function closeTutorial() {
