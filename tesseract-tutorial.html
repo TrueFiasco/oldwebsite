@@ -1,35 +1,4 @@
-.network-screenshot {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 0.6s ease-in-out;
-      pointer-events: auto;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-
-    .network-screenshot.active {
-      opacity: 1;
-      z-index: 2;
-    }
-
-    .network-screenshot.fading-out {
-      opacity: 0;
-      z-index: 1;
-    }
-
-    .network-screenshot img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 10px;
-    }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -197,62 +166,6 @@
       height: 100%;
       transition: transform 0.5s ease;
       will-change: transform;
-    }
-
-    /* Fixed network screenshot container for sections 3-8 */
-    .network-screenshots-container {
-      position: fixed;
-      right: 2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: calc(50% - 4rem);
-      aspect-ratio: 1852 / 571;
-      height: auto;
-      z-index: 5;
-      pointer-events: none;
-    }
-
-    .network-screenshot {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 0.6s ease-in-out;
-      pointer-events: auto;
-      z-index: 1;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 10px;
-    }
-
-    .network-screenshot.active {
-      opacity: 1;
-      z-index: 2;
-    }
-
-    .network-screenshot.fading-out {
-      opacity: 0;
-      z-index: 1;
-    }
-
-    .network-screenshot img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    /* Hide the original section-visual for network sections */
-    .tutorial-section.network-section .section-visual {
-      display: none;
-    }
-
-    /* Make network section content take full width */
-    .tutorial-section.network-section .section-content {
-      max-height: none;
-      width: calc(50% - 2rem);
-      padding-right: 2rem;
     }
 
     .tutorial-section {
@@ -628,9 +541,16 @@
               <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
             </div>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
+                 alt="Input Processing CHOPs" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+              <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'select1-detailed')"
+                   onmouseleave="hideParameterDialog()"></div>
+            </div>
           </div>
         </div>
 
@@ -653,9 +573,19 @@
               <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
             </div>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
+                 alt="Velocity Processing CHOPs" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+              <div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'math3-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter1-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+            </div>
           </div>
         </div>
 
@@ -675,9 +605,19 @@
 
             <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
+                 alt="Centering and Scaling CHOPs" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+              <div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'math1-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'speed2-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+            </div>
           </div>
         </div>
 
@@ -695,9 +635,19 @@
 
             <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
+                 alt="Angular Velocity CHOPs" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+              <div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'math2-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'speed3-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+            </div>
           </div>
         </div>
 
@@ -713,9 +663,28 @@
 
             <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
+                 alt="Mouse Wheel Processing" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+              <div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'select2-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter4-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter3-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+              <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                   onmouseenter="showParameterDialog(this, 'filter2-params')"
+                   onmouseleave="hideParameterDialog()"></div>
+            </div>
           </div>
         </div>
 
@@ -734,9 +703,11 @@
             <h3>Final Output:</h3>
             <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
           </div>
-          
-          <div class="section-visual full-width network-screenshots-container">
-            <!-- Screenshots will be injected here by JavaScript -->
+
+          <div class="section-visual full-width">
+            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
+                 alt="Final Merge and Null" 
+                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
           </div>
         </div>
 
@@ -977,9 +948,6 @@
     let angles = { rx: 0, ry: 0, rw: 0 };
     let wheelVelocity = 0;
     const maxSlowVelocity = 0.25;
-
-    // Network screenshot transition tracking
-    let lastActiveSection = null;
 
     // Initialize hypercube visualization with text interaction
     async function initHypercube() {
@@ -1315,6 +1283,7 @@
 
     function updateTutorial() {
       const scroller = document.getElementById('tutorialScroller');
+      const heroSection = document.querySelector('.hero-section');
       const tutorialContainer = document.getElementById('tutorialContainer');
       const progressBar = document.getElementById('progressBar');
       
@@ -1323,158 +1292,16 @@
         tutorialContainer.classList.remove('active');
         progressBar.style.display = 'none';
         tutorialOpen = false;
-        lastActiveSection = null;
       } else {
-        // Show tutorial section
+        // Show tutorial section (currentSection 1-14 maps to tutorial sections 0-13)
         tutorialContainer.classList.add('active');
         progressBar.style.display = 'flex';
         tutorialOpen = true;
-        
-        // Handle network screenshots for sections 3-8
-        if (currentSection >= 3 && currentSection <= 8) {
-          updateNetworkScreenshots(currentSection);
-        } else {
-          lastActiveSection = null;
-        }
-        
-        // Normal horizontal scrolling for all sections
-        const offset = (currentSection - 1) * -100;
+        const offset = (currentSection - 1) * -100; // Subtract 1 because section 0 is hero
         scroller.style.transform = `translateX(${offset}vw)`;
       }
       
       updateProgressBar();
-    }
-    
-    function updateNetworkScreenshots(section) {
-      // Initialize all network screenshots if not already done
-      initializeAllNetworkScreenshots();
-      
-      // Find all network screenshots
-      const allScreenshots = document.querySelectorAll('.network-screenshot');
-      
-      // Hide all screenshots first
-      allScreenshots.forEach(screenshot => {
-        screenshot.classList.remove('active');
-        screenshot.classList.add('fading-out');
-      });
-      
-      // Show the screenshot for the current section
-      const currentScreenshots = document.querySelectorAll(`[data-section="${section}"]`);
-      currentScreenshots.forEach(screenshot => {
-        screenshot.classList.remove('fading-out');
-        screenshot.classList.add('active');
-      });
-      
-      // Clean up after transition
-      setTimeout(() => {
-        allScreenshots.forEach(screenshot => {
-          if (screenshot.classList.contains('fading-out')) {
-            screenshot.style.display = 'none';
-          } else {
-            screenshot.style.display = 'block';
-          }
-        });
-      }, 600);
-      
-      lastActiveSection = section;
-    }
-    
-    function initializeAllNetworkScreenshots() {
-      // Only initialize once
-      if (document.querySelector('.network-screenshot[data-section="3"]')) {
-        return;
-      }
-      
-      // Network screenshot data
-      const networkData = {
-        3: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png',
-          alt: 'Input Processing CHOPs',
-          hotspots: `<div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'select1-detailed')"
-                     onmouseleave="hideParameterDialog()"></div>`
-        },
-        4: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png',
-          alt: 'Velocity Processing CHOPs',
-          hotspots: `<div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math3-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter1-params')"
-                     onmouseleave="hideParameterDialog()"></div>`
-        },
-        5: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png',
-          alt: 'Centering and Scaling CHOPs',
-          hotspots: `<div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math1-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'speed2-params')"
-                     onmouseleave="hideParameterDialog()"></div>`
-        },
-        6: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png',
-          alt: 'Angular Velocity CHOPs',
-          hotspots: `<div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'speed3-params')"
-                     onmouseleave="hideParameterDialog()"></div>`
-        },
-        7: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png',
-          alt: 'Mouse Wheel Processing',
-          hotspots: `<div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'select2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter4-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter3-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                     <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter2-params')"
-                     onmouseleave="hideParameterDialog()"></div>`
-        },
-        8: {
-          src: 'Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png',
-          alt: 'Final Merge and Null',
-          hotspots: ''
-        }
-      };
-      
-      // Find all network screenshot containers
-      const containers = document.querySelectorAll('.network-screenshots-container');
-      
-      // Populate each container with its corresponding screenshot
-      containers.forEach((container, index) => {
-        const sectionNum = index + 3; // Sections 3-8
-        const data = networkData[sectionNum];
-        
-        if (!data) return;
-        
-        // Create screenshot element
-        const screenshot = document.createElement('div');
-        screenshot.className = 'network-screenshot';
-        screenshot.setAttribute('data-section', sectionNum);
-        screenshot.style.display = 'none'; // Start hidden
-        
-        screenshot.innerHTML = `
-          <img src="${data.src}" alt="${data.alt}">
-          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-            ${data.hotspots}
-          </div>
-        `;
-        
-        container.appendChild(screenshot);
-      });
     }
 
     async function updateTesseractTextTexture() {
@@ -1491,8 +1318,8 @@
       tutorialOpen = true;
       currentSection = 1; // Start at first tutorial section (not hero)
       document.getElementById('tutorialContainer').classList.add('active');
-      initProgressBar();
       updateTutorial();
+      initProgressBar();
     }
 
     function closeTutorial() {
