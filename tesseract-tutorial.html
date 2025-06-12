@@ -888,6 +888,7 @@
     let previousSection = 0;
     const totalSections = 15; // Hero + 14 tutorial sections
     let tutorialOpen = false;
+    let cleanupTimeout = null; // Track cleanup timeout to cancel if needed
 
     // Hypercube variables
     let scene, camera, renderer, uniforms;
@@ -922,13 +923,15 @@
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
 
+      // CANCEL any pending cleanup from previous transitions
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
+      }
+
       // Find ALL existing images (not just one) to properly clean up
       const existingImages = imageContainer.querySelectorAll('.tutorial-image');
       const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null; // Get the most recent one
-      
-      console.log(`Transitioning from section ${oldSection} to ${newSection}`);
-      console.log(`Found ${existingImages.length} existing images`);
-      console.log(`Offset: x=${config.offset.x}, y=${config.offset.y}`);
       
       // Create new image element
       const newImage = document.createElement('img');
@@ -942,7 +945,6 @@
         newImage.style.transform = 'translate(0, 0)';
         newImage.style.opacity = '0';
         newImage.style.zIndex = '10'; // Higher z-index for new image
-        console.log('Setting up FADE transition');
       } else {
         // SLIDE + FADE: Start off-screen based on offset
         const startX = config.offset.x * 100; // 100% = full screen width to the right
@@ -950,13 +952,11 @@
         newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
         newImage.style.zIndex = '10'; // Higher z-index for new image
-        console.log(`Setting up SLIDE transition: start at ${startX}%, ${startY}%`);
       }
 
       // Set old image z-index
       if (currentImage) {
         currentImage.style.zIndex = '5'; // Old image behind
-        console.log('Set old image z-index to 5');
       }
 
       // Add new image to container
@@ -973,37 +973,31 @@
         // ANIMATE NEW IMAGE IN
         newImage.style.opacity = '1';                    // Fade in
         newImage.style.transform = 'translate(0, 0)';    // Move to center
-        console.log('Started new image animation');
 
         // ANIMATE OLD IMAGE OUT (if it exists)
         if (currentImage) {
           if (config.offset.x === 0 && config.offset.y === 0) {
             // FADE ONLY: Old image just fades out (no movement)
             currentImage.style.opacity = '0';
-            console.log('Fading out old image');
           } else {
             // SLIDE + FADE: Old image slides out opposite direction
             const exitX = -config.offset.x * 100; // Negative = slides left
             const exitY = -config.offset.y * 100;
             currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
             currentImage.style.opacity = '0';
-            console.log(`Sliding out old image to ${exitX}%, ${exitY}%`);
           }
         }
 
         // CLEAN UP ALL OLD IMAGES after transition completes
-        setTimeout(() => {
+        cleanupTimeout = setTimeout(() => {
           // Remove ALL images except the new one
           const allImages = imageContainer.querySelectorAll('.tutorial-image');
-          console.log(`Cleanup: Found ${allImages.length} images, removing all except new one`);
           allImages.forEach(img => {
             if (img !== newImage && img.parentNode === imageContainer) {
               imageContainer.removeChild(img);
-              console.log('Removed old image');
             }
           });
-          const remainingImages = imageContainer.querySelectorAll('.tutorial-image');
-          console.log(`After cleanup: ${remainingImages.length} images remaining`);
+          cleanupTimeout = null; // Clear the timeout reference
         }, 850); // Slightly longer than transition duration to ensure completion
       }, 10); // Small delay to ensure styles are applied
     }
@@ -1351,11 +1345,21 @@
     }
 
     function openTutorial() {
+      // Cancel any pending cleanup
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
+      }
       transitionToSection(1);
       initProgressBar();
     }
 
     function closeTutorial() {
+      // Cancel any pending image cleanup
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
+      }
       transitionToSection(0);
     }
 
