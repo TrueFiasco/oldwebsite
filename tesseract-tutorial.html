@@ -1,4 +1,35 @@
-<!DOCTYPE html>
+.network-screenshot {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+      pointer-events: auto;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .network-screenshot.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .network-screenshot.fading-out {
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .network-screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+    }<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -191,6 +222,8 @@
       transition: opacity 0.6s ease-in-out;
       pointer-events: auto;
       z-index: 1;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
     }
 
     .network-screenshot.active {
@@ -206,7 +239,7 @@
     .network-screenshot img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       border-radius: 10px;
     }
 
@@ -579,8 +612,8 @@
         </div>
 
         <!-- Section 3: Input Data 1 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Input Data 1: Mouse UV Control</h1>
             <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
 
@@ -595,11 +628,23 @@
               <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
             </div>
           </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot active" data-section="3">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
+                   alt="Input Processing CHOPs">
+              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'select1-detailed')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Section 4: Rangeling CHOPs 1 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
             <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
 
@@ -616,11 +661,26 @@
               <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
             </div>
           </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot" data-section="4">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
+                   alt="Velocity Processing CHOPs">
+              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'math3-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'filter1-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Section 5: Rangeling CHOPs 2 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
             <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
 
@@ -634,11 +694,26 @@
 
             <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
           </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot" data-section="5">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
+                   alt="Centering and Scaling CHOPs">
+              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'math1-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'speed2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Section 6: Rangeling CHOPs 3 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 3: Angular Velocity</h1>
             <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
 
@@ -650,11 +725,26 @@
 
             <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
           </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot" data-section="6">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
+                   alt="Angular Velocity CHOPs">
+              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'math2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'speed3-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Section 7: Rangeling CHOPs 4 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
             <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
 
@@ -664,11 +754,35 @@
 
             <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
           </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot" data-section="7">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
+                   alt="Mouse Wheel Processing">
+              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'select2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'filter4-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'filter3-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+                <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                     onmouseenter="showParameterDialog(this, 'filter2-params')"
+                     onmouseleave="hideParameterDialog()"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Section 8: Rangeling CHOPs 5 -->
-        <div class="tutorial-section network-section">
-          <div class="section-content">
+        <div class="tutorial-section">
+          <div class="section-content with-screenshot">
             <h1>Rangeling CHOPs 5: Merging and Null</h1>
             <p>Merging everything together and ending it with a null.</p>
 
@@ -680,6 +794,13 @@
 
             <h3>Final Output:</h3>
             <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
+          </div>
+          
+          <div class="section-visual full-width network-screenshots-container">
+            <div class="network-screenshot" data-section="8">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
+                   alt="Final Merge and Null">
+            </div>
           </div>
         </div>
 
@@ -883,85 +1004,6 @@
 
     <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
-    
-    <!-- Fixed Network Screenshots Container (only visible for sections 3-8) -->
-    <div class="network-screenshots-container" id="networkScreenshots" style="display: none;">
-      <div class="network-screenshot" data-section="3">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
-             alt="Input Processing CHOPs">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'select1-detailed')"
-               onmouseleave="hideParameterDialog()"></div>
-        </div>
-      </div>
-      
-      <div class="network-screenshot" data-section="4">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
-             alt="Velocity Processing CHOPs">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'math3-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'filter1-params')"
-               onmouseleave="hideParameterDialog()"></div>
-        </div>
-      </div>
-      
-      <div class="network-screenshot" data-section="5">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
-             alt="Centering and Scaling CHOPs">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'math1-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'speed2-params')"
-               onmouseleave="hideParameterDialog()"></div>
-        </div>
-      </div>
-      
-      <div class="network-screenshot" data-section="6">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
-             alt="Angular Velocity CHOPs">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'math2-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'speed3-params')"
-               onmouseleave="hideParameterDialog()"></div>
-        </div>
-      </div>
-      
-      <div class="network-screenshot" data-section="7">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
-             alt="Mouse Wheel Processing">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'select2-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'filter4-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'filter3-params')"
-               onmouseleave="hideParameterDialog()"></div>
-          <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-               onmouseenter="showParameterDialog(this, 'filter2-params')"
-               onmouseleave="hideParameterDialog()"></div>
-        </div>
-      </div>
-      
-      <div class="network-screenshot" data-section="8">
-        <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
-             alt="Final Merge and Null">
-      </div>
-    </div>
   </div>
 
   <!-- Parameter Dialog -->
@@ -1339,13 +1381,11 @@
       const scroller = document.getElementById('tutorialScroller');
       const tutorialContainer = document.getElementById('tutorialContainer');
       const progressBar = document.getElementById('progressBar');
-      const networkScreenshots = document.getElementById('networkScreenshots');
       
       if (currentSection === 0) {
         // Show hero page
         tutorialContainer.classList.remove('active');
         progressBar.style.display = 'none';
-        networkScreenshots.style.display = 'none';
         tutorialOpen = false;
         lastActiveSection = null;
       } else {
@@ -1356,10 +1396,8 @@
         
         // Handle network screenshots for sections 3-8
         if (currentSection >= 3 && currentSection <= 8) {
-          networkScreenshots.style.display = 'block';
           updateNetworkScreenshots(currentSection);
         } else {
-          networkScreenshots.style.display = 'none';
           lastActiveSection = null;
         }
         
