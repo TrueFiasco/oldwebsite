@@ -122,6 +122,8 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 2000;
+      position: relative;
     }
 
     .tutorial-nav {
@@ -175,6 +177,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow-y: auto;
     }
 
     /* Section-specific gradients */
@@ -193,34 +196,40 @@
     .tutorial-section:nth-child(13) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
     .tutorial-section:nth-child(14) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
 
-    .section-content {
-      flex: 1;
-      overflow-y: auto;
+    /* Special layout for section 1 */
+    .section-1-layout {
+      display: flex;
+      gap: 2rem;
+      height: calc(100% - 450px); /* Leave space for the static image */
       padding-bottom: 2rem;
-      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .section-content.with-screenshot {
-      flex: 0 1 auto;
-      max-height: 60%;
+    .section-1-left {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Static image container */
-    .section-visual {
-      flex: 0 0 300px;
-      background: #222;
-      border-radius: 10px;
-      position: relative;
-      overflow: hidden;
-      margin-top: auto;
-    }
-
-    .section-visual.full-width {
+    .section-1-right {
       flex: 1;
-      min-height: 400px;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Image transition container - STATIC positioning */
+    /* STATIC IMAGE CONTAINER - COMPLETELY SEPARATE FROM SECTIONS */
+    .static-image-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 400px;
+      background: #222;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      z-index: 1500;
+    }
+
+    /* Image transition container within the static container */
     .image-transition-container {
       position: relative;
       width: 100%;
@@ -235,7 +244,6 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 10px;
       opacity: 0;
       transform: translateX(100%);
       transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -251,26 +259,7 @@
       transform: translateX(-100%);
     }
 
-    /* Special layout for section 1 */
-    .section-1-layout {
-      display: flex;
-      gap: 2rem;
-      height: 60%;
-    }
-
-    .section-1-left {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .section-1-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Hotspot System */
+    /* Hotspot System - positioned relative to static image container */
     .hotspot {
       position: absolute;
       width: 20px;
@@ -305,7 +294,7 @@
       padding: 1rem;
       max-width: 400px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-      z-index: 1000;
+      z-index: 2000;
       display: none;
       pointer-events: none;
     }
@@ -341,7 +330,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      z-index: 2000;
     }
 
     .code-modal.active {
@@ -402,7 +391,7 @@
       transform: translateX(-50%);
       display: flex;
       gap: 0.5rem;
-      z-index: 100;
+      z-index: 1600;
     }
 
     .progress-dot {
@@ -442,7 +431,6 @@
 
     @media (max-width: 768px) {
       .tutorial-section {
-        flex-direction: column;
         padding: 1rem;
       }
       
@@ -456,6 +444,11 @@
 
       .section-1-layout {
         flex-direction: column;
+        height: calc(100% - 300px);
+      }
+
+      .static-image-container {
+        height: 250px;
       }
     }
   </style>
@@ -522,461 +515,239 @@
               </div>
             </div>
           </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png" 
-                   alt="Network Overview" 
-                   style="aspect-ratio: 3615/1097;">
-            </div>
-          </div>
         </div>
 
         <!-- Section 2: The CHOP Network -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>The CHOP Network</h1>
-            <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
-            
-            <div style="display: flex; gap: 4rem; margin: 2rem 0;">
-              <div>
-                <h3>Input Sources:</h3>
-                <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
-              </div>
-              <div>
-                <h3>Network Flow:</h3>
-                <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
-              </div>
-            </div>
-          </div>
+          <h1>The CHOP Network</h1>
+          <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
           
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/chop_network.png" 
-                   alt="CHOP Network" 
-                   style="aspect-ratio: 1852/571;">
+          <div style="display: flex; gap: 4rem; margin: 2rem 0;">
+            <div>
+              <h3>Input Sources:</h3>
+              <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
+            </div>
+            <div>
+              <h3>Network Flow:</h3>
+              <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Input Data 1 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Input Data 1: Mouse UV Control</h1>
-            <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
+          <h1>Input Data 1: Mouse UV Control</h1>
+          <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
 
-            <h3>Key CHOPs:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
-              <li><strong>mousein1:</strong> Raw mouse input data</li>
-              <li><strong>select1:</strong> Filters specific channels</li>
-            </ul>
+          <h3>Key CHOPs:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
+            <li><strong>mousein1:</strong> Raw mouse input data</li>
+            <li><strong>select1:</strong> Filters specific channels</li>
+          </ul>
 
-            <div class="tip">
-              <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
-            </div>
-          </div>
-
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
-                   alt="Input Processing CHOPs" 
-                   style="aspect-ratio: 1852/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'select1-detailed')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
+          <div class="tip">
+            <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
           </div>
         </div>
 
         <!-- Section 4: Rangeling CHOPs 1 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
-            <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
+          <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
+          <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
 
-            <h3>Processing Chain:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>math3:</strong> Mathematical operations on input</li>
-              <li><strong>slope1:</strong> Calculates velocity from position changes</li>
-              <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
-            </ul>
+          <h3>Processing Chain:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>math3:</strong> Mathematical operations on input</li>
+            <li><strong>slope1:</strong> Calculates velocity from position changes</li>
+            <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
+          </ul>
 
-            <div class="tip">
-              <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
-            </div>
-          </div>
-
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
-                   alt="Velocity Processing CHOPs" 
-                   style="aspect-ratio: 1852/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 4%; left: 29%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math3-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 4%; left: 52%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter1-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
+          <div class="tip">
+            <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
           </div>
         </div>
 
         <!-- Section 5: Rangeling CHOPs 2 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
-            <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
+          <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
+          <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
 
-            <h3>Process:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Add -0.5 to center the UV coordinates</li>
-              <li>Scale down for gentle interaction</li>
-              <li>Use as constant force rather than velocity burst</li>
-              <li>Convert acceleration to velocity with speed2</li>
-            </ul>
+          <h3>Process:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li>Add -0.5 to center the UV coordinates</li>
+            <li>Scale down for gentle interaction</li>
+            <li>Use as constant force rather than velocity burst</li>
+            <li>Convert acceleration to velocity with speed2</li>
+          </ul>
 
-            <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
-          </div>
-
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
-                   alt="Centering and Scaling CHOPs" 
-                   style="aspect-ratio: 1852/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 35%; left: 29%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math1-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 35%; left: 41%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'speed2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
-          </div>
+          <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
         </div>
 
         <!-- Section 6: Rangeling CHOPs 3 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rangeling CHOPs 3: Angular Velocity</h1>
-            <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
+          <h1>Rangeling CHOPs 3: Angular Velocity</h1>
+          <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
 
-            <h3>Key CHOPs:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>math2:</strong> Combines velocity and position inputs</li>
-              <li><strong>speed3:</strong> Integrates angular velocity to position</li>
-            </ul>
+          <h3>Key CHOPs:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>math2:</strong> Combines velocity and position inputs</li>
+            <li><strong>speed3:</strong> Integrates angular velocity to position</li>
+          </ul>
 
-            <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
-          </div>
-
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
-                   alt="Angular Velocity CHOPs" 
-                   style="aspect-ratio: 1852/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 30%; left: 65%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'math2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 28%; left: 76%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'speed3-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
-          </div>
+          <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
         </div>
 
         <!-- Section 7: Rangeling CHOPs 4 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
-            <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
+          <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
+          <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
 
-            <div class="tip">
-              <strong>Pro Tip:</strong> "If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP."
-            </div>
-
-            <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
+          <div class="tip">
+            <strong>Pro Tip:</strong> "If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP."
           </div>
 
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
-                   alt="Mouse Wheel Processing" 
-                   style="aspect-ratio: 1852/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 67%; left: 3%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 67%; left: 15%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'select2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 67%; left: 29%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter4-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 67%; left: 41%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter3-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 67%; left: 53%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'filter2-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
-          </div>
+          <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
         </div>
 
         <!-- Section 8: Rangeling CHOPs 5 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rangeling CHOPs 5: Merging and Null</h1>
-            <p>Merging everything together and ending it with a null.</p>
+          <h1>Rangeling CHOPs 5: Merging and Null</h1>
+          <p>Merging everything together and ending it with a null.</p>
 
-            <div class="tip">
-              <strong>Golden Rule:</strong> "Always end your CHOP network with a null and try to merge as much together as makes sense."
-            </div>
-
-            <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
-
-            <h3>Final Output:</h3>
-            <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
+          <div class="tip">
+            <strong>Golden Rule:</strong> "Always end your CHOP network with a null and try to merge as much together as makes sense."
           </div>
 
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
-                   alt="Final Merge and Null" 
-                   style="aspect-ratio: 1852/571;">
-            </div>
-          </div>
+          <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
+
+          <h3>Final Output:</h3>
+          <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
         </div>
 
         <!-- Section 9: Input Data 2 -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Input Data 2: Saved Data from TSV</h1>
-            <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
+          <h1>Input Data 2: Saved Data from TSV</h1>
+          <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
 
-            <h3>Data Storage Options:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
-              <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
-              <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
-              <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
-            </ul>
+          <h3>Data Storage Options:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
+            <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
+            <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
+            <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
+          </ul>
 
-            <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
+          <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
 
-            <div class="action-buttons">
-              <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
-            </div>
-
-            <div class="tip">
-              <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
-            </div>
+          <div class="action-buttons">
+            <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
           </div>
 
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png" 
-                   alt="Data Input Methods" 
-                   style="aspect-ratio: 1456/478;">
-            </div>
+          <div class="tip">
+            <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
           </div>
         </div>
 
         <!-- Section 10: Rotation Vertex GLSL -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Rotation Vertex GLSL</h1>
-            <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
+          <h1>Rotation Vertex GLSL</h1>
+          <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
 
-            <h3>GLSL Components:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>3 rotation matrices as helper functions</li>
-              <li>Individual rotations (order dependent)</li>
-              <li>4D point multiplication</li>
-              <li>Rotated point output</li>
-            </ul>
+          <h3>GLSL Components:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li>3 rotation matrices as helper functions</li>
+            <li>Individual rotations (order dependent)</li>
+            <li>4D point multiplication</li>
+            <li>Rotated point output</li>
+          </ul>
 
-            <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
+          <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
 
-            <div class="action-buttons">
-              <button class="action-btn" onclick="showCode('rotation-glsl')">View Rotation GLSL</button>
-            </div>
-          </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png" 
-                   alt="Rotation GLSL Shader" 
-                   style="aspect-ratio: 1920/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 35%; left: 40%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'vert_rotation')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
+          <div class="action-buttons">
+            <button class="action-btn" onclick="showCode('rotation-glsl')">View Rotation GLSL</button>
           </div>
         </div>
 
         <!-- Section 11: Perspective GLSL -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Perspective GLSL</h1>
-            <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
+          <h1>Perspective GLSL</h1>
+          <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
 
-            <h3>Perspective Pipeline:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
-              <li><strong>3D to 2D:</strong> Standard perspective projection</li>
-              <li><strong>Camera controls:</strong> FOV, position, and depth</li>
-            </ul>
+          <h3>Perspective Pipeline:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
+            <li><strong>3D to 2D:</strong> Standard perspective projection</li>
+            <li><strong>Camera controls:</strong> FOV, position, and depth</li>
+          </ul>
 
-            <div class="action-buttons">
-              <button class="action-btn" onclick="showCode('perspective-glsl')">View Perspective GLSL</button>
-            </div>
-          </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png" 
-                   alt="Perspective Projection" 
-                   style="aspect-ratio: 1920/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 40%; left: 50%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'vert_perspective')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
+          <div class="action-buttons">
+            <button class="action-btn" onclick="showCode('perspective-glsl')">View Perspective GLSL</button>
           </div>
         </div>
 
         <!-- Section 12: 2D Points to 2D Lines -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>2D Points to 2D Lines</h1>
-            <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
+          <h1>2D Points to 2D Lines</h1>
+          <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
 
-            <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
+          <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
 
-            <h3>Line Generation:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Convert point cloud to line segments</li>
-              <li>Use Euler cycle for proper connectivity</li>
-              <li>Transform TOP with repeat mode</li>
-              <li>Closed loop formation</li>
-            </ul>
-          </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png" 
-                   alt="Point to Line Conversion" 
-                   style="aspect-ratio: 1920/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 45%; left: 35%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'transform1')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 45%; left: 65%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'reorder1')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
-          </div>
+          <h3>Line Generation:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li>Convert point cloud to line segments</li>
+            <li>Use Euler cycle for proper connectivity</li>
+            <li>Transform TOP with repeat mode</li>
+            <li>Closed loop formation</li>
+          </ul>
         </div>
 
         <!-- Section 13: SDF Uneven Capsule -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>SDF Uneven Capsule</h1>
-            <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
+          <h1>SDF Uneven Capsule</h1>
+          <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
 
-            <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
+          <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
 
-            <h3>SDF Rendering:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Distance field calculation</li>
-              <li>Variable capsule radius</li>
-              <li>Efficient GPU rendering</li>
-              <li>Smooth antialiasing</li>
-            </ul>
+          <h3>SDF Rendering:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li>Distance field calculation</li>
+            <li>Variable capsule radius</li>
+            <li>Efficient GPU rendering</li>
+            <li>Smooth antialiasing</li>
+          </ul>
 
-            <div class="action-buttons">
-              <button class="action-btn" onclick="showCode('sdf-glsl')">View SDF GLSL</button>
-            </div>
-          </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png" 
-                   alt="SDF Uneven Capsule Shader" 
-                   style="aspect-ratio: 1920/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'line_mindist')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
+          <div class="action-buttons">
+            <button class="action-btn" onclick="showCode('sdf-glsl')">View SDF GLSL</button>
           </div>
         </div>
 
         <!-- Section 14: Post Processing -->
         <div class="tutorial-section">
-          <div class="section-content with-screenshot">
-            <h1>Post Processing</h1>
-            <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
+          <h1>Post Processing</h1>
+          <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
 
-            <h3>Post Effects Chain:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>Limits:</strong> Clamp value ranges</li>
-              <li><strong>Ramps:</strong> Smooth gradients</li>
-              <li><strong>Threshold:</strong> Binary decisions</li>
-              <li><strong>Lookups:</strong> Color mapping</li>
-            </ul>
+          <h3>Post Effects Chain:</h3>
+          <ul style="margin-left: 2rem; line-height: 1.8;">
+            <li><strong>Limits:</strong> Clamp value ranges</li>
+            <li><strong>Ramps:</strong> Smooth gradients</li>
+            <li><strong>Threshold:</strong> Binary decisions</li>
+            <li><strong>Lookups:</strong> Color mapping</li>
+          </ul>
 
-            <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
-          </div>
-          
-          <div class="section-visual full-width">
-            <div class="image-transition-container">
-              <img class="tutorial-image active" 
-                   src="Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png" 
-                   alt="Post Processing Chain" 
-                   style="aspect-ratio: 1920/571;">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                <div class="hotspot" style="top: 30%; left: 20%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'limits-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'ramp-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-                <div class="hotspot" style="top: 70%; left: 80%; pointer-events: auto;" 
-                     onmouseenter="showParameterDialog(this, 'lookup-params')"
-                     onmouseleave="hideParameterDialog()"></div>
-              </div>
-            </div>
-          </div>
+          <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
         </div>
 
+      </div>
+    </div>
+
+    <!-- STATIC IMAGE CONTAINER - COMPLETELY SEPARATE FROM SECTIONS -->
+    <div class="static-image-container">
+      <div class="image-transition-container" id="staticImageContainer">
+        <!-- Images will be dynamically added here -->
+        <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+          <!-- Hotspots will be dynamically added here -->
+        </div>
       </div>
     </div>
 
@@ -1010,29 +781,117 @@
       1: { 
         aspectRatio: "3615:1097", 
         offset: {x: 1.0, y: 0},
-        image: "Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png"
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png",
+        hotspots: []
       },
       2: { 
         aspectRatio: "1852:571", 
         offset: {x: 1.0, y: 0},
-        image: "Tesseract%20Tutorial%20Pictures/Network%20images/chop_network.png"
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/chop_network.png",
+        hotspots: []
       },
-      3: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
-      4: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
-      5: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
-      6: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
-      7: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
-      8: { aspectRatio: "1852:571", offset: {x: 0, y: 0} },
+      3: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png",
+        hotspots: [
+          { top: "35%", left: "17%", type: "select1-detailed" }
+        ]
+      },
+      4: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png",
+        hotspots: [
+          { top: "4%", left: "29%", type: "math3-params" },
+          { top: "4%", left: "52%", type: "filter1-params" }
+        ]
+      },
+      5: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png",
+        hotspots: [
+          { top: "35%", left: "29%", type: "math1-params" },
+          { top: "35%", left: "41%", type: "speed2-params" }
+        ]
+      },
+      6: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png",
+        hotspots: [
+          { top: "30%", left: "65%", type: "math2-params" },
+          { top: "28%", left: "76%", type: "speed3-params" }
+        ]
+      },
+      7: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png",
+        hotspots: [
+          { top: "67%", left: "3%", type: "mousein1-wheel" },
+          { top: "67%", left: "15%", type: "select2-params" },
+          { top: "67%", left: "29%", type: "filter4-params" },
+          { top: "67%", left: "41%", type: "filter3-params" },
+          { top: "67%", left: "53%", type: "filter2-params" }
+        ]
+      },
+      8: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png",
+        hotspots: []
+      },
       9: { 
         aspectRatio: "1456:478", 
         offset: {x: 1.0, y: 0},
-        image: "Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png"
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png",
+        hotspots: []
       },
-      10: { aspectRatio: "1920:571", offset: {x: 1.0, y: 0} },
-      11: { aspectRatio: "1920:571", offset: {x: 0, y: 0} },
-      12: { aspectRatio: "1920:571", offset: {x: 0, y: 0} },
-      13: { aspectRatio: "1920:571", offset: {x: 1.0, y: 0} },
-      14: { aspectRatio: "1920:571", offset: {x: 0, y: 0} }
+      10: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png",
+        hotspots: [
+          { top: "35%", left: "40%", type: "vert_rotation" }
+        ]
+      },
+      11: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png",
+        hotspots: [
+          { top: "40%", left: "50%", type: "vert_perspective" }
+        ]
+      },
+      12: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png",
+        hotspots: [
+          { top: "45%", left: "35%", type: "transform1" },
+          { top: "45%", left: "65%", type: "reorder1" }
+        ]
+      },
+      13: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png",
+        hotspots: [
+          { top: "50%", left: "50%", type: "line_mindist" }
+        ]
+      },
+      14: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png",
+        hotspots: [
+          { top: "30%", left: "20%", type: "limits-params" },
+          { top: "50%", left: "50%", type: "ramp-params" },
+          { top: "70%", left: "80%", type: "lookup-params" }
+        ]
+      }
     };
 
     // Tutorial State
@@ -1061,20 +920,17 @@
       // Handle section scroller
       updateTutorial();
       
-      // Handle image transitions
+      // Handle image transitions in static container
       if (currentSection > 0 && currentSection <= 14) {
-        transitionSectionImage(currentSection, previousSection);
+        transitionStaticImage(currentSection, previousSection);
       }
     }
 
-    function transitionSectionImage(newSection, oldSection) {
+    function transitionStaticImage(newSection, oldSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
 
-      const sectionElement = document.querySelector(`.tutorial-section:nth-child(${newSection})`);
-      if (!sectionElement) return;
-
-      const imageContainer = sectionElement.querySelector('.image-transition-container');
+      const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
 
       const currentImage = imageContainer.querySelector('.tutorial-image.active');
@@ -1083,17 +939,7 @@
       const newImage = document.createElement('img');
       newImage.className = 'tutorial-image';
       newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
-      
-      // Set image source
-      if (config.image) {
-        newImage.src = config.image;
-      } else {
-        // Use existing image from current section
-        const existingImg = sectionElement.querySelector('img[src*="Tesseract"]');
-        if (existingImg) {
-          newImage.src = existingImg.src;
-        }
-      }
+      newImage.src = config.image;
 
       // Set initial position based on offset
       if (config.offset.x === 0 && config.offset.y === 0) {
@@ -1110,6 +956,9 @@
 
       // Add new image to container
       imageContainer.appendChild(newImage);
+
+      // Update hotspots
+      updateHotspots(config.hotspots);
 
       // Trigger transition
       requestAnimationFrame(() => {
@@ -1143,7 +992,27 @@
       });
     }
 
-    // Initialize hypercube
+    function updateHotspots(hotspots) {
+      const hotspotContainer = document.getElementById('hotspotContainer');
+      if (!hotspotContainer) return;
+
+      // Clear existing hotspots
+      hotspotContainer.innerHTML = '';
+
+      // Add new hotspots
+      hotspots.forEach(hotspot => {
+        const element = document.createElement('div');
+        element.className = 'hotspot';
+        element.style.top = hotspot.top;
+        element.style.left = hotspot.left;
+        element.style.pointerEvents = 'auto';
+        element.onmouseenter = () => showParameterDialog(element, hotspot.type);
+        element.onmouseleave = () => hideParameterDialog();
+        hotspotContainer.appendChild(element);
+      });
+    }
+
+    // Initialize hypercube (same as before)
     async function initHypercube() {
       const canvas = document.getElementById('hypercube-canvas');
       scene = new THREE.Scene();
@@ -1177,7 +1046,7 @@
       // Create text texture
       const textTexture = await createTesseractTextTexture();
       
-      // Fragment shader
+      // Fragment shader (same as before)
       const fragmentShader = `
         uniform float u_time;
         uniform vec2 u_resolution;
