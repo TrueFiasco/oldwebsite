@@ -245,18 +245,7 @@
       height: 100%;
       object-fit: contain;
       opacity: 0;
-      transform: translateX(100%);
       transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .tutorial-image.active {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .tutorial-image.previous {
-      opacity: 0;
-      transform: translateX(-100%);
     }
 
     /* Hotspot System - positioned relative to static image container */
@@ -933,7 +922,8 @@
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
 
-      const currentImage = imageContainer.querySelector('.tutorial-image.active');
+      // Find currently active image
+      const currentImage = imageContainer.querySelector('.tutorial-image');
       
       // Create new image element
       const newImage = document.createElement('img');
@@ -941,53 +931,50 @@
       newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
       newImage.src = config.image;
 
-      // Set initial position based on offset
+      // Set starting position and opacity based on offset config
       if (config.offset.x === 0 && config.offset.y === 0) {
-        // Fade only transition
-        newImage.style.transform = `translateX(0)`;
+        // FADE ONLY: Start centered but invisible
+        newImage.style.transform = 'translate(0, 0)';
         newImage.style.opacity = '0';
       } else {
-        // Translate + fade transition
-        const offsetX = config.offset.x * 100;
-        const offsetY = config.offset.y * 100;
-        newImage.style.transform = `translate(${offsetX}%, ${offsetY}%)`;
+        // SLIDE + FADE: Start off-screen based on offset
+        const startX = config.offset.x * 100; // 100% = full screen width to the right
+        const startY = config.offset.y * 100;
+        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
       }
 
       // Add new image to container
       imageContainer.appendChild(newImage);
 
-      // Update hotspots
+      // Update hotspots for this section
       updateHotspots(config.hotspots);
 
-      // Trigger transition
+      // Trigger transition on next frame
       requestAnimationFrame(() => {
-        // Animate new image in
-        newImage.style.opacity = '1';
-        newImage.style.transform = 'translate(0, 0)';
-        newImage.classList.add('active');
+        // ANIMATE NEW IMAGE IN
+        newImage.style.opacity = '1';                    // Fade in
+        newImage.style.transform = 'translate(0, 0)';    // Move to center
 
-        // Animate old image out (if exists)
+        // ANIMATE OLD IMAGE OUT (if it exists)
         if (currentImage) {
           if (config.offset.x === 0 && config.offset.y === 0) {
-            // Fade out only
+            // FADE ONLY: Old image just fades out (no movement)
             currentImage.style.opacity = '0';
           } else {
-            // Translate and fade out
-            const offsetX = -config.offset.x * 100;
-            const offsetY = -config.offset.y * 100;
-            currentImage.style.transform = `translate(${offsetX}%, ${offsetY}%)`;
+            // SLIDE + FADE: Old image slides out opposite direction
+            const exitX = -config.offset.x * 100; // Negative = slides left
+            const exitY = -config.offset.y * 100;
+            currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
             currentImage.style.opacity = '0';
           }
-          currentImage.classList.remove('active');
-          currentImage.classList.add('previous');
 
-          // Remove old image after transition
+          // Remove old image after transition completes
           setTimeout(() => {
-            if (currentImage.parentNode) {
-              currentImage.parentNode.removeChild(currentImage);
+            if (currentImage.parentNode === imageContainer) {
+              imageContainer.removeChild(currentImage);
             }
-          }, 800);
+          }, 800); // Match CSS transition duration
         }
       });
     }
