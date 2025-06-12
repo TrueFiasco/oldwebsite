@@ -32,6 +32,11 @@
       box-sizing: border-box;
     }
 
+    /* Sigmoid easing function */
+    :root {
+      --sigmoid-easing: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #0a0a0a;
@@ -47,7 +52,7 @@
       justify-content: center;
       background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
       cursor: pointer;
-      transition: all 0.5s ease;
+      transition: all 0.5s var(--sigmoid-easing);
       position: relative;
       overflow: hidden;
     }
@@ -59,6 +64,7 @@
     .hero-content {
       text-align: center;
       z-index: 2;
+      transition: all 0.8s var(--sigmoid-easing);
     }
 
     .hero-title {
@@ -105,7 +111,7 @@
       background: #0a0a0a;
       z-index: 1000;
       transform: translateY(100%);
-      transition: transform 0.5s ease;
+      transition: transform 0.5s var(--sigmoid-easing);
       display: flex;
       flex-direction: column;
     }
@@ -136,7 +142,7 @@
       padding: 0.5rem 1rem;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s var(--sigmoid-easing);
     }
 
     .nav-btn:hover {
@@ -164,7 +170,7 @@
     .tutorial-scroller {
       display: flex;
       height: 100%;
-      transition: transform 0.5s ease;
+      transition: transform 0.8s var(--sigmoid-easing);
       will-change: transform;
     }
 
@@ -182,6 +188,7 @@
       flex: 1;
       overflow-y: auto;
       padding-bottom: 2rem;
+      transition: all 0.8s var(--sigmoid-easing);
     }
 
     .section-content.with-screenshot {
@@ -201,6 +208,7 @@
       border: 1px solid #444;
     }
 
+    /* Enhanced Section Visual with Transition Support */
     .section-visual {
       flex: 0 0 300px;
       background: #222;
@@ -214,6 +222,60 @@
       flex: 1;
       min-height: 400px;
     }
+
+    /* Image Container with Transition Support */
+    .image-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .image-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transform: translateX(0);
+      transition: all 0.8s var(--sigmoid-easing);
+    }
+
+    .image-wrapper.transitioning-out {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+
+    .image-wrapper.transitioning-in {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    .image-wrapper.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .section-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+      transition: all 0.3s var(--sigmoid-easing);
+    }
+
+    /* Aspect Ratio Classes */
+    .aspect-16-9 { aspect-ratio: 16/9; }
+    .aspect-4-3 { aspect-ratio: 4/3; }
+    .aspect-21-9 { aspect-ratio: 21/9; }
+    .aspect-1-1 { aspect-ratio: 1/1; }
+    .aspect-3-2 { aspect-ratio: 3/2; }
+    .aspect-5-4 { aspect-ratio: 5/4; }
 
     .screenshot-container {
       width: 100%;
@@ -239,7 +301,7 @@
       box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
       animation: pulse 2s infinite;
       border: 2px solid rgba(255, 255, 255, 0.3);
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--sigmoid-easing);
       z-index: 50;
       pointer-events: auto;
     }
@@ -266,6 +328,7 @@
       z-index: 1000;
       display: none;
       pointer-events: none;
+      transition: all 0.3s var(--sigmoid-easing);
     }
 
     .parameter-dialog.active {
@@ -300,6 +363,7 @@
       align-items: center;
       justify-content: center;
       z-index: 200;
+      transition: all 0.3s var(--sigmoid-easing);
     }
 
     .code-modal.active {
@@ -313,6 +377,7 @@
       max-width: 80%;
       max-height: 80%;
       overflow: auto;
+      transition: all 0.3s var(--sigmoid-easing);
     }
 
     .code-block {
@@ -344,7 +409,7 @@
       border-radius: 25px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--sigmoid-easing);
     }
 
     .action-btn:hover {
@@ -369,7 +434,7 @@
       border-radius: 50%;
       background: #333;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s var(--sigmoid-easing);
     }
 
     .progress-dot.active {
@@ -378,11 +443,30 @@
     }
 
     /* Typography */
-    h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #00ffff; }
-    h2 { font-size: 2rem; margin-bottom: 0.8rem; color: #ff6b6b; }
-    h3 { font-size: 1.5rem; margin-bottom: 0.6rem; color: #4ecdc4; }
+    h1 { 
+      font-size: 2.5rem; 
+      margin-bottom: 1rem; 
+      color: #00ffff; 
+      transition: all 0.8s var(--sigmoid-easing);
+    }
+    h2 { 
+      font-size: 2rem; 
+      margin-bottom: 0.8rem; 
+      color: #ff6b6b; 
+      transition: all 0.8s var(--sigmoid-easing);
+    }
+    h3 { 
+      font-size: 1.5rem; 
+      margin-bottom: 0.6rem; 
+      color: #4ecdc4; 
+      transition: all 0.8s var(--sigmoid-easing);
+    }
     
-    p { line-height: 1.6; margin-bottom: 1rem; }
+    p { 
+      line-height: 1.6; 
+      margin-bottom: 1rem; 
+      transition: all 0.8s var(--sigmoid-easing);
+    }
     
     .highlight {
       background: rgba(255, 255, 0, 0.2);
@@ -396,6 +480,7 @@
       padding: 1rem;
       margin: 1rem 0;
       border-radius: 0 5px 5px 0;
+      transition: all 0.8s var(--sigmoid-easing);
     }
 
     /* Temporary Mouse Position Debug Box */
@@ -518,9 +603,13 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png" 
-                 alt="CHOP Network Overview" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png" 
+                     alt="CHOP Network Overview" 
+                     class="section-image">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -543,13 +632,17 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
-                 alt="Input Processing CHOPs" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'select1-detailed')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png" 
+                     alt="Input Processing CHOPs" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 35%; left: 17%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'select1-detailed')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -575,16 +668,20 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
-                 alt="Velocity Processing CHOPs" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'math3-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'filter1-params')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png" 
+                     alt="Velocity Processing CHOPs" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 4%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'math3-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 4%; left: 52%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'filter1-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -607,16 +704,20 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
-                 alt="Centering and Scaling CHOPs" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'math1-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'speed2-params')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png" 
+                     alt="Centering and Scaling CHOPs" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 35%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'math1-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 35%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'speed2-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -637,16 +738,20 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
-                 alt="Angular Velocity CHOPs" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'math2-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'speed3-params')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png" 
+                     alt="Angular Velocity CHOPs" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 30%; left: 65%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'math2-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 28%; left: 76%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'speed3-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -665,25 +770,29 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
-                 alt="Mouse Wheel Processing" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'select2-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'filter4-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'filter3-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'filter2-params')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png" 
+                     alt="Mouse Wheel Processing" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 67%; left: 3%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'mousein1-wheel')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 67%; left: 15%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'select2-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 67%; left: 29%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'filter4-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 67%; left: 41%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'filter3-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 67%; left: 53%; box-shadow: 0 0 20px #00ffff; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'filter2-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -705,9 +814,13 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
-                 alt="Final Merge and Null" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png" 
+                     alt="Final Merge and Null" 
+                     class="section-image">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -737,9 +850,13 @@
           </div>
 
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png" 
-                 alt="Data Input Methods" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png" 
+                     alt="Data Input Methods" 
+                     class="section-image">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -765,13 +882,17 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png" 
-                 alt="Rotation GLSL Shader" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 35%; left: 40%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'vert_rotation')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png" 
+                     alt="Rotation GLSL Shader" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 35%; left: 40%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'vert_rotation')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -795,13 +916,17 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png" 
-                 alt="Perspective Projection" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 40%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'vert_perspective')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png" 
+                     alt="Perspective Projection" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 40%; left: 50%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'vert_perspective')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -824,16 +949,20 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png" 
-                 alt="Point to Line Conversion" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 45%; left: 35%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'transform1')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 45%; left: 65%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'reorder1')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png" 
+                     alt="Point to Line Conversion" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 45%; left: 35%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'transform1')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 45%; left: 65%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'reorder1')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -860,13 +989,17 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png" 
-                 alt="SDF Uneven Capsule Shader" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'line_mindist')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png" 
+                     alt="SDF Uneven Capsule Shader" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'line_mindist')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -889,19 +1022,23 @@
           </div>
           
           <div class="section-visual full-width">
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png" 
-                 alt="Post Processing Chain" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-              <div class="hotspot" style="top: 30%; left: 20%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'limits-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'ramp-params')"
-                   onmouseleave="hideParameterDialog()"></div>
-              <div class="hotspot" style="top: 70%; left: 80%; pointer-events: auto;" 
-                   onmouseenter="showParameterDialog(this, 'lookup-params')"
-                   onmouseleave="hideParameterDialog()"></div>
+            <div class="image-container">
+              <div class="image-wrapper active">
+                <img src="Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png" 
+                     alt="Post Processing Chain" 
+                     class="section-image">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                  <div class="hotspot" style="top: 30%; left: 20%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'limits-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 50%; left: 50%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'ramp-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                  <div class="hotspot" style="top: 70%; left: 80%; pointer-events: auto;" 
+                       onmouseenter="showParameterDialog(this, 'lookup-params')"
+                       onmouseleave="hideParameterDialog()"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -934,10 +1071,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <script>
-    // Tutorial State
+    // ============================================================================
+    // SECTION CONFIGURATION SYSTEM
+    // ============================================================================
+    
+    const sectionConfig = {
+      1: { aspectRatio: "16:9", offset: { x: 1.0, y: 0 } },      // Overview - no image
+      2: { aspectRatio: "21:9", offset: { x: 1.2, y: 0 } },      // CHOP Network - wide overview
+      3: { aspectRatio: "16:9", offset: { x: 0.8, y: 0 } },      // Input Data 1
+      4: { aspectRatio: "16:9", offset: { x: 1.0, y: -0.1 } },   // Mouse Velocity
+      5: { aspectRatio: "16:9", offset: { x: 0.6, y: 0 } },      // Centering and Scaling
+      6: { aspectRatio: "16:9", offset: { x: 1.1, y: 0 } },      // Angular Velocity
+      7: { aspectRatio: "21:9", offset: { x: 1.4, y: 0 } },      // Mouse Wheel - wide
+      8: { aspectRatio: "16:9", offset: { x: 0.7, y: 0 } },      // Merging and Null
+      9: { aspectRatio: "4:3", offset: { x: 0.9, y: 0 } },       // Input Data 2 - more square
+      10: { aspectRatio: "16:9", offset: { x: 1.0, y: 0 } },     // Rotation Vertex GLSL
+      11: { aspectRatio: "16:9", offset: { x: 0.8, y: 0.1 } },   // Perspective GLSL
+      12: { aspectRatio: "16:9", offset: { x: 1.2, y: 0 } },     // 2D Points to Lines
+      13: { aspectRatio: "4:3", offset: { x: 0.5, y: 0 } },      // SDF Uneven Capsule
+      14: { aspectRatio: "21:9", offset: { x: 1.3, y: 0 } }      // Post Processing - wide
+    };
+
+    // ============================================================================
+    // TUTORIAL STATE AND VARIABLES
+    // ============================================================================
+    
     let currentSection = 0; // 0 = hero page, 1-14 = tutorial sections
     const totalSections = 15; // Hero + 14 tutorial sections
     let tutorialOpen = false;
+    let isTransitioning = false;
 
     // Animation and interaction variables
     let scene, camera, renderer, uniforms;
@@ -948,6 +1110,98 @@
     let angles = { rx: 0, ry: 0, rw: 0 };
     let wheelVelocity = 0;
     const maxSlowVelocity = 0.25;
+
+    // ============================================================================
+    // IMAGE TRANSITION SYSTEM
+    // ============================================================================
+    
+    function applyImageTransition(sectionIndex) {
+      if (isTransitioning) return;
+      if (sectionIndex === 0) return; // No transitions for hero section
+      if (sectionIndex === 1) return; // Section 1 has no image
+      
+      const section = document.querySelector(`.tutorial-section:nth-child(${sectionIndex})`);
+      if (!section) return;
+      
+      const imageContainer = section.querySelector('.image-container');
+      if (!imageContainer) return;
+      
+      const config = sectionConfig[sectionIndex] || { aspectRatio: "16:9", offset: { x: 1.0, y: 0 } };
+      
+      // Apply aspect ratio class
+      applyAspectRatio(imageContainer, config.aspectRatio);
+      
+      // Get existing image wrapper
+      const existingWrapper = imageContainer.querySelector('.image-wrapper');
+      if (!existingWrapper) return;
+      
+      isTransitioning = true;
+      
+      // Create new image wrapper for transition
+      const newWrapper = existingWrapper.cloneNode(true);
+      newWrapper.classList.remove('active');
+      newWrapper.classList.add('transitioning-in');
+      
+      // Calculate offset positions
+      const offsetX = config.offset.x * 100; // Convert to percentage
+      const offsetY = config.offset.y * 100;
+      
+      // Set initial positions
+      existingWrapper.style.transform = `translateX(0%)`;
+      newWrapper.style.transform = `translateX(${offsetX}%)`;
+      
+      // Add new wrapper to container
+      imageContainer.appendChild(newWrapper);
+      
+      // Force reflow
+      newWrapper.offsetHeight;
+      
+      // Start transition
+      requestAnimationFrame(() => {
+        // Transition existing wrapper out
+        existingWrapper.style.transform = `translateX(-${offsetX}%)`;
+        existingWrapper.style.opacity = '0';
+        
+        // Transition new wrapper in
+        newWrapper.style.transform = `translateX(0%)`;
+        newWrapper.style.opacity = '1';
+        newWrapper.classList.remove('transitioning-in');
+        newWrapper.classList.add('active');
+        
+        // Clean up after transition
+        setTimeout(() => {
+          existingWrapper.remove();
+          isTransitioning = false;
+        }, 800); // Match CSS transition duration
+      });
+    }
+    
+    function applyAspectRatio(container, aspectRatio) {
+      // Remove any existing aspect ratio classes
+      container.classList.remove('aspect-16-9', 'aspect-4-3', 'aspect-21-9', 'aspect-1-1', 'aspect-3-2', 'aspect-5-4');
+      
+      // Add the new aspect ratio class
+      const aspectClass = `aspect-${aspectRatio.replace(':', '-')}`;
+      container.classList.add(aspectClass);
+    }
+    
+    function initializeAspectRatios() {
+      // Apply initial aspect ratios to all sections
+      Object.keys(sectionConfig).forEach(sectionIndex => {
+        const section = document.querySelector(`.tutorial-section:nth-child(${sectionIndex})`);
+        if (!section) return;
+        
+        const imageContainer = section.querySelector('.image-container');
+        if (!imageContainer) return;
+        
+        const config = sectionConfig[sectionIndex];
+        applyAspectRatio(imageContainer, config.aspectRatio);
+      });
+    }
+
+    // ============================================================================
+    // HYPERCUBE VISUALIZATION
+    // ============================================================================
 
     // Initialize hypercube visualization with text interaction
     async function initHypercube() {
@@ -1233,6 +1487,10 @@
       renderer.render(scene, camera);
     }
 
+    // ============================================================================
+    // INPUT HANDLING
+    // ============================================================================
+
     function onMouseMove(event) {
       // Only process mouse movement if tutorial is not open
       if (tutorialOpen) return;
@@ -1281,6 +1539,10 @@
       wheelVelocity += wheelDelta * 0.07;
     }
 
+    // ============================================================================
+    // TUTORIAL NAVIGATION AND STATE MANAGEMENT
+    // ============================================================================
+
     function updateTutorial() {
       const scroller = document.getElementById('tutorialScroller');
       const heroSection = document.querySelector('.hero-section');
@@ -1299,6 +1561,9 @@
         tutorialOpen = true;
         const offset = (currentSection - 1) * -100; // Subtract 1 because section 0 is hero
         scroller.style.transform = `translateX(${offset}vw)`;
+        
+        // Apply image transition for the current section
+        applyImageTransition(currentSection);
       }
       
       updateProgressBar();
@@ -1351,6 +1616,10 @@
         dot.classList.toggle('active', (index + 1) === currentSection);
       });
     }
+
+    // ============================================================================
+    // DIALOG AND MODAL SYSTEMS
+    // ============================================================================
 
     // Parameter Dialog Functions
     function showParameterDialog(element, type) {
@@ -1606,6 +1875,10 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
       };
     }
 
+    // ============================================================================
+    // ADDITIONAL EVENT HANDLERS AND UTILITIES
+    // ============================================================================
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!tutorialOpen) return;
@@ -1627,21 +1900,6 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
         uniforms.u_resolution.value.y = window.innerHeight;
         updateTesseractTextTexture();
       }
-    }
-
-    // Initialize
-    async function init() {
-      await initHypercube();
-      animate();
-      initProgressBar();
-      initMousePositionTracker(); // Add mouse position tracker
-    }
-    
-    // Start when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
     }
 
     // Mouse Position Tracker for Hotspot Positioning
@@ -1673,6 +1931,26 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
           debugBox.style.top = `${e.clientY - 60}px`;
         });
       });
+    }
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+
+    // Initialize
+    async function init() {
+      await initHypercube();
+      animate();
+      initProgressBar();
+      initMousePositionTracker();
+      initializeAspectRatios(); // Initialize aspect ratios for all sections
+    }
+    
+    // Start when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
     }
 
     // Event listeners
