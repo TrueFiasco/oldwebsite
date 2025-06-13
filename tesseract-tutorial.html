@@ -871,8 +871,12 @@
       }
 
       /* Mobile widget adjustments */
-      .content-widget {
+      .widget-container {
         height: 40vh; /* Smaller on mobile */
+      }
+
+      .widget-buttons {
+        margin-right: 0.25rem;
       }
 
       .tsv-table th,
@@ -1229,61 +1233,63 @@
             </div>
             
             <div class="section-right">
-              <div class="content-widget">
-                <div class="widget-header">
-                  <div class="widget-buttons">
-                    <button class="widget-btn widget-btn-fullscreen" onclick="showTSVFullscreen()" title="Fullscreen"></button>
-                    <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
-                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                  </div>
-                  <div class="widget-title">Euler Cycle TSV Data</div>
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showTSVFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                 </div>
-                <div class="widget-content" id="tsvContent">
-                  <table class="tsv-table" id="tsvTable">
-                    <thead>
-                      <tr>
-                        <th>tx</th>
-                        <th>ty</th>
-                        <th>tz</th>
-                        <th>tw</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                      <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
-                      <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
-                      <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
-                      <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
-                      <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
-                      <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
-                      <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
-                      <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
-                      <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
-                      <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
-                      <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
-                      <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-                      <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
-                      <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
-                      <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
-                      <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-                      <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
-                      <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
-                      <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
-                      <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
-                      <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
-                      <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
-                      <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
-                      <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
-                      <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
-                      <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
-                      <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
-                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                      <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
-                      <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
-                      <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
-                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
-                    </tbody>
-                  </table>
+                <div class="content-widget">
+                  <div class="widget-content" id="tsvContent">
+                    <table class="tsv-table" id="tsvTable">
+                      <thead>
+                        <tr>
+                          <th>tx</th>
+                          <th>ty</th>
+                          <th>tz</th>
+                          <th>tw</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Euler Cycle TSV Data</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1309,17 +1315,15 @@
             </div>
             
             <div class="section-right">
-              <div class="content-widget">
-                <div class="widget-header">
-                  <div class="widget-buttons">
-                    <button class="widget-btn widget-btn-fullscreen" onclick="showRotationGLSLFullscreen()" title="Fullscreen"></button>
-                    <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
-                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                  </div>
-                  <div class="widget-title">Vertex Rotation GLSL</div>
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showRotationGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                 </div>
-                <div class="widget-content" id="rotationGLSLContent">
-                  <div class="code-content">// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
+                <div class="content-widget">
+                  <div class="widget-content" id="rotationGLSLContent">
+                    <div class="code-content">// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
 // Input texture contains 33 points with XYZW coordinates
 // Rotation order: RWX, WRY, WRZ, then RX, RY, RZ
 
@@ -1422,6 +1426,10 @@ void main() {
     // Output the rotated point
     fragColor = rotatedPoint;
 }</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Vertex Rotation GLSL</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1444,17 +1452,15 @@ void main() {
             </div>
             
             <div class="section-right">
-              <div class="content-widget">
-                <div class="widget-header">
-                  <div class="widget-buttons">
-                    <button class="widget-btn widget-btn-fullscreen" onclick="showPerspectiveGLSLFullscreen()" title="Fullscreen"></button>
-                    <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
-                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                  </div>
-                  <div class="widget-title">Vertex Perspective GLSL</div>
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showPerspectiveGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                 </div>
-                <div class="widget-content" id="perspectiveGLSLContent">
-                  <div class="code-content">uniform float fov;			// Field of view in degrees. use 60
+                <div class="content-widget">
+                  <div class="widget-content" id="perspectiveGLSLContent">
+                    <div class="code-content">uniform float fov;			// Field of view in degrees. use 60
 uniform vec2 resolution;	// Resolution of the output TOP. use 33
 uniform float uPerspective; // use 2.3
 uniform float cameraZ;		// use -30
@@ -1487,6 +1493,10 @@ void main() {
 	// Output projected position in red and green channels
 	fragColor = vec4(normXY,0.0, 1.0); // use fragColor = vec4(pos.rgb, 1.0); for a 3D perspective
 }</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Vertex Perspective GLSL</div>
+                  </div>
                 </div>
               </div>
             </div>
