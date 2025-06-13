@@ -359,7 +359,7 @@
       background: rgb(25, 27, 31);
       border-radius: 10px 10px 0 0;
       overflow: hidden;
-      z-index: 1500;
+      z-index: 1; /* Behind text content so text overlaps */
     }
 
     .image-transition-container {
@@ -462,6 +462,7 @@
       margin: 2rem 0;
       height: 50vh; /* Takes 50% of viewport height */
       width: 100%; /* Full width in section-right */
+      transform: translateY(-5%); /* Raise widgets up by 5% */
     }
 
     .widget-buttons {
@@ -478,10 +479,10 @@
       border: 1px solid #666;
       color: #ddd;
       padding: 0;
-      width: 18px;
-      height: 18px;
+      width: 27px; /* 50% bigger: was 18px */
+      height: 27px; /* 50% bigger: was 18px */
       cursor: pointer;
-      font-size: 0.7rem;
+      font-size: 1.05rem; /* 50% bigger: was 0.7rem */
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -501,17 +502,17 @@
     /* Button Icons */
     .widget-btn-fullscreen::before {
       content: '⛶';
-      font-size: 10px;
+      font-size: 15px; /* 50% bigger: was 10px */
     }
 
     .widget-btn-copy::before {
       content: '📋';
-      font-size: 8px;
+      font-size: 12px; /* 50% bigger: was 8px */
     }
 
     .widget-btn-github::before {
       content: '⬇';
-      font-size: 10px;
+      font-size: 15px; /* 50% bigger: was 10px */
     }
 
     .content-widget {
@@ -893,9 +894,21 @@
       }
 
       .widget-btn {
-        width: 16px;
-        height: 16px;
-        font-size: 0.6rem;
+        width: 24px; /* 50% bigger: was 16px */
+        height: 24px; /* 50% bigger: was 16px */
+        font-size: 0.9rem; /* 50% bigger: was 0.6rem */
+      }
+
+      .widget-btn-fullscreen::before {
+        font-size: 11px; /* Adjusted for mobile */
+      }
+
+      .widget-btn-copy::before {
+        font-size: 9px; /* Adjusted for mobile */
+      }
+
+      .widget-btn-github::before {
+        font-size: 11px; /* Adjusted for mobile */
       }
 
       .widget-title {
@@ -1519,14 +1532,15 @@ void main() {
                 <li>Transform TOP with repeat mode</li>
                 <li>Closed loop formation</li>
               </ul>
-            </div>
-            
-            <div class="section-right">
-              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/blur.png" alt="Blur Result" class="blur-image">
+
               <h3>Blur Result</h3>
               <p>When we blur from one pixel to the next, we're interpolating linearly between the values using a box filter in the Blur TOP.</p>
               
               <p>This creates smooth transitions between line segments and helps with antialiasing in the final render. The blur operation essentially averages neighboring pixel values, creating smooth gradients that improve visual quality.</p>
+            </div>
+            
+            <div class="section-right">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/blur.png" alt="Blur Result" class="blur-image">
             </div>
           </div>
           
@@ -1554,13 +1568,92 @@ void main() {
                 <li>Efficient GPU rendering</li>
                 <li>Smooth antialiasing</li>
               </ul>
-            </div>
-            
-            <div class="section-right">
+
               <h3>Why Uneven Capsule vs Line SDF?</h3>
               <p>I could have used a standard line SDF instead, but I wanted to use the 4D value to help drive the width of the uneven capsule.</p>
               
               <p>This gives us variable line thickness that responds to the 4th dimension, creating a more dynamic visual representation of the 4D structure. The capsule approach allows for organic, flowing line weights that enhance the perception of depth and dimension.</p>
+            </div>
+            
+            <div class="section-right">
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showLineMindistGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyLineMindistGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+                </div>
+                <div class="content-widget">
+                  <div class="widget-content" id="lineMindistGLSLContent">
+                    <div class="code-content">// Pixel Shader
+float cro(in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }
+    
+float sdUnevenCapsule( in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float rb )
+{
+    p  -= pa;
+    pb -= pa;
+    float h = dot(pb,pb);
+    vec2  q = vec2( dot(p,vec2(pb.y,-pb.x)), dot(p,pb) )/h;
+    
+    //-----------
+    
+    q.x = abs(q.x);
+    
+    float b = ra-rb;
+    vec2  c = vec2(sqrt(h-b*b),b);
+    
+    float k = cro(c,q);
+    float m = dot(c,q);
+    float n = dot(q,q);
+    
+         if( k < 0.0 ) return sqrt(h*(n            )) - ra;
+    else if( k > c.x ) return sqrt(h*(n+1.0-2.0*q.y)) - rb;
+                       return m                       - ra;
+}
+
+
+out vec4 fragColor;
+
+void main()
+{
+	// Get the UV coordinates of the current pixel
+	vec2 p = vUV.st;  // Pixel coordinates (0 to 1 range)
+
+	float minDist = 1e10; // Initialize with a large value
+
+	// Get the texture size of the first input
+	ivec2 texSize = textureSize(sTD2DInputs[0], 0);
+
+	// Iterate over each line segment in the texture
+	for (int i = 0; i < texSize.x; i++) // Adjusted to iterate horizontally if needed
+	{
+		// Fetch line segment points from the input texture
+		vec4 line = texelFetch(sTD2DInputs[0], ivec2(i, 0), 0); // Line data: p0.x, p0.y, p1.x, p1.y
+		vec2 width = vec2(0.15, 0.15);
+		vec2 uPoint0 = line.xy;
+		vec2 uPoint1 = line.zw;
+		vec2 v1 = line.xy;
+		vec2 v2 = line.zw;
+		float r1 = width.r/20;
+		float r2 = width.g/20;
+		
+		float d = sdUnevenCapsule( p, v2, v1, r2, r1 );
+
+		// Calculate the distance from the pixel to the closest point on the segment
+		float dist = length(p - d);
+
+		// Keep track of the minimum distance
+		minDist = min(minDist, d);
+	}
+
+	// Output the minimum distance as a grayscale value
+	fragColor = vec4(vec3(minDist), 1.0);
+}</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">SDF Line Min Distance GLSL</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -1634,6 +1727,14 @@ void main() {
       <button class="nav-btn close-btn" onclick="closePerspectiveGLSLFullscreen()">×</button>
     </div>
     <div class="widget-fullscreen-content" id="perspectiveGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="lineMindistGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>SDF Line Min Distance GLSL Code</h3>
+      <button class="nav-btn close-btn" onclick="closeLineMindistGLSLFullscreen()">×</button>
+    </div>
+    <div class="widget-fullscreen-content" id="lineMindistGLSLFullscreenContent"></div>
   </div>
 
   <!-- Three.js -->
@@ -2456,6 +2557,19 @@ void main() {
       allowScrolling();
     }
 
+    function showLineMindistGLSLFullscreen() {
+      const modal = document.getElementById('lineMindistGLSLFullscreen');
+      const content = document.getElementById('lineMindistGLSLFullscreenContent');
+      content.innerHTML = document.getElementById('lineMindistGLSLContent').innerHTML;
+      modal.classList.add('active');
+      preventScrolling();
+    }
+
+    function closeLineMindistGLSLFullscreen() {
+      document.getElementById('lineMindistGLSLFullscreen').classList.remove('active');
+      allowScrolling();
+    }
+
     // Copy to clipboard functions
     function copyTSVToClipboard() {
       const table = document.getElementById('tsvTable');
@@ -2501,6 +2615,17 @@ void main() {
         console.log('Perspective GLSL code copied to clipboard');
       }).catch(err => {
         console.error('Failed to copy perspective GLSL code: ', err);
+      });
+    }
+
+    function copyLineMindistGLSLToClipboard() {
+      const codeContent = document.querySelector('#lineMindistGLSLContent .code-content');
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Line Mindist GLSL code copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy line mindist GLSL code: ', err);
       });
     }
 
@@ -2614,6 +2739,7 @@ void main() {
         closeTSVFullscreen();
         closeRotationGLSLFullscreen();
         closePerspectiveGLSLFullscreen();
+        closeLineMindistGLSLFullscreen();
         hideParameterDialog();
         allowScrolling();
       }
@@ -2629,6 +2755,10 @@ void main() {
     });
 
     document.getElementById('perspectiveGLSLFullscreen').addEventListener('wheel', (e) => {
+      e.stopPropagation();
+    });
+
+    document.getElementById('lineMindistGLSLFullscreen').addEventListener('wheel', (e) => {
       e.stopPropagation();
     });
 
