@@ -455,163 +455,169 @@
       margin-bottom: 1rem;
     }
 
-    /* Code/Data Widgets - ENHANCED */
-    .content-widget {
-      background: linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.9));
-      border-radius: 20px;
-      padding: 2rem;
-      margin: 2rem 0;
-      border: 2px solid rgba(78, 205, 196, 0.3);
-      box-shadow: 
-        0 10px 40px rgba(0, 0, 0, 0.4),
-        0 0 20px rgba(78, 205, 196, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(15px);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .content-widget::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #4ecdc4, #45b7d1, transparent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .content-widget:hover {
-      border-color: rgba(78, 205, 196, 0.6);
-      transform: translateY(-4px);
-      box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(78, 205, 196, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .content-widget:hover::before {
-      opacity: 1;
-    }
-
-    .widget-header {
+    /* Code/Data Widgets - TouchDesigner DAT Style */
+    .widget-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid rgba(78, 205, 196, 0.3);
-      position: relative;
-    }
-
-    .widget-title {
-      font-size: 1.4rem;
-      color: #4ecdc4;
-      font-weight: bold;
-      text-shadow: 0 0 15px rgba(78, 205, 196, 0.4);
-      letter-spacing: 0.5px;
+      align-items: stretch;
+      margin: 2rem 0;
+      height: 50vh; /* Takes 50% of viewport height */
+      width: 100%; /* Full width in section-right */
     }
 
     .widget-buttons {
       display: flex;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 1px;
+      margin-right: 0.5rem;
+      align-self: flex-start;
+      padding-top: 0.25rem;
     }
 
     .widget-btn {
-      background: linear-gradient(135deg, #4ecdc4, #45b7d1);
-      border: none;
-      color: #000;
-      padding: 0.7rem 1.5rem;
-      border-radius: 25px;
+      background: #444;
+      border: 1px solid #666;
+      color: #ddd;
+      padding: 0;
+      width: 18px;
+      height: 18px;
       cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 700;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 
-        0 6px 20px rgba(78, 205, 196, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 0.7rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
-      overflow: hidden;
-    }
-
-    .widget-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
     }
 
     .widget-btn:hover {
-      background: linear-gradient(135deg, #5fd3d3, #4ecdc4);
-      transform: translateY(-3px);
-      box-shadow: 
-        0 10px 30px rgba(78, 205, 196, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      background: #555;
+      border-color: #777;
     }
 
-    .widget-btn:hover::before {
-      left: 100%;
+    .widget-btn:active {
+      background: #333;
+    }
+
+    /* Button Icons */
+    .widget-btn-fullscreen::before {
+      content: '⛶';
+      font-size: 10px;
+    }
+
+    .widget-btn-copy::before {
+      content: '📋';
+      font-size: 8px;
+    }
+
+    .widget-btn-github::before {
+      content: '⬇';
+      font-size: 10px;
+    }
+
+    .content-widget {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 0;
+      border: 1px solid #555;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-widget:hover {
+      border-color: #777;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .widget-header {
+      background: #3a3a3a;
+      padding: 0.5rem;
+      border-top: 1px solid #555;
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 32px;
+      order: 2; /* Move to bottom */
+    }
+
+    .widget-title {
+      font-size: 0.9rem;
+      color: #ddd;
+      font-weight: normal;
+      margin: 0;
+      padding-left: 0.5rem;
+      flex: 1;
     }
 
     .widget-content {
-      max-height: 450px;
-      overflow-y: auto;
-      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      background: linear-gradient(145deg, #0d1117, #161b22);
-      padding: 2rem;
-      border-radius: 15px;
-      color: #f0f6fc;
-      border: 2px solid rgba(78, 205, 196, 0.2);
-      box-shadow: 
-        inset 0 4px 15px rgba(0, 0, 0, 0.4),
-        inset 0 0 20px rgba(78, 205, 196, 0.05);
+      flex: 1;
+      overflow: hidden; /* No scrollbar in widget mode */
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      background: #2a2a2a;
+      color: #ddd;
       position: relative;
+      order: 1; /* Content at top */
     }
 
-    .widget-content::before {
-      content: '';
-      position: absolute;
+    /* TSV Table Styling */
+    .tsv-table {
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      background: #2a2a2a;
+    }
+
+    .tsv-table th,
+    .tsv-table td {
+      border: 1px solid #555;
+      padding: 2px 6px;
+      text-align: left;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      min-width: 40px;
+      max-width: 60px;
+      overflow: hidden;
+    }
+
+    .tsv-table th {
+      background: #3a3a3a;
+      color: #fff;
+      font-weight: bold;
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 20%, rgba(78, 205, 196, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(69, 183, 209, 0.05) 0%, transparent 50%);
-      pointer-events: none;
+      z-index: 1;
     }
 
-    /* Enhanced scrollbar */
-    .widget-content::-webkit-scrollbar {
-      width: 10px;
+    .tsv-table td {
+      background: #2a2a2a;
+      color: #ddd;
     }
 
-    .widget-content::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 5px;
-      border: 1px solid rgba(78, 205, 196, 0.1);
+    .tsv-table tr:nth-child(even) td {
+      background: #2e2e2e;
     }
 
-    .widget-content::-webkit-scrollbar-thumb {
-      background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-      border-radius: 5px;
-      border: 1px solid rgba(0, 0, 0, 0.2);
+    .tsv-table tr:hover td {
+      background: #353535;
     }
 
-    .widget-content::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(45deg, #5fd3d3, #4ecdc4);
-      box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+    /* Code Content Styling */
+    .code-content {
+      padding: 1rem;
+      height: 100%;
+      overflow: hidden;
+      white-space: pre;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      color: #ddd;
     }
 
     .widget-fullscreen {
@@ -620,13 +626,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: 
-        linear-gradient(145deg, #0a0a0a, #1a1a2e),
-        radial-gradient(ellipse at center, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+      background: #1a1a1a;
       z-index: 3000;
       display: none;
       flex-direction: column;
-      backdrop-filter: blur(20px);
     }
 
     .widget-fullscreen.active {
@@ -646,88 +649,67 @@
     }
 
     .widget-fullscreen-header {
-      background: 
-        linear-gradient(135deg, #1a1a2e, #16213e),
-        linear-gradient(90deg, rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1));
-      padding: 2rem;
+      background: #2a2a2a;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 3px solid rgba(78, 205, 196, 0.4);
-      box-shadow: 
-        0 4px 30px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .widget-fullscreen-header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.1), transparent);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0%, 100% { left: -100%; }
-      50% { left: 100%; }
+      border-bottom: 1px solid #555;
+      min-height: 60px;
     }
 
     .widget-fullscreen-header h3 {
-      color: #4ecdc4;
-      font-size: 2.2rem;
-      text-shadow: 
-        0 0 20px rgba(78, 205, 196, 0.5),
-        0 0 40px rgba(78, 205, 196, 0.3);
-      letter-spacing: 1px;
-      position: relative;
-      z-index: 1;
+      color: #ddd;
+      font-size: 1.2rem;
+      margin: 0;
+      font-weight: normal;
     }
 
     .widget-fullscreen-content {
       flex: 1;
-      overflow: auto;
-      padding: 3rem;
-      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      line-height: 1.8;
-      color: #f0f6fc;
-      font-size: 1.1rem;
-      background: 
-        linear-gradient(145deg, #0d1117, #161b22),
-        radial-gradient(circle at 25% 25%, rgba(78, 205, 196, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(69, 183, 209, 0.03) 0%, transparent 50%);
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      overflow: auto; /* Enable scrolling in fullscreen */
+      padding: 0;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      line-height: 1.4;
+      color: #ddd;
+      font-size: 0.9rem;
+      background: #2a2a2a;
+    }
+
+    /* Fullscreen TSV Table */
+    .widget-fullscreen-content .tsv-table {
+      font-size: 0.85rem;
+    }
+
+    .widget-fullscreen-content .tsv-table th,
+    .widget-fullscreen-content .tsv-table td {
+      padding: 4px 8px;
+      min-width: 60px;
+    }
+
+    /* Fullscreen Code Content */
+    .widget-fullscreen-content .code-content {
+      padding: 2rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
 
     /* Enhanced fullscreen scrollbar */
     .widget-fullscreen-content::-webkit-scrollbar {
-      width: 14px;
+      width: 12px;
     }
 
     .widget-fullscreen-content::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 7px;
-      border: 2px solid rgba(78, 205, 196, 0.1);
+      background: #1a1a1a;
     }
 
     .widget-fullscreen-content::-webkit-scrollbar-thumb {
-      background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-      border-radius: 7px;
-      border: 2px solid rgba(0, 0, 0, 0.2);
-      box-shadow: 
-        0 0 10px rgba(78, 205, 196, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: #555;
+      border-radius: 6px;
     }
 
     .widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(45deg, #5fd3d3, #4ecdc4);
-      box-shadow: 
-        0 0 15px rgba(78, 205, 196, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      background: #666;
     }
 
     /* Progress Indicator */
@@ -886,6 +868,34 @@
         justify-content: space-around;
         width: 100%;
         gap: 0.5rem;
+      }
+
+      /* Mobile widget adjustments */
+      .content-widget {
+        height: 40vh; /* Smaller on mobile */
+      }
+
+      .tsv-table th,
+      .tsv-table td {
+        font-size: 0.65rem;
+        padding: 1px 3px;
+        min-width: 30px;
+        max-width: 40px;
+      }
+
+      .code-content {
+        font-size: 0.65rem;
+        padding: 0.5rem;
+      }
+
+      .widget-btn {
+        width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
+      }
+
+      .widget-title {
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -1221,47 +1231,59 @@
             <div class="section-right">
               <div class="content-widget">
                 <div class="widget-header">
-                  <div class="widget-title">Euler Cycle TSV Data</div>
                   <div class="widget-buttons">
-                    <button class="widget-btn" onclick="showTSVFullscreen()">Fullscreen</button>
-                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                    <button class="widget-btn widget-btn-fullscreen" onclick="showTSVFullscreen()" title="Fullscreen"></button>
+                    <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
+                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                   </div>
+                  <div class="widget-title">Euler Cycle TSV Data</div>
                 </div>
                 <div class="widget-content" id="tsvContent">
-tx	ty	tz	tw
-0	0	0	0
-0	0	0	1
-1	0	0	1
-1	1	0	1
-0	1	0	1
-0	0	0	1
-0	0	1	1
-0	1	1	1
-0	1	0	1
-0	1	0	0
-0	1	1	0
-0	1	1	1
-1	1	1	1
-1	1	1	0
-1	1	0	0
-1	1	0	1
-1	1	1	1
-1	0	1	1
-1	0	1	0
-1	0	0	0
-1	0	0	1
-1	0	1	1
-0	0	1	1
-0	0	1	0
-1	0	1	0
-1	1	1	0
-0	1	1	0
-0	0	1	0
-0	0	0	0
-1	0	0	0
-1	1	0	0
-0	1	0	0
-0	0	0	0
+                  <table class="tsv-table" id="tsvTable">
+                    <thead>
+                      <tr>
+                        <th>tx</th>
+                        <th>ty</th>
+                        <th>tz</th>
+                        <th>tw</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                      <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                      <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                      <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                      <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                      <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                      <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                      <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                      <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                      <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                      <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                      <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                      <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                      <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                      <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                      <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                      <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                      <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                      <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                      <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                      <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                      <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                      <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                      <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                      <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                      <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                      <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                      <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                      <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                      <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                      <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                      <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -1289,14 +1311,15 @@ tx	ty	tz	tw
             <div class="section-right">
               <div class="content-widget">
                 <div class="widget-header">
-                  <div class="widget-title">Vertex Rotation GLSL</div>
                   <div class="widget-buttons">
-                    <button class="widget-btn" onclick="showRotationGLSLFullscreen()">Fullscreen</button>
-                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                    <button class="widget-btn widget-btn-fullscreen" onclick="showRotationGLSLFullscreen()" title="Fullscreen"></button>
+                    <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
+                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                   </div>
+                  <div class="widget-title">Vertex Rotation GLSL</div>
                 </div>
                 <div class="widget-content" id="rotationGLSLContent">
-// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
+                  <div class="code-content">// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
 // Input texture contains 33 points with XYZW coordinates
 // Rotation order: RWX, WRY, WRZ, then RX, RY, RZ
 
@@ -1398,7 +1421,7 @@ void main() {
     
     // Output the rotated point
     fragColor = rotatedPoint;
-}
+}</div>
                 </div>
               </div>
             </div>
@@ -1423,14 +1446,15 @@ void main() {
             <div class="section-right">
               <div class="content-widget">
                 <div class="widget-header">
-                  <div class="widget-title">Vertex Perspective GLSL</div>
                   <div class="widget-buttons">
-                    <button class="widget-btn" onclick="showPerspectiveGLSLFullscreen()">Fullscreen</button>
-                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                    <button class="widget-btn widget-btn-fullscreen" onclick="showPerspectiveGLSLFullscreen()" title="Fullscreen"></button>
+                    <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
+                    <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
                   </div>
+                  <div class="widget-title">Vertex Perspective GLSL</div>
                 </div>
                 <div class="widget-content" id="perspectiveGLSLContent">
-uniform float fov;			// Field of view in degrees. use 60
+                  <div class="code-content">uniform float fov;			// Field of view in degrees. use 60
 uniform vec2 resolution;	// Resolution of the output TOP. use 33
 uniform float uPerspective; // use 2.3
 uniform float cameraZ;		// use -30
@@ -1462,7 +1486,7 @@ void main() {
 
 	// Output projected position in red and green channels
 	fragColor = vec4(normXY,0.0, 1.0); // use fragColor = vec4(pos.rgb, 1.0); for a 3D perspective
-}
+}</div>
                 </div>
               </div>
             </div>
@@ -2422,6 +2446,54 @@ void main() {
       allowScrolling();
     }
 
+    // Copy to clipboard functions
+    function copyTSVToClipboard() {
+      const table = document.getElementById('tsvTable');
+      let tsvText = '';
+      
+      // Add header row
+      tsvText += 'tx\tty\ttz\ttw\n';
+      
+      // Add data rows
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const rowData = [];
+        for (let cell of cells) {
+          rowData.push(cell.textContent);
+        }
+        tsvText += rowData.join('\t') + '\n';
+      }
+      
+      navigator.clipboard.writeText(tsvText).then(() => {
+        console.log('TSV data copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy TSV data: ', err);
+      });
+    }
+
+    function copyRotationGLSLToClipboard() {
+      const codeContent = document.querySelector('#rotationGLSLContent .code-content');
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Rotation GLSL code copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy rotation GLSL code: ', err);
+      });
+    }
+
+    function copyPerspectiveGLSLToClipboard() {
+      const codeContent = document.querySelector('#perspectiveGLSLContent .code-content');
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Perspective GLSL code copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy perspective GLSL code: ', err);
+      });
+    }
+
     // Hero settings panel functionality
     function setupHeroControls() {
       const toggle = document.getElementById('heroSettingsToggle');
@@ -2475,6 +2547,12 @@ void main() {
 
     // Override wheel event handling for widgets
     function onWheel(event) {
+      // Don't handle wheel events if any fullscreen modal is open
+      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
+      if (anyModalOpen) {
+        return;
+      }
+
       // Don't handle wheel events if scrolling is prevented (hovering over widget)
       if (scrollingPrevented) {
         return;
@@ -2543,6 +2621,15 @@ void main() {
     document.getElementById('perspectiveGLSLFullscreen').addEventListener('wheel', (e) => {
       e.stopPropagation();
     });
+
+    // Prevent wheel events from changing sections when any fullscreen modal is open
+    document.addEventListener('wheel', (e) => {
+      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
+      if (anyModalOpen) {
+        e.stopPropagation();
+        return;
+      }
+    }, true);
   </script>
 </body>
 </html>
