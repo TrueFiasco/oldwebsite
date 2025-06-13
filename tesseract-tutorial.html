@@ -59,6 +59,9 @@
     .hero-content {
       text-align: center;
       z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      display: none; /* Completely hide hero content */
     }
 
     .hero-title {
@@ -71,13 +74,14 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradientShift 3s ease-in-out infinite;
+      opacity: 0;
     }
 
     .hero-subtitle {
       font-family: 'Orbitron', 'Arial', sans-serif;
       font-size: 2.25rem;
       margin-bottom: 2rem;
-      opacity: 0.9;
+      opacity: 0;
       line-height: 1.2;
     }
 
@@ -93,6 +97,91 @@
       width: 100%;
       height: 100%;
       z-index: 1;
+    }
+
+    /* Settings Toggle for Hero */
+    .hero-settings-toggle {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 100;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    }
+
+    .hero-settings-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: rotate(90deg);
+    }
+
+    .hero-settings-toggle svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    /* Hero Controls Panel */
+    .hero-controls-panel {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 99;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.9rem;
+      min-width: 250px;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .hero-controls-panel h4 {
+      color: #4ecdc4;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .control-group {
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-group label {
+      color: #ffffff;
+      font-size: 0.85rem;
+      min-width: 80px;
+    }
+
+    .control-group input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      color: white;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.8rem;
+      width: 80px;
+      text-align: center;
+    }
+
+    .control-group input:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      background: rgba(255, 255, 255, 0.15);
     }
 
     /* Tutorial Container */
@@ -114,21 +203,30 @@
       transform: translateY(0);
     }
 
-    /* Tutorial Header */
+    /* Redesigned Tutorial Header */
     .tutorial-header {
       background: #1a1a2e;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 2000;
       position: relative;
+      z-index: 2000;
+      height: 60px;
+    }
+
+    .tutorial-title {
+      font-size: 1.5rem;
+      color: #00ffff;
+      font-weight: bold;
     }
 
     .tutorial-nav {
       display: flex;
       gap: 1rem;
+      align-items: center;
+      width: 33.33%;
+      justify-content: flex-end;
     }
 
     .nav-btn {
@@ -139,21 +237,32 @@
       border-radius: 5px;
       cursor: pointer;
       transition: background 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      font-size: 0.9rem;
     }
 
     .nav-btn:hover {
       background: #555;
     }
 
+    .nav-btn.primary {
+      background: #00ffff;
+      color: #000;
+    }
+
+    .nav-btn.primary:hover {
+      background: #33ffff;
+    }
+
     .close-btn {
       background: #ff4757;
-      font-size: 1.5rem;
-      width: 40px;
-      height: 40px;
+      font-size: 1.2rem;
+      width: 35px;
+      height: 35px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0;
     }
 
     /* Tutorial Content */
@@ -172,51 +281,47 @@
 
     .tutorial-section {
       min-width: 100vw;
-      height: 100%;
-      padding: 2rem;
+      min-height: calc(100vh - 60px);
+      padding: 2rem 2rem 120px 2rem; /* Added bottom margin for navigator */
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-y: auto;
     }
 
-    /* Section-specific gradients */
-    .tutorial-section:nth-child(1) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(2) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(3) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(4) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(5) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(6) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(7) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(8) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(9) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(10) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(11) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(12) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(13) { background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); }
-    .tutorial-section:nth-child(14) { background: linear-gradient(180deg, #16213e 0%, #191b1f 50%, #191b1f 100%); }
-
-    /* Special layout for section 1 */
-    .section-1-layout {
-      display: flex;
-      gap: 2rem;
-      height: calc(100% - 450px); /* Leave space for the static image */
-      padding-bottom: 2rem;
+    /* Section-specific gradients - all sections now have the same gradient */
+    .tutorial-section { 
+      background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); 
     }
 
-    .section-1-left {
+    /* Section Layouts */
+    .section-layout {
+      display: flex;
+      gap: 2rem;
+      height: 100%;
+      z-index: 10;
+      position: relative;
+    }
+
+    .section-left {
       flex: 2;
       display: flex;
       flex-direction: column;
     }
 
-    .section-1-right {
+    .section-right {
       flex: 1;
       display: flex;
       flex-direction: column;
     }
 
-    /* STATIC IMAGE CONTAINER - COMPLETELY SEPARATE FROM SECTIONS */
+    .section-full {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* STATIC IMAGE CONTAINER */
     .static-image-container {
       position: absolute;
       bottom: 0;
@@ -229,7 +334,6 @@
       z-index: 1500;
     }
 
-    /* Image transition container within the static container */
     .image-transition-container {
       position: relative;
       width: 100%;
@@ -248,26 +352,26 @@
       transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    /* Hotspot System - positioned relative to static image container */
+    /* Enhanced Hotspot System */
     .hotspot {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 30px; /* Increased by 50% from 20px */
+      height: 30px;
       background: #00ffff;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      box-shadow: 0 0 22px rgba(0, 255, 255, 0.7); /* Increased glow */
       animation: pulse 2s infinite;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 3px solid rgba(255, 255, 255, 0.3); /* Thicker border */
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 50;
       pointer-events: auto;
     }
 
-    .hotspot:hover {
+    .hotspot:hover, .hotspot.sticky {
       transform: scale(1.3);
       background: #ff00ff;
-      box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+      box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
     }
 
     @keyframes pulse {
@@ -281,11 +385,11 @@
       border: 1px solid #444;
       border-radius: 8px;
       padding: 1rem;
-      max-width: 400px;
+      max-width: 600px; /* Increased by 50% from 400px */
       box-shadow: 0 5px 20px rgba(0,0,0,0.8);
       z-index: 2000;
       display: none;
-      pointer-events: none;
+      pointer-events: auto;
     }
 
     .parameter-dialog.active {
@@ -294,7 +398,7 @@
 
     .parameter-dialog img {
       width: 100%;
-      max-width: 350px;
+      max-width: 525px; /* Increased by 50% from 350px */
       border-radius: 5px;
       margin-top: 0.5rem;
     }
@@ -308,68 +412,106 @@
       font-size: 0.9rem;
     }
 
-    /* Code Modal */
-    .code-modal {
+    /* Mobile Parameter Screenshots */
+    .mobile-parameters {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .mobile-parameters img {
+      width: 100%;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+
+    /* Code/Data Widgets */
+    .content-widget {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .widget-title {
+      font-size: 1.1rem;
+      color: #4ecdc4;
+      font-weight: bold;
+    }
+
+    .widget-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .widget-btn {
+      background: #333;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.3s ease;
+    }
+
+    .widget-btn:hover {
+      background: #555;
+    }
+
+    .widget-content {
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      background: #0d1117;
+      padding: 1rem;
+      border-radius: 5px;
+      color: #c9d1d9;
+    }
+
+    .widget-fullscreen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: #0a0a0a;
+      z-index: 3000;
       display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
+      flex-direction: column;
     }
 
-    .code-modal.active {
+    .widget-fullscreen.active {
       display: flex;
     }
 
-    .code-content {
+    .widget-fullscreen-header {
       background: #1a1a2e;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 80%;
-      max-height: 80%;
-      overflow: auto;
-    }
-
-    .code-block {
-      background: #0d1117;
       padding: 1rem;
-      border-radius: 5px;
-      margin: 1rem 0;
-      overflow-x: auto;
-    }
-
-    .code-block pre {
-      color: #c9d1d9;
-      font-family: 'Courier New', monospace;
-      margin: 0;
-    }
-
-    /* Action Buttons */
-    .action-buttons {
       display: flex;
-      gap: 1rem;
-      margin: 1rem 0;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .action-btn {
-      background: linear-gradient(45deg, #00ffff, #0080ff);
-      border: none;
-      color: white;
-      padding: 0.7rem 1.5rem;
-      border-radius: 25px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 128, 255, 0.4);
+    .widget-fullscreen-content {
+      flex: 1;
+      overflow: auto;
+      padding: 2rem;
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: #c9d1d9;
     }
 
     /* Progress Indicator */
@@ -397,11 +539,16 @@
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
     }
 
-    /* Typography */
-    h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #00ffff; }
-    h2 { font-size: 2rem; margin-bottom: 0.8rem; color: #ff6b6b; }
-    h3 { font-size: 1.5rem; margin-bottom: 0.6rem; color: #4ecdc4; }
-    
+    .tutorial-section h1,
+    .tutorial-section h2, 
+    .tutorial-section h3,
+    .tutorial-section h4,
+    .tutorial-section h5,
+    .tutorial-section h6 {
+      display: none !important;
+    }
+
+    /* Typography - removed heading styles since we only use header titles now */
     p { line-height: 1.6; margin-bottom: 1rem; }
     
     .highlight {
@@ -416,11 +563,21 @@
       padding: 1rem;
       margin: 1rem 0;
       border-radius: 0 5px 5px 0;
+      display: inline-block;
+      max-width: fit-content;
+    }
+
+    /* Right side image for section 7 */
+    .trail-image {
+      width: 33.33%;
+      max-width: 400px;
+      border-radius: 10px;
+      margin-bottom: 1rem;
     }
 
     @media (max-width: 768px) {
       .tutorial-section {
-        padding: 1rem;
+        padding: 1rem 1rem 120px 1rem;
       }
       
       .hero-title {
@@ -431,23 +588,67 @@
         font-size: 1.2rem;
       }
 
-      .section-1-layout {
+      .section-layout {
         flex-direction: column;
-        height: calc(100% - 300px);
       }
 
       .static-image-container {
         height: 250px;
+      }
+
+      /* Show mobile parameters, hide hotspots */
+      .mobile-parameters {
+        display: block;
+      }
+
+      .hotspot {
+        display: none !important;
+      }
+
+      .tutorial-nav {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
       }
     }
   </style>
 </head>
 <body>
   <!-- Hero Section -->
-  <div class="hero-section">
+  <div class="hero-section" id="heroSection">
     <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
     <button class="nav-btn close-btn" onclick="window.history.back()" style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
-    <div class="hero-content" style="opacity: 0; pointer-events: none;">
+    
+    <!-- Hero Settings Toggle -->
+    <div class="hero-settings-toggle" id="heroSettingsToggle">
+      <svg viewBox="0 0 24 24">
+        <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+      </svg>
+    </div>
+
+    <!-- Hero Controls Panel -->
+    <div class="hero-controls-panel" id="heroControlsPanel">
+      <h4>4D Projection Controls</h4>
+      <div class="control-group">
+        <label for="hero-fov-control">FOV:</label>
+        <input type="number" id="hero-fov-control" value="7" step="1" min="2" max="120">
+      </div>
+      <div class="control-group">
+        <label for="hero-perspective-control">4D Scale:</label>
+        <input type="number" id="hero-perspective-control" value="2.3" step="0.1" min="0.1" max="10">
+      </div>
+      <div class="control-group">
+        <label for="hero-cameraz-control">Camera Z:</label>
+        <input type="number" id="hero-cameraz-control" value="10" step="1" min="-100" max="50">
+      </div>
+    </div>
+    
+    <div class="hero-content">
       <h1 class="hero-title">TESSERACT</h1>
       <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
     </div>
@@ -455,12 +656,17 @@
 
   <!-- Tutorial Container -->
   <div class="tutorial-container" id="tutorialContainer">
-    <!-- Tutorial Header -->
+    <!-- Redesigned Tutorial Header -->
     <div class="tutorial-header">
+      <div class="tutorial-title" id="currentSectionTitle">TESSERACT Overview</div>
       <div class="tutorial-nav">
-        <span style="color: #ccc; font-size: 0.9rem;">Use scroll wheel to navigate</span>
+        <button class="nav-btn" onclick="goToHero()">Home</button>
+        <button class="nav-btn" onclick="goToTutorialsPage()">Tutorials</button>
+        <button class="nav-btn" onclick="goToPrevSection()">‹ Prev</button>
+        <button class="nav-btn" onclick="goToNextSection()">Next ›</button>
+        <button class="nav-btn primary" onclick="downloadTesseractResources()" target="_blank">Download</button>
+        <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
       </div>
-      <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
     </div>
 
     <!-- Tutorial Content -->
@@ -469,8 +675,8 @@
         
         <!-- Section 1: TESSERACT Overview -->
         <div class="tutorial-section">
-          <div class="section-1-layout">
-            <div class="section-1-left">
+          <div class="section-layout">
+            <div class="section-left">
               <h1>TESSERACT Overview</h1>
               <p>Welcome to this interactive tutorial on creating a 4D hypercube (tesseract) in TouchDesigner using GLSL shaders. This project demonstrates advanced techniques for 4D rotation, perspective projection, and real-time interaction.</p>
               
@@ -487,255 +693,603 @@
               </ul>
             </div>
             
-            <div class="section-1-right">
+            <div class="section-right">
               <h3>Key Resources:</h3>
               <p>This tutorial references concepts from:</p>
               <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><a href="https://en.wikipedia.org/wiki/Tesseract" style="color: #00ffff;">Tesseract mathematics</a></li>
-                <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" style="color: #00ffff;">4D projection techniques</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" style="color: #00ffff;">4D rotation matrices</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix" style="color: #00ffff;">3D rotation matrices</a></li>
-                <li><a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
-                <li><a href="https://docs.derivative.ca/GLSL_TOP" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Tesseract" target="_blank" style="color: #00ffff;">Tesseract mathematics</a></li>
+                <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" target="_blank" style="color: #00ffff;">4D projection techniques</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" target="_blank" style="color: #00ffff;">4D rotation matrices</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix" target="_blank" style="color: #00ffff;">3D rotation matrices</a></li>
+                <li><a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
+                <li><a href="https://docs.derivative.ca/GLSL_TOP" target="_blank" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
               </ul>
-
-              <div class="action-buttons">
-                <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
-              </div>
             </div>
           </div>
         </div>
 
         <!-- Section 2: The CHOP Network -->
         <div class="tutorial-section">
-          <h1>The CHOP Network</h1>
-          <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
-          
-          <div style="display: flex; gap: 4rem; margin: 2rem 0;">
-            <div>
-              <h3>Input Sources:</h3>
-              <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
-            </div>
-            <div>
-              <h3>Network Flow:</h3>
-              <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
+          <div class="section-full">
+            <h1>The CHOP Network</h1>
+            <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
+            
+            <div style="display: flex; gap: 4rem; margin: 2rem 0;">
+              <div>
+                <h3>Input Sources:</h3>
+                <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
+              </div>
+              <div>
+                <h3>Network Flow:</h3>
+                <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Input Data 1 -->
         <div class="tutorial-section">
-          <h1>Input Data 1: Mouse UV Control</h1>
-          <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Input Data 1: Mouse UV Control</h1>
+              <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
 
-          <h3>Key CHOPs:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
-            <li><strong>mousein1:</strong> Raw mouse input data</li>
-            <li><strong>select1:</strong> Filters specific channels</li>
-          </ul>
+              <h3>Key CHOPs:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
+                <li><strong>mousein1:</strong> Raw mouse input data</li>
+                <li><strong>select1:</strong> Filters specific channels</li>
+              </ul>
 
-          <div class="tip">
-            <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
+              <div class="tip">
+                <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
+              </div>
+            </div>
+            
+            <div class="section-right">
+              <h3>Input Device Flexibility</h3>
+              <p>We didn't have to use the mouse as our input - we could have used any input devices like:</p>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Xbox Controller:</strong> Analog sticks for smooth rotation</li>
+                <li><strong>USB Joystick:</strong> Traditional flight stick input</li>
+                <li><strong>Kinect:</strong> Body tracking for gesture control</li>
+                <li><strong>Leap Motion:</strong> Hand tracking and finger gestures</li>
+                <li><strong>MIDI Device:</strong> Knobs and faders for precise control</li>
+              </ul>
+              
+              <h4>Mouse vs Panel Monitoring:</h4>
+              <p><strong>MouseIn CHOP:</strong> Monitors mouse position across the entire monitor/desktop space.</p>
+              <p><strong>Panel CHOP:</strong> Monitors mouse position only within a specific TouchDesigner window or panel.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Select1 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/select1.png" alt="Select1 Parameters">
           </div>
         </div>
 
         <!-- Section 4: Rangeling CHOPs 1 -->
         <div class="tutorial-section">
-          <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
-          <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
+              <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
 
-          <h3>Processing Chain:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>math3:</strong> Mathematical operations on input</li>
-            <li><strong>slope1:</strong> Calculates velocity from position changes</li>
-            <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
-          </ul>
+              <h3>Processing Chain:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>math3:</strong> Mathematical operations on input</li>
+                <li><strong>slope1:</strong> Calculates velocity from position changes</li>
+                <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
+              </ul>
 
-          <div class="tip">
-            <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
+              <div class="tip">
+                <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
+              </div>
+            </div>
+            
+            <div class="section-right">
+              <h3>How Slope CHOP Works</h3>
+              <p>The <strong>Slope CHOP</strong> is a powerful tool for converting position data into velocity data:</p>
+              
+              <h4>Process:</h4>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Buffer Last Frame:</strong> Stores the mouse position from the previous frame</li>
+                <li><strong>Compare Positions:</strong> Takes current frame position minus last frame position</li>
+                <li><strong>Calculate Velocity:</strong> The difference between these two positions becomes our velocity</li>
+                <li><strong>Frame Rate Dependent:</strong> Velocity is calculated per frame, giving us smooth motion data</li>
+              </ul>
+              
+              <p>This converts two static positions into dynamic velocity information, essential for responsive interaction.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math3 & Filter1 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math3.png" alt="Math3 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter1.png" alt="Filter1 Parameters">
           </div>
         </div>
 
         <!-- Section 5: Rangeling CHOPs 2 -->
         <div class="tutorial-section">
-          <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
-          <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
+              <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
 
-          <h3>Process:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li>Add -0.5 to center the UV coordinates</li>
-            <li>Scale down for gentle interaction</li>
-            <li>Use as constant force rather than velocity burst</li>
-            <li>Convert acceleration to velocity with speed2</li>
-          </ul>
+              <h3>Process:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Add -0.5 to center the UV coordinates</li>
+                <li>Scale down for gentle interaction</li>
+                <li>Use as constant force rather than velocity burst</li>
+                <li>Convert acceleration to velocity with speed2</li>
+              </ul>
 
-          <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
+              <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
+            </div>
+            
+            <div class="section-right">
+              <h3>Position as Constant Force</h3>
+              <p>We're using the mouse position as a <strong>constant force</strong> rather than direct position mapping:</p>
+              
+              <h4>Force-Based Interaction:</h4>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Acceleration Input:</strong> Mouse position becomes acceleration force</li>
+                <li><strong>Speed CHOP Integration:</strong> Converts acceleration into velocity over time</li>
+                <li><strong>Velocity Accumulation:</strong> Velocity builds up gradually rather than instant jumps</li>
+                <li><strong>Speed Limiting:</strong> Without limits, velocity would increase infinitely</li>
+              </ul>
+              
+              <p><strong>Why This Matters:</strong> If we didn't limit the speed, our velocity would keep increasing indefinitely, making the interaction uncontrollable. The Speed CHOP acts like friction, giving us natural, physics-based movement.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math1 & Speed2 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math1.png" alt="Math1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed2.png" alt="Speed2 Parameters">
+          </div>
         </div>
 
         <!-- Section 6: Rangeling CHOPs 3 -->
         <div class="tutorial-section">
-          <h1>Rangeling CHOPs 3: Angular Velocity</h1>
-          <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
+          <div class="section-full">
+            <h1>Rangeling CHOPs 3: Angular Velocity</h1>
+            <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
 
-          <h3>Key CHOPs:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>math2:</strong> Combines velocity and position inputs</li>
-            <li><strong>speed3:</strong> Integrates angular velocity to position</li>
-          </ul>
+            <h3>Key CHOPs:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>math2:</strong> Combines velocity and position inputs</li>
+              <li><strong>speed3:</strong> Integrates angular velocity to position</li>
+            </ul>
 
-          <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
+            <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math2 & Speed3 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math2.png" alt="Math2 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed3.png" alt="Speed3 Parameters">
+          </div>
         </div>
 
         <!-- Section 7: Rangeling CHOPs 4 -->
         <div class="tutorial-section">
-          <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
-          <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
+              <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
 
-          <div class="tip">
-            <strong>Pro Tip:</strong> "If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP."
+              <div class="tip">
+                <strong>Pro Tip:</strong> If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP.
+              </div>
+
+              <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
+            </div>
+            
+            <div class="section-right">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/filter_trail_example.png" alt="Filter Trail Example" class="trail-image">
+            </div>
           </div>
-
-          <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Mouse Wheel Filter Chain Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/mousein1.png" alt="MouseIn1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/select2.png" alt="Select2 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter4.png" alt="Filter4 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter3.png" alt="Filter3 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter2.png" alt="Filter2 Parameters">
+          </div>
         </div>
 
         <!-- Section 8: Rangeling CHOPs 5 -->
         <div class="tutorial-section">
-          <h1>Rangeling CHOPs 5: Merging and Null</h1>
-          <p>Merging everything together and ending it with a null.</p>
+          <div class="section-full">
+            <h1>Rangeling CHOPs 5: Merging and Null</h1>
+            <p>Merging everything together and ending it with a null.</p>
 
-          <div class="tip">
-            <strong>Golden Rule:</strong> "Always end your CHOP network with a null and try to merge as much together as makes sense."
+            <div class="tip">
+              <strong>Golden Rule:</strong> Always end your CHOP network with a null and try to merge as much together as makes sense.
+            </div>
+
+            <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
+
+            <h3>Final Output:</h3>
+            <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
           </div>
-
-          <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
-
-          <h3>Final Output:</h3>
-          <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
         </div>
 
         <!-- Section 9: Input Data 2 -->
         <div class="tutorial-section">
-          <h1>Input Data 2: Saved Data from TSV</h1>
-          <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Input Data 2: Saved Data from TSV</h1>
+              <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
 
-          <h3>Data Storage Options:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
-            <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
-            <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
-            <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
-          </ul>
+              <h3>Data Storage Options:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
+                <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
+                <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
+                <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
+              </ul>
 
-          <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
+              <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
 
-          <div class="action-buttons">
-            <button class="action-btn" onclick="downloadProjectFiles()">Download Project Files</button>
-          </div>
-
-          <div class="tip">
-            <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
+              <div class="tip">
+                <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
+              </div>
+            </div>
+            
+            <div class="section-right">
+              <div class="content-widget">
+                <div class="widget-header">
+                  <div class="widget-title">Euler Cycle TSV Data</div>
+                  <div class="widget-buttons">
+                    <button class="widget-btn" onclick="showTSVFullscreen()">Fullscreen</button>
+                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                  </div>
+                </div>
+                <div class="widget-content" id="tsvContent">
+tx	ty	tz	tw
+0	0	0	0
+0	0	0	1
+1	0	0	1
+1	1	0	1
+0	1	0	1
+0	0	0	1
+0	0	1	1
+0	1	1	1
+0	1	0	1
+0	1	0	0
+0	1	1	0
+0	1	1	1
+1	1	1	1
+1	1	1	0
+1	1	0	0
+1	1	0	1
+1	1	1	1
+1	0	1	1
+1	0	1	0
+1	0	0	0
+1	0	0	1
+1	0	1	1
+0	0	1	1
+0	0	1	0
+1	0	1	0
+1	1	1	0
+0	1	1	0
+0	0	1	0
+0	0	0	0
+1	0	0	0
+1	1	0	0
+0	1	0	0
+0	0	0	0
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Section 10: Rotation Vertex GLSL -->
         <div class="tutorial-section">
-          <h1>Rotation Vertex GLSL</h1>
-          <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rotation Vertex GLSL</h1>
+              <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
 
-          <h3>GLSL Components:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li>3 rotation matrices as helper functions</li>
-            <li>Individual rotations (order dependent)</li>
-            <li>4D point multiplication</li>
-            <li>Rotated point output</li>
-          </ul>
+              <h3>GLSL Components:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>3 rotation matrices as helper functions</li>
+                <li>Individual rotations (order dependent)</li>
+                <li>4D point multiplication</li>
+                <li>Rotated point output</li>
+              </ul>
 
-          <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
+              <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
+            </div>
+            
+            <div class="section-right">
+              <div class="content-widget">
+                <div class="widget-header">
+                  <div class="widget-title">Vertex Rotation GLSL</div>
+                  <div class="widget-buttons">
+                    <button class="widget-btn" onclick="showRotationGLSLFullscreen()">Fullscreen</button>
+                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                  </div>
+                </div>
+                <div class="widget-content" id="rotationGLSLContent">
+// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
+// Input texture contains 33 points with XYZW coordinates
+// Rotation order: RWX, WRY, WRZ, then RX, RY, RZ
 
-          <div class="action-buttons">
-            <button class="action-btn" onclick="showCode('rotation-glsl')">View Rotation GLSL</button>
+uniform vec3 rotWXYZ;           // Rotations in W space (RWX, WRY, WRZ) in radians
+uniform vec3 rotXYZ;            // Rotations in 3D space (RX, RY, RZ) in radians
+
+out vec4 fragColor;
+
+// Helper function to create 4D rotation matrix for W-X plane
+mat4 rotateWZ(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, c, -s,
+        0.0, 0.0, s, c
+    );
+}
+
+// Helper function to create 4D rotation matrix for W-Y plane
+mat4 rotateWY(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, c, 0.0, -s,
+        0.0, 0.0, 1.0, 0.0,
+       0.0, s, 0.0, c
+    );
+}
+
+// Helper function to create 4D rotation matrix for W-Z plane
+mat4 rotateWX(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, 0.0, 0.0, -s,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        s, 0.0, 0.0, c
+    );
+}
+
+// Helper function to create 3D rotation matrix for X axis (embedded in 4D)
+mat4 rotateX(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, c, -s, 0.0,
+        0.0, s, c, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+// Helper function to create 3D rotation matrix for Y axis (embedded in 4D)
+mat4 rotateY(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, 0.0, s, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -s, 0.0, c, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+// Helper function to create 3D rotation matrix for Z axis (embedded in 4D)
+mat4 rotateZ(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, -s, 0.0, 0.0,
+        s, c, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+void main() {
+    // Get normalized texture coordinates
+    vec2 uv = vUV.st;
+    
+    // Sample the input point from texture
+    vec4 point = texture(sTD2DInputs[0], uv)*2.-1;
+    
+    // Create combined 4D rotation matrix in specified order (order dependent):
+    mat4 rotationMatrix = 
+        rotateZ(rotXYZ.z) * 
+        rotateY(rotXYZ.y) * 
+        rotateX(rotXYZ.x) * 
+        rotateWZ(rotWXYZ.z) * 
+        rotateWY(rotWXYZ.y) * 
+        rotateWX(rotWXYZ.x);
+    
+    // Apply rotation to the point
+    vec4 rotatedPoint = rotationMatrix * point;
+    
+    // Output the rotated point
+    fragColor = rotatedPoint;
+}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Section 11: Perspective GLSL -->
         <div class="tutorial-section">
-          <h1>Perspective GLSL</h1>
-          <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Perspective GLSL</h1>
+              <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
 
-          <h3>Perspective Pipeline:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
-            <li><strong>3D to 2D:</strong> Standard perspective projection</li>
-            <li><strong>Camera controls:</strong> FOV, position, and depth</li>
-          </ul>
+              <h3>Perspective Pipeline:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
+                <li><strong>3D to 2D:</strong> Standard perspective projection</li>
+                <li><strong>Camera controls:</strong> FOV, position, and depth</li>
+              </ul>
+            </div>
+            
+            <div class="section-right">
+              <div class="content-widget">
+                <div class="widget-header">
+                  <div class="widget-title">Vertex Perspective GLSL</div>
+                  <div class="widget-buttons">
+                    <button class="widget-btn" onclick="showPerspectiveGLSLFullscreen()">Fullscreen</button>
+                    <button class="widget-btn" onclick="downloadTesseractResources()">Download</button>
+                  </div>
+                </div>
+                <div class="widget-content" id="perspectiveGLSLContent">
+uniform float fov;			// Field of view in degrees. use 60
+uniform vec2 resolution;	// Resolution of the output TOP. use 33
+uniform float uPerspective; // use 2.3
+uniform float cameraZ;		// use -30
 
-          <div class="action-buttons">
-            <button class="action-btn" onclick="showCode('perspective-glsl')">View Perspective GLSL</button>
+out vec4 fragColor;
+void main() {
+	// Normalize UV and get pixel index
+	vec2 uv = gl_FragCoord.xy / resolution;
+	int index = int(uv.x * resolution);
+	float texX = (float(index) + 0.5) / int(resolution);
+	
+	vec4 pos = texture(sTD2DInputs[0], vec2(texX, 0.5)).rgba;
+	pos.rgb *= pos.a + uPerspective.x;
+
+	// Translate point relative to camera
+	vec3 camPos = vec3(0.0, 0.0, cameraZ);
+	vec3 relPos = pos.rgb - camPos;
+
+	// Convert FOV to focal length
+	float f = 1.0 / tan(radians(fov) * 0.5);
+
+	// Perform perspective divide
+	vec2 projected;
+	projected.x = f * relPos.x / relPos.z;
+	projected.y = f * relPos.y / relPos.z;
+
+	// Normalize projected coords to [0,1] for visualization (optional)
+	vec2 normXY = projected * 0.5 + 0.5;
+
+	// Output projected position in red and green channels
+	fragColor = vec4(normXY,0.0, 1.0); // use fragColor = vec4(pos.rgb, 1.0); for a 3D perspective
+}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Section 12: 2D Points to 2D Lines -->
         <div class="tutorial-section">
-          <h1>2D Points to 2D Lines</h1>
-          <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>2D Points to 2D Lines</h1>
+              <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
 
-          <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
+              <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
 
-          <h3>Line Generation:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li>Convert point cloud to line segments</li>
-            <li>Use Euler cycle for proper connectivity</li>
-            <li>Transform TOP with repeat mode</li>
-            <li>Closed loop formation</li>
-          </ul>
+              <h3>Line Generation:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Convert point cloud to line segments</li>
+                <li>Use Euler cycle for proper connectivity</li>
+                <li>Transform TOP with repeat mode</li>
+                <li>Closed loop formation</li>
+              </ul>
+            </div>
+            
+            <div class="section-right">
+              <h3>Blur Result</h3>
+              <p>When we blur from one pixel to the next, we're interpolating linearly between the values using a box filter in the Blur TOP.</p>
+              
+              <p>This creates smooth transitions between line segments and helps with antialiasing in the final render. The blur operation essentially averages neighboring pixel values, creating smooth gradients that improve visual quality.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Transform1 & Reorder1 Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/transform1.png" alt="Transform1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/reorder1.png" alt="Reorder1 Parameters">
+          </div>
         </div>
 
         <!-- Section 13: SDF Uneven Capsule -->
         <div class="tutorial-section">
-          <h1>SDF Uneven Capsule</h1>
-          <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>SDF Uneven Capsule</h1>
+              <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
 
-          <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
+              <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
 
-          <h3>SDF Rendering:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li>Distance field calculation</li>
-            <li>Variable capsule radius</li>
-            <li>Efficient GPU rendering</li>
-            <li>Smooth antialiasing</li>
-          </ul>
-
-          <div class="action-buttons">
-            <button class="action-btn" onclick="showCode('sdf-glsl')">View SDF GLSL</button>
+              <h3>SDF Rendering:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Distance field calculation</li>
+                <li>Variable capsule radius</li>
+                <li>Efficient GPU rendering</li>
+                <li>Smooth antialiasing</li>
+              </ul>
+            </div>
+            
+            <div class="section-right">
+              <h3>Why Uneven Capsule vs Line SDF?</h3>
+              <p>I could have used a standard line SDF instead, but I wanted to use the 4D value to help drive the width of the uneven capsule.</p>
+              
+              <p>This gives us variable line thickness that responds to the 4th dimension, creating a more dynamic visual representation of the 4D structure. The capsule approach allows for organic, flowing line weights that enhance the perception of depth and dimension.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>SDF Line Min Distance Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png" alt="Line Min Distance Parameters">
           </div>
         </div>
 
         <!-- Section 14: Post Processing -->
         <div class="tutorial-section">
-          <h1>Post Processing</h1>
-          <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
+          <div class="section-full">
+            <h1>Post Processing</h1>
+            <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
 
-          <h3>Post Effects Chain:</h3>
-          <ul style="margin-left: 2rem; line-height: 1.8;">
-            <li><strong>Limits:</strong> Clamp value ranges</li>
-            <li><strong>Ramps:</strong> Smooth gradients</li>
-            <li><strong>Threshold:</strong> Binary decisions</li>
-            <li><strong>Lookups:</strong> Color mapping</li>
-          </ul>
+            <h3>Post Effects Chain:</h3>
+            <ul style="margin-left: 2rem; line-height: 1.8;">
+              <li><strong>Limits:</strong> Clamp value ranges</li>
+              <li><strong>Ramps:</strong> Smooth gradients</li>
+              <li><strong>Threshold:</strong> Binary decisions</li>
+              <li><strong>Lookups:</strong> Color mapping</li>
+            </ul>
 
-          <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
+            <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
+          </div>
         </div>
 
       </div>
     </div>
 
-    <!-- STATIC IMAGE CONTAINER - COMPLETELY SEPARATE FROM SECTIONS -->
+    <!-- STATIC IMAGE CONTAINER -->
     <div class="static-image-container">
       <div class="image-transition-container" id="staticImageContainer">
-        <!-- Images will be dynamically added here -->
         <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-          <!-- Hotspots will be dynamically added here -->
         </div>
       </div>
     </div>
@@ -748,17 +1302,32 @@
   <div class="parameter-dialog" id="parameterDialog">
     <h4 id="parameterTitle">Parameters</h4>
     <div id="parameterContent"></div>
+    <button class="widget-btn" onclick="hideParameterDialog()" style="margin-top: 1rem;">Close</button>
   </div>
 
-  <!-- Code Modal -->
-  <div class="code-modal" id="codeModal">
-    <div class="code-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 id="codeTitle">Code Snippet</h3>
-        <button class="nav-btn" onclick="closeCodeModal()">×</button>
-      </div>
-      <div id="codeContent"></div>
+  <!-- Widget Fullscreen Modals -->
+  <div class="widget-fullscreen" id="tsvFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Euler Cycle TSV Data</h3>
+      <button class="nav-btn close-btn" onclick="closeTSVFullscreen()">×</button>
     </div>
+    <div class="widget-fullscreen-content" id="tsvFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="rotationGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Rotation GLSL Code</h3>
+      <button class="nav-btn close-btn" onclick="closeRotationGLSLFullscreen()">×</button>
+    </div>
+    <div class="widget-fullscreen-content" id="rotationGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="perspectiveGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Perspective GLSL Code</h3>
+      <button class="nav-btn close-btn" onclick="closePerspectiveGLSLFullscreen()">×</button>
+    </div>
+    <div class="widget-fullscreen-content" id="perspectiveGLSLFullscreenContent"></div>
   </div>
 
   <!-- Three.js -->
@@ -875,20 +1444,36 @@
         aspectRatio: "1920:571", 
         offset: {x: 1.0, y: 0},
         image: "Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png",
-        hotspots: [
-          { top: "30%", left: "20%", type: "limits-params" },
-          { top: "50%", left: "50%", type: "ramp-params" },
-          { top: "70%", left: "80%", type: "lookup-params" }
-        ]
+        hotspots: [] // Removed all hotspots for section 14
       }
     };
+
+    // Section titles for header
+    const sectionTitles = [
+      "TESSERACT Tutorial",
+      "TESSERACT Overview", 
+      "The CHOP Network",
+      "Input Data 1: Mouse UV Control",
+      "Rangeling CHOPs 1: Mouse Velocity",
+      "Rangeling CHOPs 2: Centering and Scaling", 
+      "Rangeling CHOPs 3: Angular Velocity",
+      "Rangeling CHOPs 4: Mouse Wheel",
+      "Rangeling CHOPs 5: Merging and Null",
+      "Input Data 2: Saved Data from TSV",
+      "Rotation Vertex GLSL",
+      "Perspective GLSL", 
+      "2D Points to 2D Lines",
+      "SDF Uneven Capsule",
+      "Post Processing"
+    ];
 
     // Tutorial State
     let currentSection = 0;
     let previousSection = 0;
     const totalSections = 15; // Hero + 14 tutorial sections
     let tutorialOpen = false;
-    let cleanupTimeout = null; // Track cleanup timeout to cancel if needed
+    let cleanupTimeout = null;
+    let stickyHotspots = new Set(); // Track sticky hotspots
 
     // Hypercube variables
     let scene, camera, renderer, uniforms;
@@ -900,12 +1485,22 @@
     let wheelVelocity = 0;
     const maxSlowVelocity = 0.25;
 
+    // Mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Touch handling for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+
     // Image transition functions
     function transitionToSection(newSection) {
       if (newSection === currentSection) return;
       
       previousSection = currentSection;
       currentSection = newSection;
+      
+      // Update section title in header
+      updateSectionTitle();
       
       // Handle section scroller
       updateTutorial();
@@ -916,6 +1511,13 @@
       }
     }
 
+    function updateSectionTitle() {
+      const titleElement = document.getElementById('currentSectionTitle');
+      if (titleElement && currentSection >= 0 && currentSection < sectionTitles.length) {
+        titleElement.textContent = sectionTitles[currentSection];
+      }
+    }
+
     function transitionStaticImage(newSection, oldSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
@@ -923,106 +1525,110 @@
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
 
-      // CANCEL any pending cleanup from previous transitions
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
       }
 
-      // Find ALL existing images (not just one) to properly clean up
       const existingImages = imageContainer.querySelectorAll('.tutorial-image');
-      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null; // Get the most recent one
+      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
       
-      // Create new image element
       const newImage = document.createElement('img');
       newImage.className = 'tutorial-image';
       newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
       newImage.src = config.image;
 
-      // Set starting position and opacity based on offset config
       if (config.offset.x === 0 && config.offset.y === 0) {
-        // FADE ONLY: Start centered but invisible
         newImage.style.transform = 'translate(0, 0)';
         newImage.style.opacity = '0';
-        newImage.style.zIndex = '10'; // Higher z-index for new image
+        newImage.style.zIndex = '10';
       } else {
-        // SLIDE + FADE: Start off-screen based on offset
-        const startX = config.offset.x * 100; // 100% = full screen width to the right
+        const startX = config.offset.x * 100;
         const startY = config.offset.y * 100;
         newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
-        newImage.style.zIndex = '10'; // Higher z-index for new image
+        newImage.style.zIndex = '10';
       }
 
-      // Set old image z-index
       if (currentImage) {
-        currentImage.style.zIndex = '5'; // Old image behind
+        currentImage.style.zIndex = '5';
       }
 
-      // Add new image to container
       imageContainer.appendChild(newImage);
-
-      // Force a reflow to ensure initial position is applied
       newImage.offsetHeight;
 
-      // Update hotspots for this section
       updateHotspots(config.hotspots);
 
-      // Use a small timeout to ensure the browser has processed the initial styles
       setTimeout(() => {
-        // ANIMATE NEW IMAGE IN
-        newImage.style.opacity = '1';                    // Fade in
-        newImage.style.transform = 'translate(0, 0)';    // Move to center
+        newImage.style.opacity = '1';
+        newImage.style.transform = 'translate(0, 0)';
 
-        // ANIMATE OLD IMAGE OUT (if it exists)
         if (currentImage) {
           if (config.offset.x === 0 && config.offset.y === 0) {
-            // FADE ONLY: Old image just fades out (no movement)
             currentImage.style.opacity = '0';
           } else {
-            // SLIDE + FADE: Old image slides out opposite direction
-            const exitX = -config.offset.x * 100; // Negative = slides left
+            const exitX = -config.offset.x * 100;
             const exitY = -config.offset.y * 100;
             currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
             currentImage.style.opacity = '0';
           }
         }
 
-        // CLEAN UP ALL OLD IMAGES after transition completes
         cleanupTimeout = setTimeout(() => {
-          // Remove ALL images except the new one
           const allImages = imageContainer.querySelectorAll('.tutorial-image');
           allImages.forEach(img => {
             if (img !== newImage && img.parentNode === imageContainer) {
               imageContainer.removeChild(img);
             }
           });
-          cleanupTimeout = null; // Clear the timeout reference
-        }, 850); // Slightly longer than transition duration to ensure completion
-      }, 10); // Small delay to ensure styles are applied
+          cleanupTimeout = null;
+        }, 850);
+      }, 10);
     }
 
     function updateHotspots(hotspots) {
       const hotspotContainer = document.getElementById('hotspotContainer');
       if (!hotspotContainer) return;
 
-      // Clear existing hotspots
+      // Clear sticky hotspots and existing hotspots
+      stickyHotspots.clear();
       hotspotContainer.innerHTML = '';
 
-      // Add new hotspots
-      hotspots.forEach(hotspot => {
+      // Don't show hotspots on mobile
+      if (isMobile) return;
+
+      hotspots.forEach((hotspot, index) => {
         const element = document.createElement('div');
         element.className = 'hotspot';
         element.style.top = hotspot.top;
         element.style.left = hotspot.left;
         element.style.pointerEvents = 'auto';
+        element.dataset.hotspotId = index;
+        
         element.onmouseenter = () => showParameterDialog(element, hotspot.type);
-        element.onmouseleave = () => hideParameterDialog();
+        element.onmouseleave = () => {
+          if (!stickyHotspots.has(index)) {
+            hideParameterDialog();
+          }
+        };
+        element.onclick = () => {
+          const hotspotId = parseInt(element.dataset.hotspotId);
+          if (stickyHotspots.has(hotspotId)) {
+            stickyHotspots.delete(hotspotId);
+            element.classList.remove('sticky');
+            hideParameterDialog();
+          } else {
+            stickyHotspots.add(hotspotId);
+            element.classList.add('sticky');
+            showParameterDialog(element, hotspot.type);
+          }
+        };
+        
         hotspotContainer.appendChild(element);
       });
     }
 
-    // Initialize hypercube (same as before)
+    // Initialize hypercube
     async function initHypercube() {
       const canvas = document.getElementById('hypercube-canvas');
       scene = new THREE.Scene();
@@ -1031,7 +1637,6 @@
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
       renderer.setSize(window.innerWidth, window.innerHeight);
       
-      // Create vertex texture (33 points Euler cycle)
       const vertexData = new Float32Array(33 * 4);
       const vertices = [
         [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
@@ -1053,10 +1658,8 @@
       );
       vertexTexture.needsUpdate = true;
       
-      // Create text texture
       const textTexture = await createTesseractTextTexture();
       
-      // Fragment shader (same as before)
       const fragmentShader = `
         uniform float u_time;
         uniform vec2 u_resolution;
@@ -1192,7 +1795,16 @@
       
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('wheel', onWheel);
-      canvas.addEventListener('click', openTutorial);
+      
+      // Mobile touch events
+      if (isMobile) {
+        canvas.addEventListener('touchstart', onTouchStart);
+        canvas.addEventListener('touchmove', onTouchMove);
+        canvas.addEventListener('touchend', onTouchEnd);
+      } else {
+        canvas.addEventListener('click', openTutorial);
+      }
+      
       canvas.style.cursor = 'pointer';
     }
 
@@ -1287,6 +1899,7 @@
       renderer.render(scene, camera);
     }
 
+    // Mouse and touch event handlers
     function onMouseMove(event) {
       if (tutorialOpen) return;
       
@@ -1307,21 +1920,53 @@
       normalizedMouse.y = (mousePos.y - 0.5) * 2;
     }
 
-    function onWheel(event) {
-      if (tutorialOpen) {
-        event.preventDefault();
-        const delta = event.deltaY;
+    // Mobile touch handlers
+    function onTouchStart(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
+
+    function onTouchMove(event) {
+      event.preventDefault();
+      if (!tutorialOpen) {
+        const touch = event.touches[0];
+        const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
+        const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
         
-        if (delta > 0) {
-          transitionToSection((currentSection + 1) % totalSections);
-        } else {
-          transitionToSection((currentSection - 1 + totalSections) % totalSections);
-        }
-        return;
+        velocity.x += deltaY * 0.1;
+        velocity.y += deltaX * 0.1;
       }
-      
-      const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
-      wheelVelocity += wheelDelta * 0.07;
+    }
+
+    function onTouchEnd(event) {
+      event.preventDefault();
+      if (!tutorialOpen) {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        // Swipe detection for opening tutorial
+        if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
+          openTutorial();
+        }
+      } else {
+        // Swipe navigation in tutorial
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0) {
+            // Swipe right - previous section
+            goToPrevSection();
+          } else {
+            // Swipe left - next section
+            goToNextSection();
+          }
+        }
+      }
     }
 
     function updateTutorial() {
@@ -1344,8 +1989,8 @@
       updateProgressBar();
     }
 
+    // Navigation functions
     function openTutorial() {
-      // Cancel any pending cleanup
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
@@ -1355,12 +2000,36 @@
     }
 
     function closeTutorial() {
-      // Cancel any pending image cleanup
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
       }
       transitionToSection(0);
+    }
+
+    function goToHero() {
+      closeTutorial();
+    }
+
+    function goToTutorialsPage() {
+      window.open('https://truefiasco.org/tutorials', '_blank');
+    }
+
+    function goToNextSection() {
+      if (currentSection < 14) {
+        transitionToSection(currentSection + 1);
+      }
+    }
+
+    function goToPrevSection() {
+      if (currentSection > 1) {
+        transitionToSection(currentSection - 1);
+      }
+    }
+
+    function downloadTesseractResources() {
+      // Open GitHub repository in new tab
+      window.open('https://github.com/TrueFiasco/TouchDesignerTutorials', '_blank');
     }
 
     function initProgressBar() {
@@ -1417,7 +2086,7 @@
       title.textContent = data.title;
       
       if (data.image) {
-        content.innerHTML = `<img src="${data.image}" style="width: 100%; max-width: 300px; border-radius: 5px;" alt="${data.title}">`;
+        content.innerHTML = `<img src="${data.image}" style="width: 100%; max-width: 525px; border-radius: 5px;" alt="${data.title}">`;
       } else if (data.params) {
         content.innerHTML = data.params.map(param => `<div class="parameter-item">${param}</div>`).join('');
       } else {
@@ -1425,149 +2094,134 @@
       }
       
       const rect = element.getBoundingClientRect();
-      dialog.style.left = `${rect.left + 30}px`;
+      dialog.style.left = `${rect.left + 45}px`; // Adjusted for larger hotspot
       dialog.style.top = `${rect.top - 50}px`;
       dialog.classList.add('active');
     }
 
     function hideParameterDialog() {
-      document.getElementById('parameterDialog').classList.remove('active');
+      const dialog = document.getElementById('parameterDialog');
+      dialog.classList.remove('active');
+      
+      // Clear all sticky hotspots
+      stickyHotspots.clear();
+      document.querySelectorAll('.hotspot.sticky').forEach(hotspot => {
+        hotspot.classList.remove('sticky');
+      });
     }
 
-    function showCode(type) {
-      const modal = document.getElementById('codeModal');
-      const title = document.getElementById('codeTitle');
-      const content = document.getElementById('codeContent');
+    // Widget fullscreen functions
+    function showTSVFullscreen() {
+      const modal = document.getElementById('tsvFullscreen');
+      const content = document.getElementById('tsvFullscreenContent');
+      content.innerHTML = document.getElementById('tsvContent').innerHTML;
+      modal.classList.add('active');
+      preventScrolling();
+    }
+
+    function closeTSVFullscreen() {
+      document.getElementById('tsvFullscreen').classList.remove('active');
+      allowScrolling();
+    }
+
+    function showRotationGLSLFullscreen() {
+      const modal = document.getElementById('rotationGLSLFullscreen');
+      const content = document.getElementById('rotationGLSLFullscreenContent');
+      content.innerHTML = document.getElementById('rotationGLSLContent').innerHTML;
+      modal.classList.add('active');
+      preventScrolling();
+    }
+
+    function closeRotationGLSLFullscreen() {
+      document.getElementById('rotationGLSLFullscreen').classList.remove('active');
+      allowScrolling();
+    }
+
+    function showPerspectiveGLSLFullscreen() {
+      const modal = document.getElementById('perspectiveGLSLFullscreen');
+      const content = document.getElementById('perspectiveGLSLFullscreenContent');
+      content.innerHTML = document.getElementById('perspectiveGLSLContent').innerHTML;
+      modal.classList.add('active');
+      preventScrolling();
+    }
+
+    function closePerspectiveGLSLFullscreen() {
+      document.getElementById('perspectiveGLSLFullscreen').classList.remove('active');
+      allowScrolling();
+    }
+
+    // Hero settings panel functionality
+    function setupHeroControls() {
+      const toggle = document.getElementById('heroSettingsToggle');
+      const panel = document.getElementById('heroControlsPanel');
       
-      const codeSnippets = {
-        'rotation-glsl': {
-          title: 'HyperCube Rotation GLSL',
-          content: `<div class="code-block">
-<pre>uniform vec3 rotWXYZ;  // 4D rotations (RWX, WRY, WRZ)
-uniform vec3 rotXYZ;   // 3D rotations (RX, RY, RZ)
-
-// 4D rotation matrices for W-X, W-Y, W-Z planes
-mat4 rotateWX(float angle) {
-    float c = cos(angle); float s = sin(angle);
-    return mat4(c, -s, 0.0, 0.0,
-                s, c, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0);
-}
-
-// Combined rotation matrix
-mat4 rotationMatrix = 
-    rotateZ(rotXYZ.z) * rotateY(rotXYZ.y) * rotateX(rotXYZ.x) * 
-    rotateWZ(rotWXYZ.z) * rotateWY(rotWXYZ.y) * rotateWX(rotWXYZ.x);
-
-vec4 rotatedPoint = rotationMatrix * point;</pre>
-</div>`
-        },
-        'perspective-glsl': {
-          title: 'Perspective Projection GLSL',
-          content: `<div class="code-block">
-<pre>uniform float fov;     // Field of view in degrees
-uniform vec2 resolution;
-uniform float cameraZ; // Camera Z position
-
-void main() {
-    vec2 uv = gl_FragCoord.xy / resolution;
-    vec3 pos = texture(sTD2DInputs[0], uv).rgb;
-    
-    // Perspective projection
-    vec3 camPos = vec3(0.0, 0.0, cameraZ);
-    vec3 relPos = pos - camPos;
-    
-    float f = 1.0 / tan(radians(fov) * 0.5);
-    vec2 projected;
-    projected.x = f * relPos.x / relPos.z;
-    projected.y = f * relPos.y / relPos.z;
-    
-    vec2 normXY = projected * 0.5 + 0.5;
-    fragColor = vec4(normXY, 0.0, 1.0);
-}</pre>
-</div>`
-        },
-        'sdf-glsl': {
-          title: 'SDF Uneven Capsule GLSL',
-          content: `<div class="code-block">
-<pre>float cro(in vec2 a, in vec2 b) { return a.x*b.y - a.y*b.x; }
-
-float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float rb) {
-    p -= pa; pb -= pa;
-    float h = dot(pb,pb);
-    vec2 q = vec2(dot(p,vec2(pb.y,-pb.x)), dot(p,pb))/h;
-    
-    q.x = abs(q.x);
-    float b = ra-rb;
-    vec2 c = vec2(sqrt(h-b*b),b);
-    
-    float k = cro(c,q);
-    float m = dot(c,q);
-    float n = dot(q,q);
-    
-    if(k < 0.0) return sqrt(h*(n)) - ra;
-    else if(k > c.x) return sqrt(h*(n+1.0-2.0*q.y)) - rb;
-    return m - ra;
-}</pre>
-</div>`
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (panel.style.display === 'none' || panel.style.display === '') {
+          panel.style.display = 'block';
+        } else {
+          panel.style.display = 'none';
         }
-      };
-      
-      const snippet = codeSnippets[type];
-      if (snippet) {
-        title.textContent = snippet.title;
-        content.innerHTML = snippet.content;
-        modal.classList.add('active');
+      });
+
+      // Prevent tutorial opening when clicking on panel
+      panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      // Control inputs
+      document.getElementById('hero-fov-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_fov.value = parseFloat(e.target.value);
+      });
+
+      document.getElementById('hero-perspective-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_perspective.value = parseFloat(e.target.value);
+      });
+
+      document.getElementById('hero-cameraz-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_cameraZ.value = parseFloat(e.target.value);
+      });
+
+      // Close panel when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!toggle.contains(e.target) && !panel.contains(e.target)) {
+          panel.style.display = 'none';
+        }
+      });
+    }
+
+    // Widget scroll prevention
+    let scrollingPrevented = false;
+
+    function preventScrolling() {
+      scrollingPrevented = true;
+    }
+
+    function allowScrolling() {
+      scrollingPrevented = false;
+    }
+
+    // Override wheel event handling for widgets
+    function onWheel(event) {
+      // Don't handle wheel events if scrolling is prevented (hovering over widget)
+      if (scrollingPrevented) {
+        return;
       }
-    }
 
-    function closeCodeModal() {
-      document.getElementById('codeModal').classList.remove('active');
-    }
-
-    function downloadProjectFiles() {
-      const projectFiles = {
-        touchdesigner: 'https://drive.google.com/file/d/your-td-file-id/view',
-        tsv: 'https://drive.google.com/file/d/your-tsv-file-id/view', 
-        glsl: 'https://github.com/yourusername/tesseract-tutorial'
-      };
+      if (tutorialOpen) {
+        event.preventDefault();
+        const delta = event.deltaY;
+        
+        if (delta > 0) {
+          transitionToSection((currentSection + 1) % totalSections);
+        } else {
+          transitionToSection((currentSection - 1 + totalSections) % totalSections);
+        }
+        return;
+      }
       
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); display: flex; align-items: center;
-        justify-content: center; z-index: 1000;
-      `;
-      
-      modal.innerHTML = `
-        <div style="background: #1a1a2e; padding: 2rem; border-radius: 10px; max-width: 500px;">
-          <h3 style="margin-bottom: 1rem; color: #00ffff;">Download Project Files</h3>
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <a href="${projectFiles.touchdesigner}" target="_blank" 
-               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
-              📁 TouchDesigner Project File (.toe)
-            </a>
-            <a href="${projectFiles.tsv}" target="_blank"
-               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
-              📊 Hypercube Data (TSV)
-            </a>
-            <a href="${projectFiles.glsl}" target="_blank"
-               style="background: #333; padding: 1rem; border-radius: 5px; color: white; text-decoration: none;">
-              💻 GLSL Code Snippets (GitHub)
-            </a>
-            <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                    style="background: #ff4757; border: none; color: white; padding: 0.5rem; border-radius: 5px; cursor: pointer;">
-              Close
-            </button>
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      modal.onclick = (e) => {
-        if (e.target === modal) modal.remove();
-      };
+      const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
+      wheelVelocity += wheelDelta * 0.07;
     }
 
     function onWindowResize() {
@@ -1580,8 +2234,10 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
 
     async function init() {
       await initHypercube();
+      setupHeroControls();
       animate();
       initProgressBar();
+      updateSectionTitle();
     }
     
     if (document.readyState === 'loading') {
@@ -1591,6 +2247,30 @@ float sdUnevenCapsule(in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float r
     }
 
     window.addEventListener('resize', onWindowResize);
+
+    // Close modals with escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeTSVFullscreen();
+        closeRotationGLSLFullscreen();
+        closePerspectiveGLSLFullscreen();
+        hideParameterDialog();
+        allowScrolling();
+      }
+    });
+
+    // Add scroll prevention to fullscreen modals
+    document.getElementById('tsvFullscreen').addEventListener('wheel', (e) => {
+      e.stopPropagation();
+    });
+
+    document.getElementById('rotationGLSLFullscreen').addEventListener('wheel', (e) => {
+      e.stopPropagation();
+    });
+
+    document.getElementById('perspectiveGLSLFullscreen').addEventListener('wheel', (e) => {
+      e.stopPropagation();
+    });
   </script>
 </body>
 </html>
