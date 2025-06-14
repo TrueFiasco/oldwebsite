@@ -320,7 +320,7 @@
       background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%); 
     }
 
-    /* Section Layouts - Ensure all content is above background images */
+    /* FIXED: Section Layouts - Better flex control and width constraints */
     .section-layout {
       display: flex;
       gap: 2rem;
@@ -328,10 +328,12 @@
       z-index: 10; /* Above background images (z-index: 1) */
       position: relative;
       margin-top: 1rem;
+      width: 100%; /* Ensure full width usage */
     }
 
     .section-left {
-      flex: 2;
+      flex: 2; /* 66.67% width */
+      min-width: 0; /* Allow flex shrinking */
       display: flex;
       flex-direction: column;
       z-index: 10; /* Ensure text content is above images */
@@ -339,7 +341,9 @@
     }
 
     .section-right {
-      flex: 1;
+      flex: 1; /* 33.33% width */
+      min-width: 0; /* Allow flex shrinking */
+      max-width: 33.33%; /* Enforce maximum width */
       display: flex;
       flex-direction: column;
       z-index: 10; /* Ensure widgets are above images */
@@ -465,7 +469,7 @@
       margin-bottom: 1rem;
     }
 
-    /* Code/Data Widgets - TouchDesigner DAT Style */
+    /* FIXED: Code/Data Widgets - Better width constraints and positioning */
     .widget-container {
       display: flex;
       align-items: stretch;
@@ -473,10 +477,12 @@
       height: calc(100vh - 60px - 400px - 8rem); /* Viewport - header - image - padding */
       max-height: 40vh; /* Fallback max height */
       min-height: 300px; /* Minimum usable height */
-      width: 100%; /* Full width in section-right */
+      width: 100%; /* Full width of section-right container */
+      max-width: 100%; /* Prevent overflow */
       transform: translateY(-5%); /* Raise widgets up by 5% */
       z-index: 15; /* Above background images and section content */
       position: relative;
+      box-sizing: border-box; /* Include padding/borders in width calc */
     }
 
     .widget-buttons {
@@ -486,6 +492,7 @@
       margin-right: 0.5rem;
       align-self: flex-start;
       padding-top: 0.25rem;
+      flex-shrink: 0; /* Don't shrink buttons */
     }
 
     .widget-btn {
@@ -539,6 +546,7 @@
       position: relative;
       overflow: hidden;
       flex: 1;
+      min-width: 0; /* Allow flex shrinking */
       display: flex;
       flex-direction: column;
     }
@@ -578,6 +586,7 @@
       color: #ddd;
       position: relative;
       order: 1; /* Content at top */
+      min-width: 0; /* Allow flex shrinking */
     }
 
     /* TSV Table Styling */
@@ -586,6 +595,7 @@
       height: 100%;
       border-collapse: collapse;
       background: #2a2a2a;
+      table-layout: fixed; /* Fix table layout for better width control */
     }
 
     .tsv-table th,
@@ -596,9 +606,10 @@
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       font-size: 0.75rem;
       line-height: 1.2;
-      min-width: 40px;
-      max-width: 60px;
+      width: 25%; /* Equal width columns */
       overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tsv-table th {
@@ -633,6 +644,7 @@
       font-size: 0.75rem;
       line-height: 1.3;
       color: #ddd;
+      word-wrap: break-word; /* Prevent horizontal overflow */
     }
 
     .widget-fullscreen {
@@ -802,7 +814,7 @@
       max-width: fit-content;
     }
 
-    /* Right side images for sections 7 and 12 - Ensure they're above background */
+    /* FIXED: Right side images for sections 7 and 12 - Ensure they're above background and blur image lifted */
     .trail-image, .blur-image {
       width: 100%; /* Fill the 1/3 width */
       max-width: none;
@@ -810,6 +822,11 @@
       margin-bottom: 1rem;
       z-index: 15; /* Above background images */
       position: relative;
+    }
+
+    /* FIXED: Lift blur image by 10% */
+    .blur-image {
+      transform: translateY(-10%);
     }
 
     /* GitHub Download Button */
@@ -866,7 +883,7 @@
 
     @media (max-width: 768px) {
       .tutorial-section {
-        padding: 1rem 1rem 120px 1rem;
+        padding: 1rem 1rem 280px 1rem; /* FIXED: Increased bottom padding from 120px to 280px */
         padding-top: 1rem;
       }
       
@@ -878,8 +895,20 @@
         font-size: 1.2rem;
       }
 
+      /* FIXED: Mobile layout - stack vertically but maintain proper spacing */
       .section-layout {
         flex-direction: column;
+        gap: 1rem;
+      }
+
+      .section-left {
+        flex: none;
+        max-width: none;
+      }
+
+      .section-right {
+        flex: none;
+        max-width: none;
       }
 
       .static-image-container {
@@ -930,11 +959,12 @@
         gap: 0.5rem;
       }
 
-      /* Mobile widget adjustments */
+      /* FIXED: Mobile widget adjustments - better responsive sizing */
       .widget-container {
         height: calc(100vh - 60px - 250px - 4rem); /* Mobile: smaller image container */
         max-height: 30vh; /* Smaller max on mobile */
         min-height: 200px; /* Smaller min on mobile */
+        margin: 1rem 0; /* Reduce margin on mobile */
       }
 
       .widget-buttons {
@@ -945,8 +975,7 @@
       .tsv-table td {
         font-size: 0.65rem;
         padding: 1px 3px;
-        min-width: 30px;
-        max-width: 40px;
+        width: 25%; /* Maintain equal columns on mobile */
       }
 
       .code-content {
