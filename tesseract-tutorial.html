@@ -313,9 +313,6 @@
       overflow-y: auto;
       padding-top: 2rem;
       margin-top: 0;
-      /* Enable smooth scrolling on mobile */
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
     }
 
     /* Section-specific gradients - all sections now have the same gradient */
@@ -476,7 +473,7 @@
       height: calc(100vh - 60px - 400px - 8rem); /* Viewport - header - image - padding */
       max-height: 40vh; /* Fallback max height */
       min-height: 300px; /* Minimum usable height */
-      width: 33.33%; /* Fixed 1/3 width in desktop mode */
+      width: 100%; /* Full width in section-right */
       transform: translateY(-5%); /* Raise widgets up by 5% */
       z-index: 15; /* Above background images and section content */
       position: relative;
@@ -935,7 +932,6 @@
 
       /* Mobile widget adjustments */
       .widget-container {
-        width: 100%; /* Full width on mobile */
         height: calc(100vh - 60px - 250px - 4rem); /* Mobile: smaller image container */
         max-height: 30vh; /* Smaller max on mobile */
         min-height: 200px; /* Smaller min on mobile */
