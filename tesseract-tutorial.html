@@ -2765,31 +2765,43 @@ void main()
       }
     });
 
-    // Add scroll prevention to fullscreen modals
-    document.getElementById('tsvFullscreen').addEventListener('wheel', (e) => {
-      e.stopPropagation();
-    });
-
-    document.getElementById('rotationGLSLFullscreen').addEventListener('wheel', (e) => {
-      e.stopPropagation();
-    });
-
-    document.getElementById('perspectiveGLSLFullscreen').addEventListener('wheel', (e) => {
-      e.stopPropagation();
-    });
-
-    document.getElementById('lineMindistGLSLFullscreen').addEventListener('wheel', (e) => {
-      e.stopPropagation();
-    });
-
-    // Prevent wheel events from changing sections when any fullscreen modal is open
-    document.addEventListener('wheel', (e) => {
-      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
-      if (anyModalOpen) {
-        e.stopPropagation();
-        return;
-      }
-    }, true);
+	// Add intelligent scroll handling to fullscreen modals
+	function handleModalWheel(e, modalId) {
+	  const modal = document.getElementById(modalId);
+	  const content = modal.querySelector('.widget-fullscreen-content');
+	  
+	  if (content) {
+	    const { scrollTop, scrollHeight, clientHeight } = content;
+	    const isScrollingUp = e.deltaY < 0;
+	    const isScrollingDown = e.deltaY > 0;
+	    
+	    // Allow scrolling within content if there's room to scroll
+	    const canScrollUp = scrollTop > 0;
+	    const canScrollDown = scrollTop < scrollHeight - clientHeight;
+	    
+	    // Only prevent section changes if we can't scroll in that direction
+	    if ((isScrollingUp && !canScrollUp) || (isScrollingDown && !canScrollDown)) {
+	      e.preventDefault();
+	      e.stopPropagation();
+	    }
+	  }
+	}
+	
+	document.getElementById('tsvFullscreen').addEventListener('wheel', (e) => {
+	  handleModalWheel(e, 'tsvFullscreen');
+	});
+	
+	document.getElementById('rotationGLSLFullscreen').addEventListener('wheel', (e) => {
+	  handleModalWheel(e, 'rotationGLSLFullscreen');
+	});
+	
+	document.getElementById('perspectiveGLSLFullscreen').addEventListener('wheel', (e) => {
+	  handleModalWheel(e, 'perspectiveGLSLFullscreen');
+	});
+	
+	document.getElementById('lineMindistGLSLFullscreen').addEventListener('wheel', (e) => {
+	  handleModalWheel(e, 'lineMindistGLSLFullscreen');
+	});
   </script>
 </body>
 </html>
