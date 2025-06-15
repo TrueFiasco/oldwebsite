@@ -36,12 +36,12 @@
       </div>
     </div>
     
-    <div class="hero-content">
-      <h1 class="hero-title">TESSERACT</h1>
-      <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
-      
-      <!-- NEW BUTTON -->
-      <button class="hero-start-btn" onclick="openTutorial()">
+    <!-- REMOVED: All hero-content, hero-title, hero-subtitle, and hero-start-btn -->
+    <!-- The text is now rendered by the GLSL shader only -->
+    
+    <!-- FIXED: Mobile-only start button - only shows on mobile devices -->
+    <div class="mobile-start-container" id="mobileStartContainer">
+      <button class="mobile-start-btn" onclick="openTutorial()">
         Start Tutorial
       </button>
     </div>
@@ -817,6 +817,14 @@
     // Initialize Tesseract Shader instance
     let tesseractShader = null;
 
+    // FIXED: Show/hide mobile start button based on device type
+    function updateMobileButton() {
+      const mobileContainer = document.getElementById('mobileStartContainer');
+      if (mobileContainer) {
+        mobileContainer.style.display = isMobile ? 'block' : 'none';
+      }
+    }
+
     // Load dynamic content
     function loadDynamicContent() {
       // TSV loader - load headers from file
@@ -1145,7 +1153,7 @@
       });
     }
 
-    // FIXED: Enhanced parameter dialog functions with smart positioning
+    // Enhanced parameter dialog functions with smart positioning
     function showParameterDialog(element, type) {
       const dialog = document.getElementById('parameterDialog');
       const title = document.getElementById('parameterTitle');
@@ -1186,7 +1194,7 @@
         content.innerHTML = '<div class="parameter-item">No parameters available</div>';
       }
       
-      // FIXED: Smart positioning logic to keep dialog within viewport bounds
+      // Smart positioning logic to keep dialog within viewport bounds
       const rect = element.getBoundingClientRect();
       const dialogWidth = 600; // max-width from CSS
       const dialogHeight = 400; // estimated height (adjust based on content)
@@ -1231,7 +1239,7 @@
       });
     }
 
-    // Widget fullscreen functions - FIXED: Enhanced for proper scrolling
+    // Widget fullscreen functions
     function showTSVFullscreen() {
       const modal = document.getElementById('tsvFullscreen');
       const content = document.getElementById('tsvFullscreenContent');
@@ -1398,7 +1406,7 @@
       });
     }
 
-    // FIXED: Updated wheel event handling to allow scrolling in fullscreen modals
+    // Updated wheel event handling to allow scrolling in fullscreen modals
     function onWheel(event) {
       // Check if any fullscreen modal is open
       const anyModalOpen = document.querySelector('.widget-fullscreen.active');
@@ -1433,6 +1441,9 @@
       });
       
       await tesseractShader.init();
+      
+      // FIXED: Update mobile button visibility
+      updateMobileButton();
       
       loadDynamicContent(); // Load TSV and code snippets
       initProgressBar();
