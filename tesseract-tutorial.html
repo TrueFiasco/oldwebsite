@@ -318,7 +318,7 @@
 
     /* Dynamic bottom spacing based on content and image presence */
     .tutorial-section.has-background-image {
-      padding-bottom: 420px; /* Only when background image is present */
+      padding-bottom: 360px; /* Only when background image is present */
     }
 
     /* FIXED: Enhanced section layouts with proper z-index hierarchy and consistent 2/3 - 1/3 split */
@@ -348,6 +348,7 @@
       z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
       min-width: 0; /* Prevent flex item from overflowing */
+      padding-top: 0.5rem; /* Small top padding to create gap from header */
     }
 
     .section-full {
@@ -482,7 +483,7 @@
     .widget-container {
       display: flex;
       align-items: stretch;
-      margin: 2rem 0;
+      margin: 0.5rem 0 2rem 0; /* Reduced top margin to move widgets higher */
       height: auto; /* CHANGED from complex calc to auto */
       max-height: 40vh;
       min-height: 300px;
@@ -985,7 +986,7 @@
         height: auto; /* Let it size naturally on mobile */
         max-height: 30vh;
         min-height: 200px;
-        margin: 1.5rem 0; /* Consistent spacing */
+        margin: 1rem 0; /* Consistent spacing on mobile */
       }
 
       .widget-buttons {
@@ -1076,7 +1077,7 @@
       }
       
       .widget-container {
-        margin: 1rem 0;
+        margin: 0.5rem 0; /* Reduced margin for very small screens */
         min-height: 150px; /* Smaller min height for very small screens */
       }
     }
