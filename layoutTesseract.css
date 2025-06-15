@@ -46,48 +46,581 @@ body {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  cursor: default; /* Changed from pointer since we're using a button now */
+  cursor: pointer; /* FIXED: Desktop gets pointer cursor for click-anywhere */
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.content-widget:hover {
+  border-color: #777;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.widget-header {
+  background: #3a3a3a;
+  padding: 0.5rem;
+  border-top: 1px solid #555;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  order: 2;
+}
+
+.widget-title {
+  font-size: 0.9rem;
+  color: #ddd;
+  font-weight: normal;
+  margin: 0;
+  padding-left: 0.5rem;
+  flex: 1;
+}
+
+.widget-content {
+  flex: 1;
+  overflow: hidden;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  background: #2a2a2a;
+  color: #ddd;
+  position: relative;
+  order: 1;
+}
+
+/* === TSV TABLE STYLING === */
+.tsv-table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  background: #2a2a2a;
+}
+
+.tsv-table th,
+.tsv-table td {
+  border: 1px solid #555;
+  padding: 2px 6px;
+  text-align: left;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  min-width: 40px;
+  max-width: 60px;
+  overflow: hidden;
+}
+
+.tsv-table th {
+  background: #3a3a3a;
+  color: #fff;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tsv-table td {
+  background: #2a2a2a;
+  color: #ddd;
+}
+
+.tsv-table tr:nth-child(even) td {
+  background: #2e2e2e;
+}
+
+.tsv-table tr:hover td {
+  background: #353535;
+}
+
+/* === CODE CONTENT STYLING === */
+.code-content {
+  padding: 1rem;
+  height: 100%;
+  overflow: hidden;
+  white-space: pre;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #ddd;
+}
+
+/* === LOADING STATES === */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+  font-style: italic;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #ff6b6b;
+  font-style: italic;
+}
+
+/* === FULLSCREEN MODALS === */
+.widget-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  z-index: 4000;
+  display: none;
+  flex-direction: column;
+}
+
+.widget-fullscreen.active {
+  display: flex;
+  animation: fadeInScale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.widget-fullscreen-header {
+  background: #2a2a2a;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #555;
+  min-height: 60px;
+  gap: 1rem;
+}
+
+.widget-fullscreen-header h3 {
+  color: #ddd;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: normal;
+  flex: 1;
+}
+
+.widget-fullscreen-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.widget-fullscreen-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.4;
+  color: #ddd;
+  font-size: 0.9rem;
+  background: #2a2a2a;
+  min-height: 0;
+}
+
+.widget-fullscreen-content .tsv-table {
+  font-size: 0.85rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.widget-fullscreen-content .tsv-table th,
+.widget-fullscreen-content .tsv-table td {
+  padding: 4px 8px;
+  min-width: 60px;
+  border: 1px solid #555;
+}
+
+.widget-fullscreen-content .tsv-table th {
+  position: sticky;
+  top: 0;
+  background: #3a3a3a;
+  z-index: 10;
+}
+
+.widget-fullscreen-content .code-content {
+  padding: 2rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  height: auto !important;
+  overflow: visible !important;
+  white-space: pre-wrap;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 6px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* === PROGRESS INDICATOR === */
+.progress-bar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1600;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.progress-dot.active {
+  background: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+/* === TYPOGRAPHY === */
+.tutorial-section h1,
+.tutorial-section h2, 
+.tutorial-section h3,
+.tutorial-section h4,
+.tutorial-section h5,
+.tutorial-section h6 {
+  display: none !important;
+}
+
+p { 
+  line-height: 1.6; 
+  margin-bottom: 1rem; 
+}
+
+.highlight {
+  background: rgba(255, 255, 0, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.tip {
+  background: #2c3e50;
+  border-left: 4px solid #3498db;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 5px 5px 0;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+/* === SPECIAL SECTION IMAGES === */
+.trail-image, .blur-image {
+  width: 100%;
+  max-width: none;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  z-index: 25;
+  position: relative;
+}
+
+/* === GITHUB DOWNLOAD BUTTON === */
+.github-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: linear-gradient(45deg, #24292e, #586069);
+  border: none;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin: 1.5rem 0;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.github-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
+  background: linear-gradient(45deg, #2f363d, #6a737d);
+}
+
+.github-logo {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* === COPY NOTIFICATION === */
+.copy-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 255, 255, 0.9);
+  color: #000;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 5000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.copy-notification.show {
+  opacity: 1;
+}
+
+/* === MOBILE RESPONSIVE STYLES === */
+@media (max-width: 768px) {
+  /* FIXED: Show mobile button on mobile, remove pointer cursor */
+  .hero-section {
+    cursor: default; /* Remove pointer cursor on mobile */
+  }
+  
+  .mobile-start-container {
+    display: block !important; /* Show mobile button */
+  }
+  
+  .tutorial-section {
+    padding: 0.25rem 1rem 1rem 1rem;
+    min-height: calc(100vh - 60px);
+  }
+  
+  .tutorial-section.has-background-image {
+    padding-bottom: 500px;
+  }
+
+  .section-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0.125rem;
+  }
+
+  .section-left,
+  .section-right {
+    flex: 1;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .static-image-container {
+    height: 250px;
+  }
+
+  .mobile-parameters {
+    display: block;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+
+  .hotspot {
+    display: none !important;
+  }
+
+  .tutorial-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .tutorial-header {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
+    gap: 1rem;
+    padding: 1rem 1rem;
+  }
+
+  .tutorial-title {
+    max-width: 100%;
+    text-align: center;
+    font-size: clamp(1rem, 5vw, 1.8rem);
+    margin-right: 0;
+    margin-bottom: 0;
+    line-height: 1.2;
+  }
+
+  .tutorial-nav {
+    justify-content: space-around;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .widget-container {
+    height: auto;
+    max-height: 30vh;
+    min-height: 200px;
+    margin: 0.5rem 0;
+  }
+
+  .widget-buttons {
+    margin-right: 0.25rem;
+  }
+
+  .tsv-table th,
+  .tsv-table td {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    min-width: 30px;
+    max-width: 40px;
+  }
+
+  .code-content {
+    font-size: 0.65rem;
+    padding: 0.5rem;
+  }
+
+  .widget-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+
+  .widget-btn-fullscreen::before {
+    font-size: 11px;
+  }
+
+  .widget-btn-copy::before {
+    font-size: 9px;
+  }
+
+  .widget-btn-github::before {
+    font-size: 11px;
+  }
+
+  .widget-title {
+    font-size: 0.8rem;
+  }
+
+  .section-left > *:last-child,
+  .section-right > *:last-child,
+  .section-full > *:last-child {
+    margin-bottom: 2rem;
+  }
+}
+
+/* === DESKTOP SPECIFIC STYLES === */
+@media (min-width: 769px) {
+  /* FIXED: Hide mobile button on desktop */
+  .mobile-start-container {
+    display: none !important;
+  }
+  
+  .section-left {
+    flex: 2 1 66.666%;
+    max-width: 66.666%;
+  }
+
+  .section-right {
+    flex: 1 1 33.333%;
+    max-width: 33.333%;
+  }
+
+  .widget-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .content-widget {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* === EXTRA SMALL MOBILE STYLES === */
+@media (max-width: 480px) {
+  .tutorial-section {
+    padding: 0.2rem 0.75rem 0.75rem 0.75rem;
+  }
+  
+  .tutorial-section.has-background-image {
+    padding-bottom: 450px;
+  }
+  
+  .mobile-parameters {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+  
+  .widget-container {
+    margin: 0.25rem 0;
+    min-height: 150px;
+  }
+  
+  .mobile-start-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+}
+
+/* === CONTENT OVERFLOW PROTECTION === */
+.section-left,
+.section-right,
+.section-full {
+  overflow: visible;
+  word-wrap: break-word;
+};
 }
 
 .hero-section:hover {
   transform: scale(1.02);
 }
 
-.hero-content {
-  text-align: center;
-  z-index: 10; /* INCREASED from 2 to 10 to ensure it's above the canvas */
-  pointer-events: auto; /* FIXED: Enable pointer events for button interaction */
-  opacity: 1;
-  display: block;
-  position: relative; /* ADDED: Ensure proper positioning context */
+/* REMOVED: All .hero-content, .hero-title, .hero-subtitle styles since they're rendered by shader now */
+
+.hypercube-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Canvas stays behind content */
 }
 
-.hero-title {
-  font-family: 'Spy Agency', 'Arial', sans-serif;
-  font-size: clamp(3.75rem, 12vw, 9rem);
-  font-weight: normal;
-  margin-bottom: 1rem;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 3s ease-in-out infinite;
-  opacity: 1; /* CHANGED from 0 to 1 to make title visible */
+/* === MOBILE START BUTTON STYLES === */
+.mobile-start-container {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: none; /* Hidden by default, shown only on mobile */
 }
 
-.hero-subtitle {
-  font-family: 'Orbitron', 'Arial', sans-serif;
-  font-size: 2.25rem;
-  margin-bottom: 2rem;
-  opacity: 1; /* CHANGED from 0 to 1 to make subtitle visible */
-  line-height: 1.2;
-}
-
-/* FIXED: Hero Start Button Styles - moved to proper location in hero section */
-.hero-start-btn {
+.mobile-start-btn {
   background: rgba(0, 255, 255, 0.1);
   border: 2px solid rgba(0, 255, 255, 0.5);
   color: #00ffff;
@@ -100,13 +633,11 @@ body {
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-  margin-top: 1rem;
-  pointer-events: auto; /* ADDED: Ensure button is clickable */
-  position: relative; /* ADDED: Proper positioning */
-  z-index: 15; /* ADDED: Higher z-index to ensure button is above everything */
+  pointer-events: auto;
+  position: relative;
 }
 
-.hero-start-btn:hover {
+.mobile-start-btn:hover {
   background: rgba(0, 255, 255, 0.2);
   border-color: rgba(0, 255, 255, 0.8);
   transform: translateY(-2px);
@@ -114,23 +645,9 @@ body {
   color: #ffffff;
 }
 
-.hero-start-btn:active {
+.mobile-start-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 10px rgba(0, 255, 255, 0.3);
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.hypercube-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1; /* KEPT: Canvas stays behind content */
 }
 
 /* === HERO SETTINGS CONTROLS === */
@@ -577,536 +1094,4 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
-}
-
-.content-widget:hover {
-  border-color: #777;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.widget-header {
-  background: #3a3a3a;
-  padding: 0.5rem;
-  border-top: 1px solid #555;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 32px;
-  order: 2;
-}
-
-.widget-title {
-  font-size: 0.9rem;
-  color: #ddd;
-  font-weight: normal;
-  margin: 0;
-  padding-left: 0.5rem;
-  flex: 1;
-}
-
-.widget-content {
-  flex: 1;
-  overflow: hidden;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.8rem;
-  line-height: 1.2;
-  background: #2a2a2a;
-  color: #ddd;
-  position: relative;
-  order: 1;
-}
-
-/* === TSV TABLE STYLING === */
-.tsv-table {
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  background: #2a2a2a;
-}
-
-.tsv-table th,
-.tsv-table td {
-  border: 1px solid #555;
-  padding: 2px 6px;
-  text-align: left;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  min-width: 40px;
-  max-width: 60px;
-  overflow: hidden;
-}
-
-.tsv-table th {
-  background: #3a3a3a;
-  color: #fff;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.tsv-table td {
-  background: #2a2a2a;
-  color: #ddd;
-}
-
-.tsv-table tr:nth-child(even) td {
-  background: #2e2e2e;
-}
-
-.tsv-table tr:hover td {
-  background: #353535;
-}
-
-/* === CODE CONTENT STYLING === */
-.code-content {
-  padding: 1rem;
-  height: 100%;
-  overflow: hidden;
-  white-space: pre;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.75rem;
-  line-height: 1.3;
-  color: #ddd;
-}
-
-/* === LOADING STATES === */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #888;
-  font-style: italic;
-}
-
-.error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #ff6b6b;
-  font-style: italic;
-}
-
-/* === FULLSCREEN MODALS === */
-.widget-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #1a1a1a;
-  z-index: 4000;
-  display: none;
-  flex-direction: column;
-}
-
-.widget-fullscreen.active {
-  display: flex;
-  animation: fadeInScale 0.4s cubic-bezier(0.4, 0.4s;
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.widget-fullscreen-header {
-  background: #2a2a2a;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #555;
-  min-height: 60px;
-  gap: 1rem;
-}
-
-.widget-fullscreen-header h3 {
-  color: #ddd;
-  font-size: 1.2rem;
-  margin: 0;
-  font-weight: normal;
-  flex: 1;
-}
-
-.widget-fullscreen-buttons {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.widget-fullscreen-content {
-  flex: 1;
-  overflow: auto;
-  padding: 0;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  line-height: 1.4;
-  color: #ddd;
-  font-size: 0.9rem;
-  background: #2a2a2a;
-  min-height: 0;
-}
-
-.widget-fullscreen-content .tsv-table {
-  font-size: 0.85rem;
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.widget-fullscreen-content .tsv-table th,
-.widget-fullscreen-content .tsv-table td {
-  padding: 4px 8px;
-  min-width: 60px;
-  border: 1px solid #555;
-}
-
-.widget-fullscreen-content .tsv-table th {
-  position: sticky;
-  top: 0;
-  background: #3a3a3a;
-  z-index: 10;
-}
-
-.widget-fullscreen-content .code-content {
-  padding: 2rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  height: auto !important;
-  overflow: visible !important;
-  white-space: pre-wrap;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 6px;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
-  background: #666;
-}
-
-/* === PROGRESS INDICATOR === */
-.progress-bar {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  z-index: 1600;
-}
-
-.progress-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #333;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.progress-dot.active {
-  background: #00ffff;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-}
-
-/* === TYPOGRAPHY === */
-.tutorial-section h1,
-.tutorial-section h2, 
-.tutorial-section h3,
-.tutorial-section h4,
-.tutorial-section h5,
-.tutorial-section h6 {
-  display: none !important;
-}
-
-p { 
-  line-height: 1.6; 
-  margin-bottom: 1rem; 
-}
-
-.highlight {
-  background: rgba(255, 255, 0, 0.2);
-  padding: 0.2rem 0.4rem;
-  border-radius: 3px;
-}
-
-.tip {
-  background: #2c3e50;
-  border-left: 4px solid #3498db;
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 0 5px 5px 0;
-  display: inline-block;
-  max-width: fit-content;
-}
-
-/* === SPECIAL SECTION IMAGES === */
-.trail-image, .blur-image {
-  width: 100%;
-  max-width: none;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  z-index: 25;
-  position: relative;
-}
-
-/* === GITHUB DOWNLOAD BUTTON === */
-.github-download-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  background: linear-gradient(45deg, #24292e, #586069);
-  border: none;
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  font-weight: bold;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  margin: 1.5rem 0;
-  text-decoration: none;
-  width: fit-content;
-}
-
-.github-download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
-  background: linear-gradient(45deg, #2f363d, #6a737d);
-}
-
-.github-logo {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-
-/* === COPY NOTIFICATION === */
-.copy-notification {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 255, 255, 0.9);
-  color: #000;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  font-weight: bold;
-  z-index: 5000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.copy-notification.show {
-  opacity: 1;
-}
-
-/* === MOBILE RESPONSIVE STYLES === */
-@media (max-width: 768px) {
-  .tutorial-section {
-    padding: 0.25rem 1rem 1rem 1rem;
-    min-height: calc(100vh - 60px);
-  }
-  
-  .tutorial-section.has-background-image {
-    padding-bottom: 500px;
-  }
-  
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  
-  .hero-subtitle {
-    font-size: 1.2rem;
-  }
-
-  .section-layout {
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    margin-top: 0.125rem;
-  }
-
-  .section-left,
-  .section-right {
-    flex: 1;
-    width: 100%;
-    padding-top: 0;
-  }
-
-  .static-image-container {
-    height: 250px;
-  }
-
-  .mobile-parameters {
-    display: block;
-    margin: 1.5rem 0;
-    padding: 1rem;
-  }
-
-  .hotspot {
-    display: none !important;
-  }
-
-  .tutorial-nav {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .nav-btn {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .tutorial-header {
-    flex-direction: column;
-    align-items: stretch;
-    min-height: auto;
-    gap: 1rem;
-    padding: 1rem 1rem;
-  }
-
-  .tutorial-title {
-    max-width: 100%;
-    text-align: center;
-    font-size: clamp(1rem, 5vw, 1.8rem);
-    margin-right: 0;
-    margin-bottom: 0;
-    line-height: 1.2;
-  }
-
-  .tutorial-nav {
-    justify-content: space-around;
-    width: 100%;
-    gap: 0.5rem;
-  }
-
-  .widget-container {
-    height: auto;
-    max-height: 30vh;
-    min-height: 200px;
-    margin: 0.5rem 0;
-  }
-
-  .widget-buttons {
-    margin-right: 0.25rem;
-  }
-
-  .tsv-table th,
-  .tsv-table td {
-    font-size: 0.65rem;
-    padding: 1px 3px;
-    min-width: 30px;
-    max-width: 40px;
-  }
-
-  .code-content {
-    font-size: 0.65rem;
-    padding: 0.5rem;
-  }
-
-  .widget-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.9rem;
-  }
-
-  .widget-btn-fullscreen::before {
-    font-size: 11px;
-  }
-
-  .widget-btn-copy::before {
-    font-size: 9px;
-  }
-
-  .widget-btn-github::before {
-    font-size: 11px;
-  }
-
-  .widget-title {
-    font-size: 0.8rem;
-  }
-
-  .section-left > *:last-child,
-  .section-right > *:last-child,
-  .section-full > *:last-child {
-    margin-bottom: 2rem;
-  }
-}
-
-/* === DESKTOP SPECIFIC STYLES === */
-@media (min-width: 769px) {
-  .section-left {
-    flex: 2 1 66.666%;
-    max-width: 66.666%;
-  }
-
-  .section-right {
-    flex: 1 1 33.333%;
-    max-width: 33.333%;
-  }
-
-  .widget-container {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .content-widget {
-    width: 100%;
-    max-width: 100%;
-  }
-}
-
-/* === EXTRA SMALL MOBILE STYLES === */
-@media (max-width: 480px) {
-  .tutorial-section {
-    padding: 0.2rem 0.75rem 0.75rem 0.75rem;
-  }
-  
-  .tutorial-section.has-background-image {
-    padding-bottom: 450px;
-  }
-  
-  .mobile-parameters {
-    margin: 1rem 0;
-    padding: 0.75rem;
-  }
-  
-  .widget-container {
-    margin: 0.25rem 0;
-    min-height: 150px;
-  }
-}
-
-/* === CONTENT OVERFLOW PROTECTION === */
-.section-left,
-.section-right,
-.section-full {
-  overflow: visible;
-  word-wrap: break-word;
-}
+  overflow: hidden
