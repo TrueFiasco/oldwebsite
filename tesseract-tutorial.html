@@ -307,7 +307,7 @@
     .tutorial-section {
       min-width: 100vw;
       min-height: calc(100vh - 60px); /* Account for header height */
-      padding: 1rem 2rem 2rem 2rem; /* Reduced top padding by 50% (was 2rem, now 1rem) */
+      padding: 0.5rem 2rem 2rem 2rem; /* Reduced top padding by another 50% (was 1rem, now 0.5rem) */
       display: flex;
       flex-direction: column;
       position: relative;
@@ -328,7 +328,7 @@
       flex: 1; /* Take all available space */
       z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
-      margin-top: 0.5rem; /* Reduced by 50% (was 1rem, now 0.5rem) */
+      margin-top: 0.25rem; /* Reduced by another 50% (was 0.5rem, now 0.25rem) */
       margin-bottom: 2rem; /* ADD bottom margin for spacing */
     }
 
@@ -348,7 +348,7 @@
       z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
       min-width: 0; /* Prevent flex item from overflowing */
-      padding-top: 0.125rem; /* Reduced by 75% (was 0.5rem, now 0.125rem) */
+      padding-top: 0.05rem; /* Reduced further to align with tighter header spacing */
     }
 
     .section-full {
@@ -483,7 +483,7 @@
     .widget-container {
       display: flex;
       align-items: stretch;
-      margin: 0.5rem 0 2rem 0; /* Reduced top margin to move widgets higher */
+      margin: 0.25rem 0 2rem 0; /* Reduced top margin further to align with reduced header spacing */
       height: auto; /* CHANGED from complex calc to auto */
       max-height: 40vh;
       min-height: 300px;
@@ -900,13 +900,13 @@
     /* FIXED: Mobile responsive improvements with dynamic padding */
     @media (max-width: 768px) {
       .tutorial-section {
-        padding: 0.5rem 1rem 1rem 1rem; /* Reduced top padding by 50% (was 1rem, now 0.5rem) */
+        padding: 0.25rem 1rem 1rem 1rem; /* Reduced top padding by another 50% (was 0.5rem, now 0.25rem) */
         min-height: calc(100vh - 60px);
       }
       
       /* Only add bottom padding on mobile when background image exists */
       .tutorial-section.has-background-image {
-        padding-bottom: 400px; /* Increased padding on mobile to account for parameter images */
+        padding-bottom: 500px; /* Increased padding on mobile for better content visibility */
       }
       
       .hero-title {
@@ -922,7 +922,7 @@
         flex-direction: column;
         gap: 1.5rem; /* Reduced gap for mobile */
         margin-bottom: 1.5rem;
-        margin-top: 0.25rem; /* Reduced by 50% for mobile */
+        margin-top: 0.125rem; /* Reduced by another 50% (was 0.25rem, now 0.125rem) */
       }
 
       /* Mobile: Both sections take full width */
@@ -988,7 +988,7 @@
         height: auto; /* Let it size naturally on mobile */
         max-height: 30vh;
         min-height: 200px;
-        margin: 1rem 0; /* Consistent spacing on mobile */
+        margin: 0.5rem 0; /* Consistent spacing on mobile */
       }
 
       .widget-buttons {
@@ -1065,12 +1065,12 @@
     /* FIXED: Additional mobile spacing for very narrow screens */
     @media (max-width: 480px) {
       .tutorial-section {
-        padding: 0.375rem 0.75rem 0.75rem 0.75rem; /* Reduced top padding by 50% (was 0.75rem, now 0.375rem) */
+        padding: 0.2rem 0.75rem 0.75rem 0.75rem; /* Reduced top padding by another 50% (was 0.375rem, now 0.2rem) */
       }
       
       /* Only add bottom padding on mobile when background image exists */
       .tutorial-section.has-background-image {
-        padding-bottom: 350px; /* Adequate padding for very small screens with parameter images */
+        padding-bottom: 450px; /* Increased padding for very small screens with parameter images */
       }
       
       .mobile-parameters {
@@ -1079,7 +1079,7 @@
       }
       
       .widget-container {
-        margin: 0.5rem 0; /* Reduced margin for very small screens */
+        margin: 0.25rem 0; /* Consistent with further reduced spacing */
         min-height: 150px; /* Smaller min height for very small screens */
       }
     }
