@@ -36,624 +36,19 @@
       </div>
     </div>
     
-    <!-- REMOVED: All hero-content, hero-title, hero-subtitle, and hero-start-btn -->
-    <!-- The text is now rendered by the GLSL shader only -->
-    
-    <!-- FIXED: Mobile-only start button - only shows on mobile devices -->
-    <div class="mobile-start-container" id="mobileStartContainer">
-      <button class="mobile-start-btn" onclick="openTutorial()">
+    <div class="hero-content">
+      <h1 class="hero-title">TESSERACT</h1>
+      <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
+      
+      <!-- Start Tutorial Button -->
+      <button class="hero-start-btn" onclick="openTutorial()">
         Start Tutorial
       </button>
     </div>
-
-  <!-- Tutorial Container -->
-  <div class="tutorial-container" id="tutorialContainer">
-    <!-- Redesigned Tutorial Header -->
-    <div class="tutorial-header">
-      <div class="tutorial-title" id="currentSectionTitle">TESSERACT Overview</div>
-      <div class="tutorial-nav">
-        <button class="nav-btn" onclick="goToHero()">Home</button>
-        <button class="nav-btn" onclick="goToTutorialsPage()">Tutorials</button>
-        <button class="nav-btn circular" onclick="goToPrevSection()">‹</button>
-        <button class="nav-btn circular" onclick="goToNextSection()">›</button>
-        <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
-      </div>
-    </div>
-
-    <!-- Tutorial Content -->
-    <div class="tutorial-content">
-      <div class="tutorial-scroller" id="tutorialScroller">
-        
-        <!-- Section 1: TESSERACT Overview -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>TESSERACT Overview</h1>
-              <p>Welcome to this interactive tutorial on creating a 4D hypercube (tesseract) in TouchDesigner using GLSL shaders. This project demonstrates advanced techniques for 4D rotation, perspective projection, and real-time interaction.</p>
-              
-              <div class="tip">
-                <strong>Pro Tip:</strong> Understanding 4D rotations requires thinking beyond our 3D intuition. We'll break this down step by step!
-              </div>
-              
-              <h3>What We'll Cover:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>CHOP Networks:</strong> Mouse input processing and rotation control</li>
-                <li><strong>4D Mathematics:</strong> Rotation matrices and perspective projection</li>
-                <li><strong>GLSL Shaders:</strong> Vertex transformation and SDF rendering</li>
-                <li><strong>Interactive Controls:</strong> Real-time parameter manipulation</li>
-              </ul>
-            </div>
-            
-            <div class="section-right">
-              <h3>Key Resources:</h3>
-              <p>This tutorial references concepts from:</p>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><a href="https://en.wikipedia.org/wiki/Tesseract" target="_blank" style="color: #00ffff;">Tesseract mathematics</a></li>
-                <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" target="_blank" style="color: #00ffff;">4D projection techniques</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" target="_blank" style="color: #00ffff;">4D rotation matrices</a></li>
-                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix" target="_blank" style="color: #00ffff;">3D rotation matrices</a></li>
-                <li><a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
-                <li><a href="https://docs.derivative.ca/GLSL_TOP" target="_blank" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 2: The CHOP Network -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>The CHOP Network</h1>
-              <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
-              
-              <h3>Input Sources:</h3>
-              <p>We take mouse position from either <span class="highlight">mousein</span> or <span class="highlight">panel</span> CHOPs, and scroll increment from mousein to control our hypercube rotation.</p>
-              
-              <h3>Network Flow:</h3>
-              <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
-            </div>
-            
-            <div class="section-right">
-              <h3>Input Device Flexibility</h3>
-              <p>We didn't have to use the mouse as our input - we could have used any input devices like:</p>
-              <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><strong>Xbox Controller:</strong> Analog sticks for smooth rotation</li>
-                <li><strong>USB Joystick:</strong> Traditional flight stick input</li>
-                <li><strong>Kinect:</strong> Body tracking for gesture control</li>
-                <li><strong>Leap Motion:</strong> Hand tracking and finger gestures</li>
-                <li><strong>MIDI Device:</strong> Knobs and faders for precise control</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: Input Data 1 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Input Data 1: Mouse UV Control</h1>
-              <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
-
-              <h3>Key CHOPs:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
-                <li><strong>mousein1:</strong> Raw mouse input data</li>
-                <li><strong>select1:</strong> Filters specific channels</li>
-              </ul>
-
-              <div class="tip">
-                <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
-              </div>
-            </div>
-            
-            <div class="section-right">
-              <h3>Mouse vs Panel Monitoring:</h3>
-              <p><strong>MouseIn CHOP:</strong> Monitors mouse position across the entire monitor/desktop space.</p>
-              <p><strong>Panel CHOP:</strong> Monitors mouse position only within a specific TouchDesigner window or panel.</p>
-              
-              <p>This gives us the flexibility to choose our input monitoring scope based on the project requirements.</p>
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Select1 CHOP Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/select1.png" alt="Select1 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 4: Rangeling CHOPs 1 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
-              <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
-
-              <h3>Processing Chain:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>math3:</strong> Mathematical operations on input</li>
-                <li><strong>slope1:</strong> Calculates velocity from position changes</li>
-                <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
-              </ul>
-
-              <div class="tip">
-                <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
-              </div>
-            </div>
-            
-            <div class="section-right">
-              <h3>How Slope CHOP Works</h3>
-              <p>The <strong>Slope CHOP</strong> is a powerful tool for converting position data into velocity data:</p>
-              
-              <h4>Process:</h4>
-              <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><strong>Buffer Last Frame:</strong> Stores the mouse position from the previous frame</li>
-                <li><strong>Compare Positions:</strong> Takes current frame position minus last frame position</li>
-                <li><strong>Calculate Velocity:</strong> The difference between these two positions becomes our velocity</li>
-                <li><strong>Frame Rate Dependent:</strong> Velocity is calculated per frame, giving us smooth motion data</li>
-              </ul>
-              
-              <p>This converts two static positions into dynamic velocity information, essential for responsive interaction.</p>
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Math3 & Filter1 CHOP Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/math3.png" alt="Math3 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter1.png" alt="Filter1 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 5: Rangeling CHOPs 2 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
-              <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
-
-              <h3>Process:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li>Add -0.5 to center the UV coordinates</li>
-                <li>Scale down for gentle interaction</li>
-                <li>Use as constant force rather than velocity burst</li>
-                <li>Convert acceleration to velocity with speed2</li>
-              </ul>
-
-              <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
-            </div>
-            
-            <div class="section-right">
-              <h3>Position as Constant Force</h3>
-              <p>We're using the mouse position as a <strong>constant force</strong> rather than direct position mapping:</p>
-              
-              <h4>Force-Based Interaction:</h4>
-              <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><strong>Acceleration Input:</strong> Mouse position becomes acceleration force</li>
-                <li><strong>Speed CHOP Integration:</strong> Converts acceleration into velocity over time</li>
-                <li><strong>Velocity Accumulation:</strong> Velocity builds up gradually rather than instant jumps</li>
-                <li><strong>Speed Limiting:</strong> Without limits, velocity would increase infinitely</li>
-              </ul>
-              
-              <p><strong>Why This Matters:</strong> If we didn't limit the speed, our velocity would keep increasing indefinitely, making the interaction uncontrollable. The Speed CHOP acts like friction, giving us natural, physics-based movement.</p>
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Math1 & Speed2 CHOP Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/math1.png" alt="Math1 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed2.png" alt="Speed2 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 6: Rangeling CHOPs 3 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rangeling CHOPs 3: Angular Velocity</h1>
-              <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
-
-              <h3>Key CHOPs:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>math2:</strong> Combines velocity and position inputs</li>
-                <li><strong>speed3:</strong> Integrates angular velocity to position</li>
-              </ul>
-
-              <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
-            </div>
-            
-            <div class="section-right">
-              <h3>Integration Process</h3>
-              <p>The Speed CHOP acts as an integrator, converting our angular velocity into angular position over time. This creates the smooth, continuous rotation we see in the final result.</p>
-              
-              <p>The combination of velocity-based and position-based inputs gives us both immediate responsiveness and gentle, continuous movement when the mouse is stationary.</p>
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Math2 & Speed3 CHOP Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/math2.png" alt="Math2 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed3.png" alt="Speed3 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 7: Rangeling CHOPs 4 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
-              <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
-
-              <div class="tip">
-                <strong>Pro Tip:</strong> If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP.
-              </div>
-
-              <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
-            </div>
-            
-            <div class="section-right">
-              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/filter_trail_example.png" alt="Filter Trail Example" class="trail-image">
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Mouse Wheel Filter Chain Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/mousein1.png" alt="MouseIn1 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/select2.png" alt="Select2 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter4.png" alt="Filter4 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter3.png" alt="Filter3 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter2.png" alt="Filter2 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 8: Rangeling CHOPs 5 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rangeling CHOPs 5: Merging and Null</h1>
-              <p>Merging everything together and ending it with a null.</p>
-
-              <div class="tip">
-                <strong>Golden Rule:</strong> Always end your CHOP network with a null and try to merge as much together as makes sense.
-              </div>
-
-              <p>This creates clean, organized networks that are easier to debug and maintain. The null acts as a clean output point and prevents unexpected behavior from downstream connections.</p>
-
-              <h3>Final Output:</h3>
-              <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
-            </div>
-            
-            <div class="section-right">
-              <h3>Network Organization Benefits</h3>
-              <p>Using nulls and proper merging provides several advantages:</p>
-              <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><strong>Clean Outputs:</strong> Single connection point for downstream operators</li>
-                <li><strong>Easier Debugging:</strong> Clear signal flow and isolation points</li>
-                <li><strong>Performance:</strong> Reduced connections and cleaner data flow</li>
-                <li><strong>Maintainability:</strong> Easier to modify and expand the network</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 9: Input Data 2 -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Input Data 2: Saved Data from TSV</h1>
-              <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
-
-              <h3>Data Storage Options:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
-                <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
-                <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
-                <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
-              </ul>
-
-              <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
-
-              <div class="tip">
-                <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
-              </div>
-            </div>
-            
-            <div class="section-right">
-              <div class="widget-container">
-                <div class="widget-buttons">
-                  <button class="widget-btn widget-btn-fullscreen" onclick="showTSVFullscreen()" title="Fullscreen"></button>
-                  <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
-                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                </div>
-                <div class="content-widget">
-                  <div class="widget-content" id="tsvContent">
-                    <table class="tsv-table" id="tsvTable">
-                      <thead>
-                        <tr>
-                          <!-- Headers will be loaded dynamically from TSV file -->
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- TSV data will be loaded here dynamically -->
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="widget-header">
-                    <div class="widget-title">Euler Cycle TSV Data</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 10: Rotation Vertex GLSL -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Rotation Vertex GLSL</h1>
-              <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
-
-              <h3>GLSL Components:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li>3 rotation matrices as helper functions</li>
-                <li>Individual rotations (order dependent)</li>
-                <li>4D point multiplication</li>
-                <li>Rotated point output</li>
-              </ul>
-
-              <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
-            </div>
-            
-            <div class="section-right">
-              <div class="widget-container">
-                <div class="widget-buttons">
-                  <button class="widget-btn widget-btn-fullscreen" onclick="showRotationGLSLFullscreen()" title="Fullscreen"></button>
-                  <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
-                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                </div>
-                <div class="content-widget">
-                  <div class="widget-content" id="rotationGLSLContent">
-                    <div class="code-content loading">Loading rotation GLSL code...</div>
-                  </div>
-                  <div class="widget-header">
-                    <div class="widget-title">Vertex Rotation GLSL</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 11: Perspective GLSL -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Perspective GLSL</h1>
-              <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
-
-              <h3>Perspective Pipeline:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
-                <li><strong>3D to 2D:</strong> Standard perspective projection</li>
-                <li><strong>Camera controls:</strong> FOV, position, and depth</li>
-              </ul>
-            </div>
-            
-            <div class="section-right">
-              <div class="widget-container">
-                <div class="widget-buttons">
-                  <button class="widget-btn widget-btn-fullscreen" onclick="showPerspectiveGLSLFullscreen()" title="Fullscreen"></button>
-                  <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
-                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                </div>
-                <div class="content-widget">
-                  <div class="widget-content" id="perspectiveGLSLContent">
-                    <div class="code-content loading">Loading perspective GLSL code...</div>
-                  </div>
-                  <div class="widget-header">
-                    <div class="widget-title">Vertex Perspective GLSL</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 12: 2D Points to 2D Lines - WITH BLUR IMAGE -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>2D Points to 2D Lines</h1>
-              <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
-
-              <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
-
-              <h3>Line Generation:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li>Convert point cloud to line segments</li>
-                <li>Use Euler cycle for proper connectivity</li>
-                <li>Transform TOP with repeat mode</li>
-                <li>Closed loop formation</li>
-              </ul>
-
-              <h3>Blur Result</h3>
-              <p>When we blur from one pixel to the next, we're interpolating linearly between the values using a box filter in the Blur TOP.</p>
-              
-              <p>This creates smooth transitions between line segments and helps with antialiasing in the final render. The blur operation essentially averages neighboring pixel values, creating smooth gradients that improve visual quality.</p>
-            </div>
-            
-            <div class="section-right">
-              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/blur.png" alt="Blur Result" class="blur-image">
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>Transform1 & Reorder1 Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/transform1.png" alt="Transform1 Parameters">
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/reorder1.png" alt="Reorder1 Parameters">
-          </div>
-        </div>
-
-        <!-- Section 13: SDF Uneven Capsule -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>SDF Uneven Capsule</h1>
-              <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
-
-              <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
-
-              <h3>SDF Rendering:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li>Distance field calculation</li>
-                <li>Variable capsule radius</li>
-                <li>Efficient GPU rendering</li>
-                <li>Smooth antialiasing</li>
-              </ul>
-
-              <h3>Why Uneven Capsule vs Line SDF?</h3>
-              <p>I could have used a standard line SDF instead, but I wanted to use the 4D value to help drive the width of the uneven capsule.</p>
-              
-              <p>This gives us variable line thickness that responds to the 4th dimension, creating a more dynamic visual representation of the 4D structure. The capsule approach allows for organic, flowing line weights that enhance the perception of depth and dimension.</p>
-            </div>
-            
-            <div class="section-right">
-              <div class="widget-container">
-                <div class="widget-buttons">
-                  <button class="widget-btn widget-btn-fullscreen" onclick="showLineDistanceGLSLFullscreen()" title="Fullscreen"></button>
-                  <button class="widget-btn widget-btn-copy" onclick="copyLineDistanceGLSLToClipboard()" title="Copy to Clipboard"></button>
-                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-                </div>
-                <div class="content-widget">
-                  <div class="widget-content" id="lineDistanceGLSLContent">
-                    <div class="code-content loading">Loading line distance GLSL code...</div>
-                  </div>
-                  <div class="widget-header">
-                    <div class="widget-title">SDF Line Min Distance GLSL</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Mobile Parameters -->
-          <div class="mobile-parameters">
-            <h4>SDF Line Min Distance Parameters</h4>
-            <img src="Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png" alt="Line Min Distance Parameters">
-          </div>
-        </div>
-
-        <!-- Section 14: Post Processing -->
-        <div class="tutorial-section">
-          <div class="section-layout">
-            <div class="section-left">
-              <h1>Post Processing</h1>
-              <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
-
-              <h3>Post Effects Chain:</h3>
-              <ul style="margin-left: 2rem; line-height: 1.8;">
-                <li><strong>Limits:</strong> Clamp value ranges</li>
-                <li><strong>Ramps:</strong> Smooth gradients</li>
-                <li><strong>Threshold:</strong> Binary decisions</li>
-                <li><strong>Lookups:</strong> Color mapping</li>
-              </ul>
-
-              <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
-            </div>
-            
-            <div class="section-right">
-              <h3>Effect Purpose</h3>
-              <p>Each post-processing step serves a specific purpose in creating the final visual:</p>
-              <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><strong>Limits:</strong> Prevent over-bright or under-dark values</li>
-                <li><strong>Ramps:</strong> Create smooth color transitions</li>
-                <li><strong>Threshold:</strong> Create sharp cutoffs for specific effects</li>
-                <li><strong>Lookups:</strong> Apply color palettes and artistic looks</li>
-              </ul>
-              
-              <p>The combination of these effects allows for fine-tuned control over the final appearance of our 4D hypercube visualization.</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- STATIC IMAGE CONTAINER -->
-    <div class="static-image-container">
-      <div class="image-transition-container" id="staticImageContainer">
-        <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-        </div>
-      </div>
-    </div>
-
-    <!-- Progress Bar -->
-    <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <!-- Parameter Dialog -->
-  <div class="parameter-dialog" id="parameterDialog">
-    <h4 id="parameterTitle">Parameters</h4>
-    <div id="parameterContent"></div>
-    <button class="widget-btn" onclick="hideParameterDialog()" style="margin-top: 1rem;">Close</button>
-  </div>
-
-  <!-- Widget Fullscreen Modals -->
-  <div class="widget-fullscreen" id="tsvFullscreen">
-    <div class="widget-fullscreen-header">
-      <h3>Euler Cycle TSV Data</h3>
-      <div class="widget-fullscreen-buttons">
-        <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
-        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-        <button class="nav-btn close-btn" onclick="closeTSVFullscreen()">×</button>
-      </div>
-    </div>
-    <div class="widget-fullscreen-content" id="tsvFullscreenContent"></div>
-  </div>
-
-  <div class="widget-fullscreen" id="rotationGLSLFullscreen">
-    <div class="widget-fullscreen-header">
-      <h3>Vertex Rotation GLSL Code</h3>
-      <div class="widget-fullscreen-buttons">
-        <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
-        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-        <button class="nav-btn close-btn" onclick="closeRotationGLSLFullscreen()">×</button>
-      </div>
-    </div>
-    <div class="widget-fullscreen-content" id="rotationGLSLFullscreenContent"></div>
-  </div>
-
-  <div class="widget-fullscreen" id="perspectiveGLSLFullscreen">
-    <div class="widget-fullscreen-header">
-      <h3>Vertex Perspective GLSL Code</h3>
-      <div class="widget-fullscreen-buttons">
-        <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
-        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-        <button class="nav-btn close-btn" onclick="closePerspectiveGLSLFullscreen()">×</button>
-      </div>
-    </div>
-    <div class="widget-fullscreen-content" id="perspectiveGLSLFullscreenContent"></div>
-  </div>
-
-  <div class="widget-fullscreen" id="lineDistanceGLSLFullscreen">
-    <div class="widget-fullscreen-header">
-      <h3>SDF Line Min Distance GLSL Code</h3>
-      <div class="widget-fullscreen-buttons">
-        <button class="widget-btn widget-btn-copy" onclick="copyLineDistanceGLSLToClipboard()" title="Copy to Clipboard"></button>
-        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
-        <button class="nav-btn close-btn" onclick="closeLineDistanceGLSLFullscreen()">×</button>
-      </div>
-    </div>
-    <div class="widget-fullscreen-content" id="lineDistanceGLSLFullscreenContent"></div>
-  </div>
-
-  <!-- Copy Notification -->
-  <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+  <!-- Tutorial Container Placeholder - will be loaded dynamically -->
+  <div id="tutorialContainer"></div>
 
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -817,12 +212,38 @@
     // Initialize Tesseract Shader instance
     let tesseractShader = null;
 
-    // FIXED: Show/hide mobile start button based on device type
-    function updateMobileButton() {
-      const mobileContainer = document.getElementById('mobileStartContainer');
-      if (mobileContainer) {
-        mobileContainer.style.display = isMobile ? 'block' : 'none';
-      }
+    // Load tutorial content from external file
+    function loadTutorialContent() {
+      return fetch('contentTesseract.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to load tutorial content: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          document.getElementById('tutorialContainer').outerHTML = html;
+          console.log('Tutorial content loaded successfully');
+        })
+        .catch(error => {
+          console.error('Error loading tutorial content:', error);
+          // Fallback: create a basic tutorial container
+          document.getElementById('tutorialContainer').innerHTML = `
+            <div class="tutorial-container" id="tutorialContainer">
+              <div class="tutorial-header">
+                <div class="tutorial-title">Tutorial Loading Error</div>
+                <div class="tutorial-nav">
+                  <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
+                </div>
+              </div>
+              <div class="tutorial-content">
+                <div style="padding: 2rem; text-align: center;">
+                  <p>Failed to load tutorial content. Please refresh the page and try again.</p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
     }
 
     // Load dynamic content
@@ -840,32 +261,38 @@
           
           // Update table headers
           const thead = document.querySelector('#tsvTable thead tr');
-          thead.innerHTML = '';
-          headers.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = header.trim();
-            thead.appendChild(th);
-          });
-          
-          // Update table body
-          const tbody = document.querySelector('#tsvTable tbody');
-          tbody.innerHTML = '';
-          dataRows.forEach(row => {
-            const cells = row.split('\t');
-            const tr = document.createElement('tr');
-            cells.forEach(cell => {
-              const td = document.createElement('td');
-              td.textContent = cell.trim();
-              tr.appendChild(td);
+          if (thead) {
+            thead.innerHTML = '';
+            headers.forEach(header => {
+              const th = document.createElement('th');
+              th.textContent = header.trim();
+              thead.appendChild(th);
             });
-            tbody.appendChild(tr);
-          });
+            
+            // Update table body
+            const tbody = document.querySelector('#tsvTable tbody');
+            if (tbody) {
+              tbody.innerHTML = '';
+              dataRows.forEach(row => {
+                const cells = row.split('\t');
+                const tr = document.createElement('tr');
+                cells.forEach(cell => {
+                  const td = document.createElement('td');
+                  td.textContent = cell.trim();
+                  tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+              });
+            }
+          }
           dataLoaded.tsv = true;
         })
         .catch(err => {
           console.error('Failed to load TSV:', err);
           const tbody = document.querySelector('#tsvTable tbody');
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ff6b6b; font-style: italic;">Failed to load TSV data</td></tr>';
+          if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #ff6b6b; font-style: italic;">Failed to load TSV data</td></tr>';
+          }
         });
 
       // Code snippet loaders
@@ -1073,15 +500,25 @@
       const progressBar = document.getElementById('progressBar');
       
       if (currentSection === 0) {
-        tutorialContainer.classList.remove('active');
-        progressBar.style.display = 'none';
+        if (tutorialContainer) {
+          tutorialContainer.classList.remove('active');
+        }
+        if (progressBar) {
+          progressBar.style.display = 'none';
+        }
         tutorialOpen = false;
       } else {
-        tutorialContainer.classList.add('active');
-        progressBar.style.display = 'flex';
+        if (tutorialContainer) {
+          tutorialContainer.classList.add('active');
+        }
+        if (progressBar) {
+          progressBar.style.display = 'flex';
+        }
         tutorialOpen = true;
-        const offset = (currentSection - 1) * -100;
-        scroller.style.transform = `translateX(${offset}vw)`;
+        if (scroller) {
+          const offset = (currentSection - 1) * -100;
+          scroller.style.transform = `translateX(${offset}vw)`;
+        }
         
         // Update padding for current section
         updateSectionPadding(currentSection);
@@ -1135,14 +572,16 @@
 
     function initProgressBar() {
       const progressBar = document.getElementById('progressBar');
-      progressBar.innerHTML = '';
-      
-      for (let i = 1; i <= 14; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'progress-dot';
-        if (i === currentSection) dot.classList.add('active');
-        dot.onclick = () => transitionToSection(i);
-        progressBar.appendChild(dot);
+      if (progressBar) {
+        progressBar.innerHTML = '';
+        
+        for (let i = 1; i <= 14; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'progress-dot';
+          if (i === currentSection) dot.classList.add('active');
+          dot.onclick = () => transitionToSection(i);
+          progressBar.appendChild(dot);
+        }
       }
     }
 
@@ -1158,6 +597,8 @@
       const dialog = document.getElementById('parameterDialog');
       const title = document.getElementById('parameterTitle');
       const content = document.getElementById('parameterContent');
+      
+      if (!dialog || !title || !content) return;
       
       const parameterData = {
         'math1-params': { title: 'Math1 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/math1.png' },
@@ -1197,10 +638,10 @@
       // Smart positioning logic to keep dialog within viewport bounds
       const rect = element.getBoundingClientRect();
       const dialogWidth = 600; // max-width from CSS
-      const dialogHeight = 400; // estimated height (adjust based on content)
+      const dialogHeight = 400; // estimated height
       const padding = 20; // minimum distance from screen edge
       
-      let left = rect.left + 45; // default position (adjusted for larger hotspot)
+      let left = rect.left + 45; // default position
       let top = rect.top - 50;
       
       // Check right edge - if dialog would go off screen, position it to the left
@@ -1230,7 +671,9 @@
 
     function hideParameterDialog() {
       const dialog = document.getElementById('parameterDialog');
-      dialog.classList.remove('active');
+      if (dialog) {
+        dialog.classList.remove('active');
+      }
       
       // Clear all sticky hotspots
       stickyHotspots.clear();
@@ -1243,96 +686,124 @@
     function showTSVFullscreen() {
       const modal = document.getElementById('tsvFullscreen');
       const content = document.getElementById('tsvFullscreenContent');
-      content.innerHTML = document.getElementById('tsvContent').innerHTML;
-      modal.classList.add('active');
+      if (modal && content) {
+        content.innerHTML = document.getElementById('tsvContent').innerHTML;
+        modal.classList.add('active');
+      }
     }
 
     function closeTSVFullscreen() {
-      document.getElementById('tsvFullscreen').classList.remove('active');
+      const modal = document.getElementById('tsvFullscreen');
+      if (modal) {
+        modal.classList.remove('active');
+      }
     }
 
     function showRotationGLSLFullscreen() {
       const modal = document.getElementById('rotationGLSLFullscreen');
       const content = document.getElementById('rotationGLSLFullscreenContent');
       
-      // Get the code content and ensure it's properly structured for scrolling
-      const originalCodeContent = document.querySelector('#rotationGLSLContent .code-content');
-      const codeText = originalCodeContent.textContent;
-      
-      // Create properly structured content for fullscreen with explicit height
-      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
-      modal.classList.add('active');
+      if (modal && content) {
+        // Get the code content and ensure it's properly structured for scrolling
+        const originalCodeContent = document.querySelector('#rotationGLSLContent .code-content');
+        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
+        
+        // Create properly structured content for fullscreen with explicit height
+        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        modal.classList.add('active');
+      }
     }
 
     function closeRotationGLSLFullscreen() {
-      document.getElementById('rotationGLSLFullscreen').classList.remove('active');
+      const modal = document.getElementById('rotationGLSLFullscreen');
+      if (modal) {
+        modal.classList.remove('active');
+      }
     }
 
     function showPerspectiveGLSLFullscreen() {
       const modal = document.getElementById('perspectiveGLSLFullscreen');
       const content = document.getElementById('perspectiveGLSLFullscreenContent');
       
-      // Get the code content and ensure it's properly structured for scrolling
-      const originalCodeContent = document.querySelector('#perspectiveGLSLContent .code-content');
-      const codeText = originalCodeContent.textContent;
-      
-      // Create properly structured content for fullscreen with explicit height
-      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
-      modal.classList.add('active');
+      if (modal && content) {
+        // Get the code content and ensure it's properly structured for scrolling
+        const originalCodeContent = document.querySelector('#perspectiveGLSLContent .code-content');
+        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
+        
+        // Create properly structured content for fullscreen with explicit height
+        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        modal.classList.add('active');
+      }
     }
 
     function closePerspectiveGLSLFullscreen() {
-      document.getElementById('perspectiveGLSLFullscreen').classList.remove('active');
+      const modal = document.getElementById('perspectiveGLSLFullscreen');
+      if (modal) {
+        modal.classList.remove('active');
+      }
     }
 
     function showLineDistanceGLSLFullscreen() {
       const modal = document.getElementById('lineDistanceGLSLFullscreen');
       const content = document.getElementById('lineDistanceGLSLFullscreenContent');
       
-      // Get the code content and ensure it's properly structured for scrolling
-      const originalCodeContent = document.querySelector('#lineDistanceGLSLContent .code-content');
-      const codeText = originalCodeContent.textContent;
-      
-      // Create properly structured content for fullscreen with explicit height
-      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
-      modal.classList.add('active');
+      if (modal && content) {
+        // Get the code content and ensure it's properly structured for scrolling
+        const originalCodeContent = document.querySelector('#lineDistanceGLSLContent .code-content');
+        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
+        
+        // Create properly structured content for fullscreen with explicit height
+        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        modal.classList.add('active');
+      }
     }
 
     function closeLineDistanceGLSLFullscreen() {
-      document.getElementById('lineDistanceGLSLFullscreen').classList.remove('active');
+      const modal = document.getElementById('lineDistanceGLSLFullscreen');
+      if (modal) {
+        modal.classList.remove('active');
+      }
     }
 
     // Copy notification helper
     function showCopyNotification() {
       const notification = document.getElementById('copyNotification');
-      notification.classList.add('show');
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 2000);
+      if (notification) {
+        notification.classList.add('show');
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 2000);
+      }
     }
 
     // Copy to clipboard functions
     function copyTSVToClipboard() {
       const table = document.getElementById('tsvTable');
+      if (!table) return;
+      
       let tsvText = '';
       
       // Add header row (dynamically loaded)
-      const headerCells = table.getElementsByTagName('thead')[0].getElementsByTagName('th');
-      const headers = [];
-      for (let header of headerCells) {
-        headers.push(header.textContent);
+      const headerCells = table.getElementsByTagName('thead')[0]?.getElementsByTagName('th');
+      if (headerCells) {
+        const headers = [];
+        for (let header of headerCells) {
+          headers.push(header.textContent);
+        }
+        tsvText += headers.join('\t') + '\n';
       }
-      tsvText += headers.join('\t') + '\n';
       
       // Add data rows
-      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-      for (let row of rows) {
-        const cells = row.getElementsByTagName('td');
-        const rowData = [];
-        for (let cell of cells) {
-          rowData.push(cell.textContent);
+      const rows = table.getElementsByTagName('tbody')[0]?.getElementsByTagName('tr');
+      if (rows) {
+        for (let row of rows) {
+          const cells = row.getElementsByTagName('td');
+          const rowData = [];
+          for (let cell of cells) {
+            rowData.push(cell.textContent);
+          }
+          tsvText += rowData.join('\t') + '\n';
         }
-        tsvText += rowData.join('\t') + '\n';
       }
       
       navigator.clipboard.writeText(tsvText).then(() => {
@@ -1354,7 +825,7 @@
         codeContent = document.querySelector('#rotationGLSLContent .code-content');
       }
       
-      const text = codeContent.textContent;
+      const text = codeContent ? codeContent.textContent : '';
       
       navigator.clipboard.writeText(text).then(() => {
         console.log('Rotation GLSL code copied to clipboard');
@@ -1375,7 +846,7 @@
         codeContent = document.querySelector('#perspectiveGLSLContent .code-content');
       }
       
-      const text = codeContent.textContent;
+      const text = codeContent ? codeContent.textContent : '';
       
       navigator.clipboard.writeText(text).then(() => {
         console.log('Perspective GLSL code copied to clipboard');
@@ -1396,7 +867,7 @@
         codeContent = document.querySelector('#lineDistanceGLSLContent .code-content');
       }
       
-      const text = codeContent.textContent;
+      const text = codeContent ? codeContent.textContent : '';
       
       navigator.clipboard.writeText(text).then(() => {
         console.log('Line Distance GLSL code copied to clipboard');
@@ -1434,23 +905,29 @@
     }
 
     async function init() {
-      // Initialize Tesseract shader
-      tesseractShader = new TesseractShader('hypercube-canvas', {
-        onTutorialOpen: openTutorial,
-        getTutorialState: () => tutorialOpen
-      });
-      
-      await tesseractShader.init();
-      
-      // FIXED: Update mobile button visibility
-      updateMobileButton();
-      
-      loadDynamicContent(); // Load TSV and code snippets
-      initProgressBar();
-      updateSectionTitle();
-      
-      // Setup wheel event for tutorial navigation
-      document.addEventListener('wheel', onWheel);
+      try {
+        // Load tutorial content first
+        await loadTutorialContent();
+        
+        // Initialize Tesseract shader
+        tesseractShader = new TesseractShader('hypercube-canvas', {
+          onTutorialOpen: openTutorial,
+          getTutorialState: () => tutorialOpen
+        });
+        
+        await tesseractShader.init();
+        
+        loadDynamicContent(); // Load TSV and code snippets
+        initProgressBar();
+        updateSectionTitle();
+        
+        // Setup wheel event for tutorial navigation
+        document.addEventListener('wheel', onWheel);
+        
+        console.log('Application initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize application:', error);
+      }
     }
     
     if (document.readyState === 'loading') {
