@@ -4,247 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tesseract Tutorial - Interactive TouchDesigner Guide</title>
-  
-  <!-- External Dependencies -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-glsl.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-dark.min.css">
-  
-  <!-- Tutorial Configuration -->
-  <script id="tutorial-config" type="application/json">
-  {
-    "tutorialTitle": "TESSERACT",
-    "tutorialSubtitle": "TouchDesigner Tutorial using GLSL",
-    "githubBaseUrl": "https://raw.githubusercontent.com/TrueFiasco/TouchDesigner-Tesseract-Tutorial/main/Tesseract%20Tutorial%20Pictures/code/",
-    "sections": [
-      {
-        "id": 1,
-        "title": "TESSERACT Overview",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png",
-        "aspectRatio": "3615:1097",
-        "scrollOffset": {"x": 1.0, "y": 0},
-        "layout": "split",
-        "hotspots": []
-      },
-      {
-        "id": 2,
-        "title": "The CHOP Network", 
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/chop_network.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 1.0, "y": 0},
-        "layout": "full",
-        "hotspots": []
-      },
-      {
-        "id": 3,
-        "title": "Input Data 1: Mouse UV Control",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "35%", "left": "17%", "type": "select1-detailed" }
-        ]
-      },
-      {
-        "id": 4,
-        "title": "Rangeling CHOPs 1: Mouse Velocity",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "4%", "left": "29%", "type": "math3-params" },
-          { "top": "4%", "left": "52%", "type": "filter1-params" }
-        ]
-      },
-      {
-        "id": 5,
-        "title": "Rangeling CHOPs 2: Centering and Scaling",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "35%", "left": "29%", "type": "math1-params" },
-          { "top": "35%", "left": "41%", "type": "speed2-params" }
-        ]
-      },
-      {
-        "id": 6,
-        "title": "Rangeling CHOPs 3: Angular Velocity",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "full",
-        "hotspots": [
-          { "top": "30%", "left": "65%", "type": "math2-params" },
-          { "top": "28%", "left": "76%", "type": "speed3-params" }
-        ]
-      },
-      {
-        "id": 7,
-        "title": "Rangeling CHOPs 4: Mouse Wheel",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "67%", "left": "3%", "type": "mousein1-wheel" },
-          { "top": "67%", "left": "15%", "type": "select2-params" },
-          { "top": "67%", "left": "29%", "type": "filter4-params" },
-          { "top": "67%", "left": "41%", "type": "filter3-params" },
-          { "top": "67%", "left": "53%", "type": "filter2-params" }
-        ]
-      },
-      {
-        "id": 8,
-        "title": "Rangeling CHOPs 5: Merging and Null",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png",
-        "aspectRatio": "1852:571",
-        "scrollOffset": {"x": 0.1, "y": 0},
-        "layout": "full",
-        "hotspots": []
-      },
-      {
-        "id": 9,
-        "title": "Input Data 2: Saved Data from TSV",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png", 
-        "aspectRatio": "1456:478",
-        "scrollOffset": {"x": 1.0, "y": 0},
-        "layout": "split",
-        "hotspots": [],
-        "widgets": [
-          {
-            "type": "tsv",
-            "file": "euler cycle.tsv",
-            "title": "Euler Cycle TSV Data",
-            "columns": 4,
-            "expectedRows": 33
-          }
-        ]
-      },
-      {
-        "id": 10,
-        "title": "Rotation Vertex GLSL",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png",
-        "aspectRatio": "1920:571", 
-        "scrollOffset": {"x": 1.0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "35%", "left": "40%", "type": "vert_rotation" }
-        ],
-        "widgets": [
-          {
-            "type": "glsl",
-            "file": "vert_rotation_pixel.frag",
-            "fallbackFile": "vert_rotation_pixel.txt",
-            "title": "Vertex Rotation GLSL"
-          }
-        ]
-      },
-      {
-        "id": 11,
-        "title": "Perspective GLSL",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png",
-        "aspectRatio": "1920:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "40%", "left": "50%", "type": "vert_perspective" }
-        ],
-        "widgets": [
-          {
-            "type": "glsl",
-            "file": "vert_persprective_pixel.frag",
-            "fallbackFile": "vert_persprective_pixel.txt",
-            "title": "Vertex Perspective GLSL"
-          }
-        ]
-      },
-      {
-        "id": 12,
-        "title": "2D Points to 2D Lines",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png",
-        "aspectRatio": "1920:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "45%", "left": "35%", "type": "transform1" },
-          { "top": "45%", "left": "65%", "type": "reorder1" }
-        ]
-      },
-      {
-        "id": 13,
-        "title": "SDF Uneven Capsule",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png",
-        "aspectRatio": "1920:571",
-        "scrollOffset": {"x": 0, "y": 0},
-        "layout": "split",
-        "hotspots": [
-          { "top": "50%", "left": "50%", "type": "line_mindist" }
-        ],
-        "widgets": [
-          {
-            "type": "glsl",
-            "file": "line_mindist_pixel.frag",
-            "fallbackFile": "line_mindist_pixel.txt",
-            "title": "SDF Line Min Distance GLSL"
-          }
-        ]
-      },
-      {
-        "id": 14,
-        "title": "Post Processing",
-        "image": "Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png",
-        "aspectRatio": "1920:571",
-        "scrollOffset": {"x": 1.0, "y": 0},
-        "layout": "full",
-        "hotspots": []
-      }
-    ]
-  }
-  </script>
-  
   <style>
-    /* CSS Custom Properties for Theming */
-    :root {
-      --primary-bg: #0a0a0a;
-      --secondary-bg: #1a1a2e;
-      --accent-bg: #16213e;
-      --text-primary: #ffffff;
-      --text-secondary: #ddd;
-      --accent-cyan: #00ffff;
-      --accent-blue: #4ecdc4;
-      --accent-pink: #ff6b6b;
-      --border-primary: rgba(255, 255, 255, 0.3);
-      --border-secondary: rgba(255, 255, 255, 0.1);
-      --glass-bg: rgba(0, 0, 0, 0.8);
-      --glass-border: rgba(255, 255, 255, 0.2);
-    }
-
-    /* CSS Reset & Base Styles */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--primary-bg);
-      color: var(--text-primary);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    /* Font Loading */
     @font-face {
       font-family: 'Spy Agency';
       src: url('./fonts/spyagencycond.ttf') format('truetype');
@@ -265,14 +25,27 @@
       font-weight: 500;
       font-display: swap;
     }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    /* Hero Section Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
     .hero-section {
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--secondary-bg), var(--accent-bg), #0f3460);
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
       cursor: pointer;
       transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
@@ -281,6 +54,40 @@
 
     .hero-section:hover {
       transform: scale(1.02);
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      display: none; /* Completely hide hero content */
+    }
+
+    .hero-title {
+      font-family: 'Spy Agency', 'Arial', sans-serif;
+      font-size: clamp(3.75rem, 12vw, 9rem);
+      font-weight: normal;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 3s ease-in-out infinite;
+      opacity: 0;
+    }
+
+    .hero-subtitle {
+      font-family: 'Orbitron', 'Arial', sans-serif;
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      line-height: 1.2;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
 
     .hypercube-canvas {
@@ -292,22 +99,99 @@
       z-index: 1;
     }
 
-    .hero-content {
-      text-align: center;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      display: none;
+    /* Settings Toggle for Hero */
+    .hero-settings-toggle {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 100;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      pointer-events: auto;
     }
 
-    /* Tutorial Container Styles */
+    .hero-settings-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: rotate(90deg);
+    }
+
+    .hero-settings-toggle svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    /* Hero Controls Panel */
+    .hero-controls-panel {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 99;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.9rem;
+      min-width: 250px;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .hero-controls-panel h4 {
+      color: #4ecdc4;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .control-group {
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-group label {
+      color: #ffffff;
+      font-size: 0.85rem;
+      min-width: 80px;
+    }
+
+    .control-group input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      color: white;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.8rem;
+      width: 80px;
+      text-align: center;
+    }
+
+    .control-group input:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Tutorial Container */
     .tutorial-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: var(--primary-bg);
+      background: #0a0a0a;
       z-index: 1000;
       transform: translateY(100%);
       transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -319,9 +203,9 @@
       transform: translateY(0);
     }
 
-    /* Header Styles */
+    /* Redesigned Tutorial Header - FIXED */
     .tutorial-header {
-      background: var(--secondary-bg);
+      background: #1a1a2e;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -334,7 +218,7 @@
 
     .tutorial-title {
       font-size: clamp(1.2rem, 3vw, 2rem);
-      color: var(--accent-cyan);
+      color: #00ffff;
       font-weight: bold;
       flex: 1;
       max-width: 65%;
@@ -345,7 +229,6 @@
       word-break: break-word;
     }
 
-    /* Navigation Styles */
     .tutorial-nav {
       display: flex;
       gap: 1rem;
@@ -358,7 +241,7 @@
     .nav-btn {
       background: #333;
       border: none;
-      color: var(--text-primary);
+      color: white;
       padding: 0.5rem 1rem;
       border-radius: 5px;
       cursor: pointer;
@@ -371,7 +254,7 @@
     }
 
     .nav-btn.primary {
-      background: var(--accent-cyan);
+      background: #00ffff;
       color: #000;
     }
 
@@ -406,7 +289,7 @@
       flex-shrink: 0;
     }
 
-    /* Tutorial Content Styles */
+    /* Tutorial Content */
     .tutorial-content {
       flex: 1;
       overflow: hidden;
@@ -420,62 +303,186 @@
       will-change: transform;
     }
 
+    /* FIXED: Enhanced tutorial section with proper spacing */
     .tutorial-section {
       min-width: 100vw;
       min-height: calc(100vh - 60px);
-      padding: 2rem 2rem 450px 2rem;
+      padding: 2rem 2rem 450px 2rem; /* INCREASED bottom padding from 120px to 450px */
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-y: auto;
-      background: linear-gradient(180deg, var(--secondary-bg) 0%, #191b1f 50%, #191b1f 100%);
-      z-index: 5;
+      padding-top: 2rem;
+      margin-top: 0;
+      background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%);
+      z-index: 5; /* Base z-index for sections */
     }
 
-    /* Section Layout Variations */
+    /* FIXED: Enhanced section layouts with proper z-index hierarchy */
     .section-layout {
       display: flex;
       gap: 2rem;
-      flex: 1;
-      z-index: 20;
+      flex: 1; /* Take available space */
+      z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
       margin-top: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 2rem; /* ADD bottom margin for spacing */
     }
 
-    .section-layout.split .section-left {
+    .section-left {
       flex: 2;
-    }
-
-    .section-layout.split .section-right {
-      flex: 1;
-    }
-
-    .section-layout.full .section-full {
-      width: 100%;
-    }
-
-    .section-left,
-    .section-right,
-    .section-full {
       display: flex;
       flex-direction: column;
-      z-index: 20;
+      z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
-      overflow: visible;
-      word-wrap: break-word;
     }
 
-    /* Widget Container Styles */
+    .section-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      z-index: 20; /* INCREASED from 10 to 20 */
+      position: relative;
+    }
+
+    .section-full {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 1rem;
+      margin-bottom: 2rem; /* ADD bottom margin */
+      z-index: 20; /* INCREASED from 10 to 20 */
+      position: relative;
+    }
+
+    /* STATIC IMAGE CONTAINER - Ensure it's always behind content */
+    .static-image-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 400px;
+      background: rgb(25, 27, 31);
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      z-index: 1; /* Behind all content */
+    }
+
+    .image-transition-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1; /* Same as parent */
+    }
+
+    .tutorial-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 1; /* Ensure images stay behind content */
+    }
+
+    /* Enhanced Hotspot System */
+    .hotspot {
+      position: absolute;
+      width: 30px; /* Increased by 50% from 20px */
+      height: 30px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 22px rgba(0, 255, 255, 0.7); /* Increased glow */
+      animation: pulse 2s infinite;
+      border: 3px solid rgba(255, 255, 255, 0.3); /* Thicker border */
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    .hotspot:hover, .hotspot.sticky {
+      transform: scale(1.3);
+      background: #ff00ff;
+      box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+
+    /* FIXED: Enhanced parameter dialog with smart positioning */
+    .parameter-dialog {
+      position: fixed;
+      background: #1a1a2e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 1rem;
+      max-width: 600px;
+      min-width: 300px; /* Ensure minimum width */
+      box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+      z-index: 3000; /* Very high z-index */
+      display: none;
+      pointer-events: auto;
+      /* Smart positioning will be handled by JavaScript */
+    }
+
+    .parameter-dialog.active {
+      display: block;
+    }
+
+    .parameter-dialog img {
+      width: 100%;
+      max-width: 525px; /* Increased by 50% from 350px */
+      border-radius: 5px;
+      margin-top: 0.5rem;
+    }
+
+    .parameter-item {
+      margin: 0.5rem 0;
+      padding: 0.3rem;
+      background: #333;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    /* FIXED: Mobile Parameters with proper spacing */
+    .mobile-parameters {
+      display: none;
+      margin: 2rem 0; /* INCREASED margin from 1rem to 2rem */
+      padding: 1.5rem; /* INCREASED padding from 1rem to 1.5rem */
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      z-index: 25; /* INCREASED z-index */
+      position: relative;
+      clear: both; /* Ensure it clears floating elements */
+    }
+
+    .mobile-parameters img {
+      width: 100%;
+      border-radius: 5px;
+      margin-bottom: 1.5rem; /* INCREASED spacing between images */
+    }
+
+    .mobile-parameters:last-child {
+      margin-bottom: 3rem; /* Extra space for last mobile parameter section */
+    }
+
+    /* FIXED: Code/Data Widgets - TouchDesigner DAT Style with improved positioning */
     .widget-container {
       display: flex;
       align-items: stretch;
       margin: 2rem 0;
-      height: auto;
+      height: auto; /* CHANGED from complex calc to auto */
       max-height: 40vh;
       min-height: 300px;
-      width: 100%;
-      z-index: 25;
+      width: 100%; /* Full width in section-right */
+      z-index: 25; /* INCREASED z-index to ensure widgets stay on top */
       position: relative;
     }
 
@@ -491,12 +498,12 @@
     .widget-btn {
       background: #444;
       border: 1px solid #666;
-      color: var(--text-secondary);
+      color: #ddd;
       padding: 0;
-      width: 27px;
-      height: 27px;
+      width: 27px; /* 50% bigger: was 18px */
+      height: 27px; /* 50% bigger: was 18px */
       cursor: pointer;
-      font-size: 1.05rem;
+      font-size: 1.05rem; /* 50% bigger: was 0.7rem */
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -513,23 +520,22 @@
       background: #333;
     }
 
-    /* Widget Button Icons */
+    /* Button Icons */
     .widget-btn-fullscreen::before {
       content: '⛶';
-      font-size: 15px;
+      font-size: 15px; /* 50% bigger: was 10px */
     }
 
     .widget-btn-copy::before {
       content: '📋';
-      font-size: 12px;
+      font-size: 12px; /* 50% bigger: was 8px */
     }
 
     .widget-btn-github::before {
       content: '⬇';
-      font-size: 15px;
+      font-size: 15px; /* 50% bigger: was 10px */
     }
 
-    /* Content Widget Styles */
     .content-widget {
       background: #2a2a2a;
       border-radius: 8px;
@@ -557,12 +563,12 @@
       display: flex;
       align-items: center;
       height: 32px;
-      order: 2;
+      order: 2; /* Move to bottom */
     }
 
     .widget-title {
       font-size: 0.9rem;
-      color: var(--text-secondary);
+      color: #ddd;
       font-weight: normal;
       margin: 0;
       padding-left: 0.5rem;
@@ -571,17 +577,17 @@
 
     .widget-content {
       flex: 1;
-      overflow: hidden;
+      overflow: hidden; /* No scrollbar in widget mode */
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       font-size: 0.8rem;
       line-height: 1.2;
       background: #2a2a2a;
-      color: var(--text-secondary);
+      color: #ddd;
       position: relative;
-      order: 1;
+      order: 1; /* Content at top */
     }
 
-    /* TSV Table Styles */
+    /* TSV Table Styling */
     .tsv-table {
       width: 100%;
       height: 100%;
@@ -604,7 +610,7 @@
 
     .tsv-table th {
       background: #3a3a3a;
-      color: var(--text-primary);
+      color: #fff;
       font-weight: bold;
       position: sticky;
       top: 0;
@@ -613,7 +619,7 @@
 
     .tsv-table td {
       background: #2a2a2a;
-      color: var(--text-secondary);
+      color: #ddd;
     }
 
     .tsv-table tr:nth-child(even) td {
@@ -624,7 +630,7 @@
       background: #353535;
     }
 
-    /* Code Content Styles */
+    /* Code Content Styling */
     .code-content {
       padding: 1rem;
       height: 100%;
@@ -633,125 +639,7 @@
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       font-size: 0.75rem;
       line-height: 1.3;
-      color: var(--text-secondary);
-    }
-
-    /* Prism.js Override for Code Widget */
-    .widget-content pre[class*="language-"] {
-      margin: 0;
-      padding: 1rem;
-      background: transparent !important;
-      overflow: hidden;
-      font-size: 0.75rem;
-      line-height: 1.3;
-    }
-
-    .widget-content code[class*="language-"] {
-      background: transparent !important;
-      color: var(--text-secondary);
-    }
-
-    /* Loading States */
-    .widget-loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 200px;
-      color: var(--text-secondary);
-      font-style: italic;
-    }
-
-    .widget-error {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 200px;
-      color: #ff6b6b;
-      font-style: italic;
-    }
-
-    /* Static Image Container */
-    .static-image-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 400px;
-      background: rgb(25, 27, 31);
-      border-radius: 10px 10px 0 0;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .image-transition-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .tutorial-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      opacity: 0;
-      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      z-index: 1;
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 0.5rem;
-      z-index: 1600;
-    }
-
-    .progress-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #333;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .progress-dot.active {
-      background: var(--accent-cyan);
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-    }
-
-    /* Typography */
-    h1, h2, h3, h4, h5, h6 {
-      display: none !important;
-    }
-
-    p {
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    .highlight {
-      background: rgba(255, 255, 0, 0.2);
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
-    }
-
-    .tip {
-      background: #2c3e50;
-      border-left: 4px solid #3498db;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0 5px 5px 0;
-      display: inline-block;
-      max-width: fit-content;
+      color: #ddd;
     }
 
     .widget-fullscreen {
@@ -794,7 +682,7 @@
     }
 
     .widget-fullscreen-header h3 {
-      color: var(--text-secondary);
+      color: #ddd;
       font-size: 1.2rem;
       margin: 0;
       font-weight: normal;
@@ -809,14 +697,14 @@
 
     .widget-fullscreen-content {
       flex: 1;
-      overflow: auto;
+      overflow: auto; /* Enable scrolling in fullscreen */
       padding: 0;
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       line-height: 1.4;
-      color: var(--text-secondary);
+      color: #ddd;
       font-size: 0.9rem;
       background: #2a2a2a;
-      min-height: 0;
+      min-height: 0; /* Ensure flex item can shrink and create scrollable area */
     }
 
     /* Fullscreen TSV Table */
@@ -845,9 +733,9 @@
       padding: 2rem;
       font-size: 0.9rem;
       line-height: 1.4;
-      height: auto !important;
-      overflow: visible !important;
-      white-space: pre-wrap;
+      height: auto !important; /* Override widget height restriction */
+      overflow: visible !important; /* Override widget overflow hidden */
+      white-space: pre-wrap; /* Allow text wrapping in fullscreen */
     }
 
     /* Enhanced fullscreen scrollbar */
@@ -868,181 +756,139 @@
       background: #666;
     }
 
-    /* Copy Notification */
-    .copy-notification {
+    /* Progress Indicator */
+    .progress-bar {
       position: fixed;
-      top: 50%;
+      bottom: 2rem;
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 255, 255, 0.9);
-      color: #000;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      font-weight: bold;
-      z-index: 5000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 1600;
     }
 
-    .copy-notification.show {
-      opacity: 1;
-    }
-    .copy-notification {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 255, 255, 0.9);
-      color: #000;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      font-weight: bold;
-      z-index: 5000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .copy-notification.show {
-      opacity: 1;
-    }
-
-    /* Enhanced Hotspot System */
-    .hotspot {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: var(--accent-cyan);
+    .progress-dot {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
+      background: #333;
       cursor: pointer;
-      box-shadow: 0 0 22px rgba(0, 255, 255, 0.7);
-      animation: pulse 2s infinite;
-      border: 3px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      z-index: 50;
-      pointer-events: auto;
     }
 
-    .hotspot:hover, .hotspot.sticky {
-      transform: scale(1.3);
-      background: #ff00ff;
-      box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
+    .progress-dot.active {
+      background: #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.7; }
+    .tutorial-section h1,
+    .tutorial-section h2, 
+    .tutorial-section h3,
+    .tutorial-section h4,
+    .tutorial-section h5,
+    .tutorial-section h6 {
+      display: none !important;
     }
 
-    /* Parameter Tooltip */
-    .parameter-tooltip {
-      position: fixed;
-      background: rgba(0, 0, 0, 0.9);
-      color: var(--text-primary);
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      pointer-events: none;
-      z-index: 3000;
-      font-size: 0.8rem;
-      max-width: 200px;
-      border: 1px solid var(--border-primary);
+    /* Typography - removed heading styles since we only use header titles now */
+    p { line-height: 1.6; margin-bottom: 1rem; }
+    
+    .highlight {
+      background: rgba(255, 255, 0, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
     }
 
-    /* Settings Toggle */
-    .hero-settings-toggle {
-      position: fixed;
-      top: 2rem;
-      left: 2rem;
-      z-index: 100;
-      width: 50px;
-      height: 50px;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-primary);
-      border-radius: 50%;
+    .tip {
+      background: #2c3e50;
+      border-left: 4px solid #3498db;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 5px 5px 0;
+      display: inline-block;
+      max-width: fit-content;
+    }
+
+    /* Right side images for sections 7 and 12 - Ensure they're above background */
+    .trail-image, .blur-image {
+      width: 100%; /* Fill the 1/3 width */
+      max-width: none;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      z-index: 25; /* INCREASED z-index - above background images */
+      position: relative;
+    }
+
+    /* GitHub Download Button */
+    .github-download-btn {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.8rem;
+      background: linear-gradient(45deg, #24292e, #586069);
+      border: none;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
       cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      pointer-events: auto;
+      font-size: 1.1rem;
+      font-weight: bold;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      margin: 1.5rem 0;
+      text-decoration: none;
+      width: fit-content;
     }
 
-    .hero-settings-toggle:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: rotate(90deg);
+    .github-download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
+      background: linear-gradient(45deg, #2f363d, #6a737d);
     }
 
-    .hero-settings-toggle svg {
+    .github-logo {
       width: 24px;
       height: 24px;
-      fill: var(--text-primary);
+      fill: currentColor;
     }
 
-    .hero-controls-panel {
+    /* Copy notification */
+    .copy-notification {
       position: fixed;
-      top: 2rem;
-      left: 2rem;
-      z-index: 99;
-      background: var(--glass-bg);
-      padding: 1.5rem;
-      border-radius: 15px;
-      backdrop-filter: blur(15px);
-      border: 1px solid var(--border-primary);
-      font-size: 0.9rem;
-      min-width: 250px;
-      display: none;
-      pointer-events: auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 255, 255, 0.9);
+      color: #000;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-weight: bold;
+      z-index: 5000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
-    .hero-controls-panel h4 {
-      color: var(--accent-blue);
-      margin-bottom: 1rem;
-      text-align: center;
+    .copy-notification.show {
+      opacity: 1;
     }
 
-    .control-group {
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .control-group label {
-      color: var(--text-primary);
-      font-size: 0.85rem;
-      min-width: 80px;
-    }
-
-    .control-group input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--border-primary);
-      border-radius: 5px;
-      color: var(--text-primary);
-      padding: 0.3rem 0.5rem;
-      font-size: 0.8rem;
-      width: 80px;
-      text-align: center;
-    }
-
-    .control-group input:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    /* Mobile Responsive */
+    /* FIXED: Mobile responsive improvements */
     @media (max-width: 768px) {
       .tutorial-section {
-        padding: 1rem 1rem 300px 1rem;
+        padding: 1rem 1rem 300px 1rem; /* INCREASED bottom padding from 120px to 300px on mobile */
         padding-top: 1rem;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.2rem;
       }
 
       .section-layout {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1.5rem; /* Reduced gap for mobile */
         margin-bottom: 1.5rem;
       }
 
@@ -1050,6 +896,29 @@
         height: 250px;
       }
 
+      /* Show mobile parameters, hide hotspots */
+      .mobile-parameters {
+        display: block;
+        margin: 2rem 0; /* Consistent spacing */
+        padding: 1rem;
+      }
+
+      .hotspot {
+        display: none !important;
+      }
+
+      .tutorial-nav {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      /* Better mobile header */
       .tutorial-header {
         flex-direction: column;
         align-items: stretch;
@@ -1073,11 +942,12 @@
         gap: 0.5rem;
       }
 
+      /* Mobile widget adjustments */
       .widget-container {
-        height: auto;
+        height: auto; /* Let it size naturally on mobile */
         max-height: 30vh;
         min-height: 200px;
-        margin: 1.5rem 0;
+        margin: 1.5rem 0; /* Consistent spacing */
       }
 
       .widget-buttons {
@@ -1092,54 +962,72 @@
         max-width: 40px;
       }
 
-      .code-content,
-      .widget-content pre[class*="language-"] {
+      .code-content {
         font-size: 0.65rem;
         padding: 0.5rem;
       }
 
       .widget-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 0.9rem;
+        width: 24px; /* 50% bigger: was 16px */
+        height: 24px; /* 50% bigger: was 16px */
+        font-size: 0.9rem; /* 50% bigger: was 0.6rem */
       }
 
       .widget-btn-fullscreen::before {
-        font-size: 11px;
+        font-size: 11px; /* Adjusted for mobile */
       }
 
       .widget-btn-copy::before {
-        font-size: 9px;
+        font-size: 9px; /* Adjusted for mobile */
       }
 
       .widget-btn-github::before {
-        font-size: 11px;
+        font-size: 11px; /* Adjusted for mobile */
       }
 
       .widget-title {
         font-size: 0.8rem;
       }
+
+      /* FIXED: Ensure proper spacing between content sections on mobile */
+      .section-left > *:last-child,
+      .section-right > *:last-child,
+      .section-full > *:last-child {
+        margin-bottom: 2rem;
+      }
     }
 
+    /* FIXED: Additional mobile spacing for very narrow screens */
     @media (max-width: 480px) {
       .tutorial-section {
-        padding: 0.75rem 0.75rem 280px 0.75rem;
+        padding: 0.75rem 0.75rem 280px 0.75rem; /* Even more conservative on very small screens */
       }
-
+      
+      .mobile-parameters {
+        margin: 1.5rem 0;
+        padding: 0.75rem;
+      }
+      
       .widget-container {
         margin: 1rem 0;
-        min-height: 150px;
+        min-height: 150px; /* Smaller min height for very small screens */
       }
+    }
+
+    /* FIXED: Content overflow protection */
+    .section-left,
+    .section-right,
+    .section-full {
+      overflow: visible; /* Ensure content is not clipped */
+      word-wrap: break-word; /* Prevent text overflow */
     }
   </style>
 </head>
-
 <body>
   <!-- Hero Section -->
-  <section class="hero-section" id="heroSection">
+  <div class="hero-section" id="heroSection">
     <canvas class="hypercube-canvas" id="hypercube-canvas"></canvas>
-    <button class="nav-btn close-btn" onclick="window.history.back()" 
-            style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
+    <button class="nav-btn close-btn" onclick="window.history.back()" style="position: absolute; top: 2rem; right: 2rem; z-index: 100;">×</button>
     
     <!-- Hero Settings Toggle -->
     <div class="hero-settings-toggle" id="heroSettingsToggle">
@@ -1169,329 +1057,65 @@
       <h1 class="hero-title">TESSERACT</h1>
       <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
     </div>
-  </section>
+  </div>
 
   <!-- Tutorial Container -->
-  <main class="tutorial-container" id="tutorialContainer">
-    <!-- Tutorial Header -->
-    <header class="tutorial-header">
-      <h1 class="tutorial-title" id="currentSectionTitle">TESSERACT Overview</h1>
-      <nav class="tutorial-nav">
+  <div class="tutorial-container" id="tutorialContainer">
+    <!-- Redesigned Tutorial Header -->
+    <div class="tutorial-header">
+      <div class="tutorial-title" id="currentSectionTitle">TESSERACT Overview</div>
+      <div class="tutorial-nav">
         <button class="nav-btn" onclick="goToHero()">Home</button>
         <button class="nav-btn" onclick="goToTutorialsPage()">Tutorials</button>
         <button class="nav-btn circular" onclick="goToPrevSection()">‹</button>
         <button class="nav-btn circular" onclick="goToNextSection()">›</button>
         <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
-      </nav>
-    </header>
+      </div>
+    </div>
 
     <!-- Tutorial Content -->
     <div class="tutorial-content">
       <div class="tutorial-scroller" id="tutorialScroller">
-        <!-- Sections will be dynamically generated here -->
-      </div>
-    </div>
-
-    <!-- Static Image Container -->
-    <div class="static-image-container">
-      <div class="image-transition-container" id="staticImageContainer">
-        <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
-      </div>
-    </div>
-
-    <!-- Progress Bar -->
-    <div class="progress-bar" id="progressBar"></div>
-  </main>
-
-  <!-- Copy Notification -->
-  <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
-
-  <!-- Tutorial JavaScript -->
-  <script>
-    // Tutorial System - Modular Architecture
-    class TutorialSystem {
-      constructor() {
-        this.config = null;
-        this.currentSection = 0;
-        this.previousSection = 0;
-        this.totalSections = 0;
-        this.tutorialOpen = false;
-        this.cleanupTimeout = null;
-        this.contentCache = new Map();
         
-        // Three.js variables
-        this.scene = null;
-        this.camera = null;
-        this.renderer = null;
-        this.uniforms = null;
-        
-        // Interaction variables
-        this.mousePos = { x: 0, y: 0 };
-        this.normalizedMouse = { x: 0, y: 0 };
-        this.velocity = { x: 0, y: 0 };
-        this.slowVelocity = { x: 0, y: 0 };
-        this.angles = { rx: 0, ry: 0, rw: 0 };
-        this.wheelVelocity = 0;
-        this.maxSlowVelocity = 0.25;
-        
-        // Mobile detection
-        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        this.init();
-      }
-
-      async init() {
-        await this.loadConfig();
-        await this.initHypercube();
-        this.generateSections();
-        this.setupEventListeners();
-        this.setupHeroControls();
-        this.addMobileParametersStyle();
-        this.animate();
-        this.initProgressBar();
-        
-        // Set initial state and title
-        this.currentSection = 0;
-        this.updateSectionTitle();
-      }
-
-      async loadConfig() {
-        const configElement = document.getElementById('tutorial-config');
-        this.config = JSON.parse(configElement.textContent);
-        this.totalSections = 14; // Always 14 sections for this tutorial
-      }
-
-      generateSections() {
-        const scroller = document.getElementById('tutorialScroller');
-        scroller.innerHTML = '';
-
-        this.config.sections.forEach((section, index) => {
-          const sectionElement = this.createSectionElement(section, index + 1);
-          scroller.appendChild(sectionElement);
-        });
-      }
-
-      createSectionElement(section, sectionNumber) {
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'tutorial-section';
-        sectionDiv.dataset.sectionId = section.id;
-
-        const layoutDiv = document.createElement('div');
-        layoutDiv.className = `section-layout ${section.layout}`;
-
-        if (section.layout === 'split') {
-          const leftDiv = document.createElement('div');
-          leftDiv.className = 'section-left';
-          leftDiv.innerHTML = this.generateSectionContent(section);
-
-          const rightDiv = document.createElement('div');
-          rightDiv.className = 'section-right';
-          
-          // Add widgets if they exist
-          if (section.widgets && section.widgets.length > 0) {
-            section.widgets.forEach(widget => {
-              rightDiv.appendChild(this.createWidget(widget));
-            });
-            
-            // Add mobile parameters for widget sections
-            rightDiv.innerHTML += this.generateMobileParameters(section);
-          } else {
-            // Add some content for sections without widgets
-            rightDiv.innerHTML = this.generateRightSideContent(section);
-          }
-
-          layoutDiv.appendChild(leftDiv);
-          layoutDiv.appendChild(rightDiv);
-        } else {
-          const fullDiv = document.createElement('div');
-          fullDiv.className = 'section-full';
-          fullDiv.innerHTML = this.generateSectionContent(section);
-          layoutDiv.appendChild(fullDiv);
-        }
-
-        sectionDiv.appendChild(layoutDiv);
-        return sectionDiv;
-      }
-
-      generateRightSideContent(section) {
-        // Right-side content for sections without widgets
-        const rightContentMap = {
-          3: `
-            <h3>Input Device Flexibility</h3>
-            <p>We didn't have to use the mouse as our input - we could have used any input devices like:</p>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Xbox Controller:</strong> Analog sticks for smooth rotation</li>
-              <li><strong>USB Joystick:</strong> Traditional flight stick input</li>
-              <li><strong>Kinect:</strong> Body tracking for gesture control</li>
-              <li><strong>Leap Motion:</strong> Hand tracking and finger gestures</li>
-              <li><strong>MIDI Device:</strong> Knobs and faders for precise control</li>
-            </ul>
-            
-            <h4>Mouse vs Panel Monitoring:</h4>
-            <p><strong>MouseIn CHOP:</strong> Monitors mouse position across the entire monitor/desktop space.</p>
-            <p><strong>Panel CHOP:</strong> Monitors mouse position only within a specific TouchDesigner window or panel.</p>
-            
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>Select1 CHOP Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/select1.png" alt="Select1 Parameters">
-            </div>
-          `,
-          4: `
-            <h3>How Slope CHOP Works</h3>
-            <p>The <strong>Slope CHOP</strong> is a powerful tool for converting position data into velocity data:</p>
-            
-            <h4>Process:</h4>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Buffer Last Frame:</strong> Stores the mouse position from the previous frame</li>
-              <li><strong>Compare Positions:</strong> Takes current frame position minus last frame position</li>
-              <li><strong>Calculate Velocity:</strong> The difference between these two positions becomes our velocity</li>
-              <li><strong>Frame Rate Dependent:</strong> Velocity is calculated per frame, giving us smooth motion data</li>
-            </ul>
-            
-            <p>This converts two static positions into dynamic velocity information, essential for responsive interaction.</p>
-            
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>Math3 & Filter1 CHOP Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/math3.png" alt="Math3 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/filter1.png" alt="Filter1 Parameters">
-            </div>
-          `,
-          5: `
-            <h3>Position as Constant Force</h3>
-            <p>We're using the mouse position as a <strong>constant force</strong> rather than direct position mapping:</p>
-            
-            <h4>Force-Based Interaction:</h4>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Acceleration Input:</strong> Mouse position becomes acceleration force</li>
-              <li><strong>Speed CHOP Integration:</strong> Converts acceleration into velocity over time</li>
-              <li><strong>Velocity Accumulation:</strong> Velocity builds up gradually rather than instant jumps</li>
-              <li><strong>Speed Limiting:</strong> Without limits, velocity would increase infinitely</li>
-            </ul>
-            
-            <p><strong>Why This Matters:</strong> If we didn't limit the speed, our velocity would keep increasing indefinitely, making the interaction uncontrollable. The Speed CHOP acts like friction, giving us natural, physics-based movement.</p>
-            
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>Math1 & Speed2 CHOP Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/math1.png" alt="Math1 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/speed2.png" alt="Speed2 Parameters">
-            </div>
-          `,
-          7: `
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/filter_trail_example.png" alt="Filter Trail Example" style="width: 100%; max-width: none; border-radius: 10px; margin-bottom: 1rem;">
-            
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>Mouse Wheel Filter Chain Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/mousein1.png" alt="MouseIn1 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/select2.png" alt="Select2 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/filter4.png" alt="Filter4 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/filter3.png" alt="Filter3 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/filter2.png" alt="Filter2 Parameters">
-            </div>
-          `,
-          12: `
-            <img src="Tesseract%20Tutorial%20Pictures/Network%20images/blur.png" alt="Blur Result" style="width: 100%; max-width: none; border-radius: 10px; margin-bottom: 1rem;">
-            
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>Transform1 & Reorder1 Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/transform1.png" alt="Transform1 Parameters">
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/reorder1.png" alt="Reorder1 Parameters">
-            </div>
-          `
-        };
-        
-        return rightContentMap[section.id] || '<div></div>';
-      }
-
-      generateMobileParameters(section) {
-        const mobileParamsMap = {
-          13: `
-            <!-- Mobile Parameters -->
-            <div class="mobile-parameters">
-              <h4>SDF Line Min Distance Parameters</h4>
-              <img src="Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png" alt="Line Min Distance Parameters">
-            </div>
-          `
-        };
-        
-        return mobileParamsMap[section.id] || '';
-      }
-
-      // Add mobile parameters styling
-      addMobileParametersStyle() {
-        const style = document.createElement('style');
-        style.textContent = `
-          .mobile-parameters {
-            display: none;
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            z-index: 25;
-            position: relative;
-            clear: both;
-          }
-
-          .mobile-parameters img {
-            width: 100%;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-          }
-
-          .mobile-parameters:last-child {
-            margin-bottom: 3rem;
-          }
-
-          @media (max-width: 768px) {
-            .mobile-parameters {
-              display: block;
-              margin: 2rem 0;
-              padding: 1rem;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .mobile-parameters {
-              margin: 1.5rem 0;
-              padding: 0.75rem;
-            }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
-      generateSectionContent(section) {
-        const contentMap = {
-          1: `
-            <p>Welcome to this interactive tutorial on creating a 4D hypercube (tesseract) in TouchDesigner using GLSL shaders. This project demonstrates advanced techniques for 4D rotation, perspective projection, and real-time interaction.</p>
-            
-            <div class="tip">
-              <strong>Pro Tip:</strong> Understanding 4D rotations requires thinking beyond our 3D intuition. We'll break this down step by step!
+        <!-- Section 1: TESSERACT Overview -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>TESSERACT Overview</h1>
+              <p>Welcome to this interactive tutorial on creating a 4D hypercube (tesseract) in TouchDesigner using GLSL shaders. This project demonstrates advanced techniques for 4D rotation, perspective projection, and real-time interaction.</p>
+              
+              <div class="tip">
+                <strong>Pro Tip:</strong> Understanding 4D rotations requires thinking beyond our 3D intuition. We'll break this down step by step!
+              </div>
+              
+              <h3>What We'll Cover:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>CHOP Networks:</strong> Mouse input processing and rotation control</li>
+                <li><strong>4D Mathematics:</strong> Rotation matrices and perspective projection</li>
+                <li><strong>GLSL Shaders:</strong> Vertex transformation and SDF rendering</li>
+                <li><strong>Interactive Controls:</strong> Real-time parameter manipulation</li>
+              </ul>
             </div>
             
-            <h3>What We'll Cover:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>CHOP Networks:</strong> Mouse input processing and rotation control</li>
-              <li><strong>4D Mathematics:</strong> Rotation matrices and perspective projection</li>
-              <li><strong>GLSL Shaders:</strong> Vertex transformation and SDF rendering</li>
-              <li><strong>Interactive Controls:</strong> Real-time parameter manipulation</li>
-            </ul>
-            
-            <h3>Key Resources:</h3>
-            <p>This tutorial references concepts from:</p>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><a href="https://en.wikipedia.org/wiki/Tesseract" target="_blank" style="color: #00ffff;">Tesseract mathematics</a></li>
-              <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" target="_blank" style="color: #00ffff;">4D projection techniques</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" target="_blank" style="color: #00ffff;">4D rotation matrices</a></li>
-              <li><a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
-              <li><a href="https://docs.derivative.ca/GLSL_TOP" target="_blank" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
-            </ul>
-          `,
-          2: `
+            <div class="section-right">
+              <h3>Key Resources:</h3>
+              <p>This tutorial references concepts from:</p>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><a href="https://en.wikipedia.org/wiki/Tesseract" target="_blank" style="color: #00ffff;">Tesseract mathematics</a></li>
+                <li><a href="https://hollasch.github.io/ray4/Four-Space_Visualization_of_4D_Objects.html" target="_blank" style="color: #00ffff;">4D projection techniques</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix#In_four_dimensions" target="_blank" style="color: #00ffff;">4D rotation matrices</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Rotation_matrix" target="_blank" style="color: #00ffff;">3D rotation matrices</a></li>
+                <li><a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a></li>
+                <li><a href="https://docs.derivative.ca/GLSL_TOP" target="_blank" style="color: #00ffff;">Writing GLSL TOPs in TouchDesigner</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: The CHOP Network -->
+        <div class="tutorial-section">
+          <div class="section-full">
+            <h1>The CHOP Network</h1>
             <p>Our CHOP network processes mouse input to control the hypercube rotation. We can use any input device to control any axis or parameter - the flexibility of TouchDesigner shines here.</p>
             
             <div style="display: flex; gap: 4rem; margin: 2rem 0;">
@@ -1504,89 +1128,141 @@
                 <p>The network processes raw input → applies velocity calculations → converts to angular position → feeds rotation matrices.</p>
               </div>
             </div>
-          `,
-          3: `
-            <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
+          </div>
+        </div>
 
-            <h3>Key CHOPs:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
-              <li><strong>mousein1:</strong> Raw mouse input data</li>
-              <li><strong>select1:</strong> Filters specific channels</li>
-            </ul>
+        <!-- Section 3: Input Data 1 -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Input Data 1: Mouse UV Control</h1>
+              <p>Using panel CHOP to get mouse UV coordinates, selecting <span class="highlight">rollu</span> and <span class="highlight">rollv</span> or <span class="highlight">tx ty</span> from mousein to control the Y and X axis respectively.</p>
 
-            <div class="tip">
-              <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
+              <h3>Key CHOPs:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>panel1:</strong> Captures mouse UV coordinates</li>
+                <li><strong>mousein1:</strong> Raw mouse input data</li>
+                <li><strong>select1:</strong> Filters specific channels</li>
+              </ul>
+
+              <div class="tip">
+                <strong>Remember:</strong> UV coordinates give us normalized 0-1 values, perfect for controlling rotations!
+              </div>
             </div>
             
-            <h3>Input Device Flexibility</h3>
-            <p>We didn't have to use the mouse as our input - we could have used any input devices like:</p>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Xbox Controller:</strong> Analog sticks for smooth rotation</li>
-              <li><strong>USB Joystick:</strong> Traditional flight stick input</li>
-              <li><strong>Kinect:</strong> Body tracking for gesture control</li>
-              <li><strong>Leap Motion:</strong> Hand tracking and finger gestures</li>
-              <li><strong>MIDI Device:</strong> Knobs and faders for precise control</li>
-            </ul>
-            
-            <h4>Mouse vs Panel Monitoring:</h4>
-            <p><strong>MouseIn CHOP:</strong> Monitors mouse position across the entire monitor/desktop space.</p>
-            <p><strong>Panel CHOP:</strong> Monitors mouse position only within a specific TouchDesigner window or panel.</p>
-          `,
-          4: `
-            <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
+            <div class="section-right">
+              <h3>Input Device Flexibility</h3>
+              <p>We didn't have to use the mouse as our input - we could have used any input devices like:</p>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Xbox Controller:</strong> Analog sticks for smooth rotation</li>
+                <li><strong>USB Joystick:</strong> Traditional flight stick input</li>
+                <li><strong>Kinect:</strong> Body tracking for gesture control</li>
+                <li><strong>Leap Motion:</strong> Hand tracking and finger gestures</li>
+                <li><strong>MIDI Device:</strong> Knobs and faders for precise control</li>
+              </ul>
+              
+              <h4>Mouse vs Panel Monitoring:</h4>
+              <p><strong>MouseIn CHOP:</strong> Monitors mouse position across the entire monitor/desktop space.</p>
+              <p><strong>Panel CHOP:</strong> Monitors mouse position only within a specific TouchDesigner window or panel.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Select1 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/select1.png" alt="Select1 Parameters">
+          </div>
+        </div>
 
-            <h3>Processing Chain:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>math3:</strong> Mathematical operations on input</li>
-              <li><strong>slope1:</strong> Calculates velocity from position changes</li>
-              <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
-            </ul>
+        <!-- Section 4: Rangeling CHOPs 1 -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 1: Mouse Velocity</h1>
+              <p>I increase the responsive part of the interaction, which is driven by mouse velocity. We use a <span class="highlight">slope</span> CHOP to get velocity and a <span class="highlight">filter</span> to give this a more natural feel when you stop moving the mouse.</p>
 
-            <div class="tip">
-              <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
+              <h3>Processing Chain:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>math3:</strong> Mathematical operations on input</li>
+                <li><strong>slope1:</strong> Calculates velocity from position changes</li>
+                <li><strong>filter1:</strong> Smooths the velocity for natural feel</li>
+              </ul>
+
+              <div class="tip">
+                <strong>Pro Tip:</strong> Velocity-based interaction feels more intuitive than direct position mapping!
+              </div>
             </div>
             
-            <h3>How Slope CHOP Works</h3>
-            <p>The <strong>Slope CHOP</strong> is a powerful tool for converting position data into velocity data:</p>
-            
-            <h4>Process:</h4>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Buffer Last Frame:</strong> Stores the mouse position from the previous frame</li>
-              <li><strong>Compare Positions:</strong> Takes current frame position minus last frame position</li>
-              <li><strong>Calculate Velocity:</strong> The difference between these two positions becomes our velocity</li>
-              <li><strong>Frame Rate Dependent:</strong> Velocity is calculated per frame, giving us smooth motion data</li>
-            </ul>
-            
-            <p>This converts two static positions into dynamic velocity information, essential for responsive interaction.</p>
-          `,
-          5: `
-            <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
+            <div class="section-right">
+              <h3>How Slope CHOP Works</h3>
+              <p>The <strong>Slope CHOP</strong> is a powerful tool for converting position data into velocity data:</p>
+              
+              <h4>Process:</h4>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Buffer Last Frame:</strong> Stores the mouse position from the previous frame</li>
+                <li><strong>Compare Positions:</strong> Takes current frame position minus last frame position</li>
+                <li><strong>Calculate Velocity:</strong> The difference between these two positions becomes our velocity</li>
+                <li><strong>Frame Rate Dependent:</strong> Velocity is calculated per frame, giving us smooth motion data</li>
+              </ul>
+              
+              <p>This converts two static positions into dynamic velocity information, essential for responsive interaction.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math3 & Filter1 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math3.png" alt="Math3 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter1.png" alt="Filter1 Parameters">
+          </div>
+        </div>
 
-            <h3>Process:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Add -0.5 to center the UV coordinates</li>
-              <li>Scale down for gentle interaction</li>
-              <li>Use as constant force rather than velocity burst</li>
-              <li>Convert acceleration to velocity with speed2</li>
-            </ul>
+        <!-- Section 5: Rangeling CHOPs 2 -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 2: Centering and Scaling</h1>
+              <p>I use a <span class="highlight">math</span> CHOP to center the pre-normalized mouse UV from 0-1 to -0.5 to 0.5 with -0.5 pre-add, then make it a small value to create gentle interaction using this input as a gentle constant force rather than sudden bursts from mouse velocity.</p>
 
-            <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
+              <h3>Process:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Add -0.5 to center the UV coordinates</li>
+                <li>Scale down for gentle interaction</li>
+                <li>Use as constant force rather than velocity burst</li>
+                <li>Convert acceleration to velocity with speed2</li>
+              </ul>
+
+              <p>Since it's a force, I use <span class="highlight">speed2</span> to convert acceleration into velocity.</p>
+            </div>
             
-            <h3>Position as Constant Force</h3>
-            <p>We're using the mouse position as a <strong>constant force</strong> rather than direct position mapping:</p>
-            
-            <h4>Force-Based Interaction:</h4>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-              <li><strong>Acceleration Input:</strong> Mouse position becomes acceleration force</li>
-              <li><strong>Speed CHOP Integration:</strong> Converts acceleration into velocity over time</li>
-              <li><strong>Velocity Accumulation:</strong> Velocity builds up gradually rather than instant jumps</li>
-              <li><strong>Speed Limiting:</strong> Without limits, velocity would increase infinitely</li>
-            </ul>
-            
-            <p><strong>Why This Matters:</strong> If we didn't limit the speed, our velocity would keep increasing indefinitely, making the interaction uncontrollable. The Speed CHOP acts like friction, giving us natural, physics-based movement.</p>
-          `,
-          6: `
+            <div class="section-right">
+              <h3>Position as Constant Force</h3>
+              <p>We're using the mouse position as a <strong>constant force</strong> rather than direct position mapping:</p>
+              
+              <h4>Force-Based Interaction:</h4>
+              <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><strong>Acceleration Input:</strong> Mouse position becomes acceleration force</li>
+                <li><strong>Speed CHOP Integration:</strong> Converts acceleration into velocity over time</li>
+                <li><strong>Velocity Accumulation:</strong> Velocity builds up gradually rather than instant jumps</li>
+                <li><strong>Speed Limiting:</strong> Without limits, velocity would increase infinitely</li>
+              </ul>
+              
+              <p><strong>Why This Matters:</strong> If we didn't limit the speed, our velocity would keep increasing indefinitely, making the interaction uncontrollable. The Speed CHOP acts like friction, giving us natural, physics-based movement.</p>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math1 & Speed2 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math1.png" alt="Math1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed2.png" alt="Speed2 Parameters">
+          </div>
+        </div>
+
+        <!-- Section 6: Rangeling CHOPs 3 -->
+        <div class="tutorial-section">
+          <div class="section-full">
+            <h1>Rangeling CHOPs 3: Angular Velocity</h1>
             <p>Adding the velocity from mouse movement and position, we get the current total angular velocity which we give to the <span class="highlight">speed3</span> CHOP. This updates every frame to give us the current angular position for our rotation matrix.</p>
 
             <h3>Key CHOPs:</h3>
@@ -1596,17 +1272,50 @@
             </ul>
 
             <p>This gives us smooth, continuous rotation that responds to both mouse movement and position.</p>
-          `,
-          7: `
-            <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Math2 & Speed3 CHOP Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/math2.png" alt="Math2 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/speed3.png" alt="Speed3 Parameters">
+          </div>
+        </div>
 
-            <div class="tip">
-              <strong>Pro Tip:</strong> If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP.
+        <!-- Section 7: Rangeling CHOPs 4 -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rangeling CHOPs 4: Mouse Wheel</h1>
+              <p>Selecting mouse wheel from the mousein CHOP, filtering it in a few different ways. No real rhyme or reason - I wanted it to feel like it had weight, so I used one long box filter, wanted it to take longer to stop so used a long left half box filter first, followed by a short Gaussian to smooth anything else, then one final box filter.</p>
+
+              <div class="tip">
+                <strong>Pro Tip:</strong> If you ever want to see how a filter is affecting your input, try using a <span class="highlight">trail</span> CHOP to compare the input and output of the filter CHOP.
+              </div>
+
+              <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
             </div>
+            
+            <div class="section-right">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/filter_trail_example.png" alt="Filter Trail Example" class="trail-image">
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Mouse Wheel Filter Chain Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/mousein1.png" alt="MouseIn1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/select2.png" alt="Select2 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter4.png" alt="Filter4 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter3.png" alt="Filter3 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/filter2.png" alt="Filter2 Parameters">
+          </div>
+        </div>
 
-            <p>This creates a weighted, inertial feel for the mouse wheel input that feels natural and responsive.</p>
-          `,
-          8: `
+        <!-- Section 8: Rangeling CHOPs 5 -->
+        <div class="tutorial-section">
+          <div class="section-full">
+            <h1>Rangeling CHOPs 5: Merging and Null</h1>
             <p>Merging everything together and ending it with a null.</p>
 
             <div class="tip">
@@ -1617,84 +1326,454 @@
 
             <h3>Final Output:</h3>
             <p>Our CHOP network now outputs clean rotation values ready for our GLSL shaders!</p>
-          `,
-          9: `
-            <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
+          </div>
+        </div>
 
-            <h3>Data Storage Options:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
-              <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
-              <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
-              <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
-            </ul>
+        <!-- Section 9: Input Data 2 -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Input Data 2: Saved Data from TSV</h1>
+              <p>In TouchDesigner we can input saved data in loads of ways. Here I've used a TSV file saved from a previous project in 2021 and loaded with a <span class="highlight">table DAT</span>, but equally it could have been saved as a waveform and opened with the <span class="highlight">filein CHOP</span>, or as a texture where tx, ty, tz, tw are stored as RGBA.</p>
 
-            <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
+              <h3>Data Storage Options:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>TSV/CSV files:</strong> Table DAT for structured data</li>
+                <li><strong>Waveforms:</strong> Filein CHOP for time-based data</li>
+                <li><strong>Textures:</strong> RGBA channels for 4D coordinates</li>
+                <li><strong>GLSL sampling:</strong> Direct access from shaders</li>
+              </ul>
 
-            <div class="tip">
-              <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
+              <p>You can also sample data in a GLSL TOP from DATs, CHOPs or TOPs. Each row in the DAT, sample in the CHOP, and pixel in TOP all store the same 4 channels of data over 33 samples.</p>
+
+              <div class="tip">
+                <strong>Important:</strong> Save as TSV so it will open as a table in TouchDesigner!
+              </div>
             </div>
-          `,
-          10: `
-            <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
-
-            <h3>GLSL Components:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>3 rotation matrices as helper functions</li>
-              <li>Individual rotations (order dependent)</li>
-              <li>4D point multiplication</li>
-              <li>Rotated point output</li>
-            </ul>
-
-            <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
-          `,
-          11: `
-            <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
-
-            <h3>Perspective Pipeline:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
-              <li><strong>3D to 2D:</strong> Standard perspective projection</li>
-              <li><strong>Camera controls:</strong> FOV, position, and depth</li>
-            </ul>
-          `,
-          12: `
-            <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
-
-            <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
-
-            <h3>Line Generation:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Convert point cloud to line segments</li>
-              <li>Use Euler cycle for proper connectivity</li>
-              <li>Transform TOP with repeat mode</li>
-              <li>Closed loop formation</li>
-            </ul>
-
-            <h3>Blur Result</h3>
-            <p>When we blur from one pixel to the next, we're interpolating linearly between the values using a box filter in the Blur TOP.</p>
             
-            <p>This creates smooth transitions between line segments and helps with antialiasing in the final render. The blur operation essentially averages neighboring pixel values, creating smooth gradients that improve visual quality.</p>
-          `,
-          13: `
-            <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
+            <div class="section-right">
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showTSVFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+                </div>
+                <div class="content-widget">
+                  <div class="widget-content" id="tsvContent">
+                    <table class="tsv-table" id="tsvTable">
+                      <thead>
+                        <tr>
+                          <th>tx</th>
+                          <th>ty</th>
+                          <th>tz</th>
+                          <th>tw</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Euler Cycle TSV Data</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
+        <!-- Section 10: Rotation Vertex GLSL -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Rotation Vertex GLSL</h1>
+              <p>We're using RWY, RY and RX from the null in our CHOP network. In our uniforms we need to assign them at the start of the shader and add them to our vector parameter.</p>
 
-            <h3>SDF Rendering:</h3>
-            <ul style="margin-left: 2rem; line-height: 1.8;">
-              <li>Distance field calculation</li>
-              <li>Variable capsule radius</li>
-              <li>Efficient GPU rendering</li>
-              <li>Smooth antialiasing</li>
-            </ul>
+              <h3>GLSL Components:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>3 rotation matrices as helper functions</li>
+                <li>Individual rotations (order dependent)</li>
+                <li>4D point multiplication</li>
+                <li>Rotated point output</li>
+              </ul>
 
-            <h3>Why Uneven Capsule vs Line SDF?</h3>
-            <p>I could have used a standard line SDF instead, but I wanted to use the 4D value to help drive the width of the uneven capsule.</p>
+              <p>We multiply the individual rotations (order dependent), then multiply our rotation matrix with our 4D points and output our rotated points.</p>
+            </div>
             
-            <p>This gives us variable line thickness that responds to the 4th dimension, creating a more dynamic visual representation of the 4D structure. The capsule approach allows for organic, flowing line weights that enhance the perception of depth and dimension.</p>
-          `,
-          14: `
+            <div class="section-right">
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showRotationGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+                </div>
+                <div class="content-widget">
+                  <div class="widget-content" id="rotationGLSLContent">
+                    <div class="code-content">// GLSL TOP for TouchDesigner that rotates 33 points in 4D space
+// Input texture contains 33 points with XYZW coordinates
+// Rotation order: RWX, WRY, WRZ, then RX, RY, RZ
+
+uniform vec3 rotWXYZ;           // Rotations in W space (RWX, WRY, WRZ) in radians
+uniform vec3 rotXYZ;            // Rotations in 3D space (RX, RY, RZ) in radians
+
+out vec4 fragColor;
+
+// Helper function to create 4D rotation matrix for W-X plane
+mat4 rotateWZ(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, c, -s,
+        0.0, 0.0, s, c
+    );
+}
+
+// Helper function to create 4D rotation matrix for W-Y plane
+mat4 rotateWY(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, c, 0.0, -s,
+        0.0, 0.0, 1.0, 0.0,
+       0.0, s, 0.0, c
+    );
+}
+
+// Helper function to create 4D rotation matrix for W-Z plane
+mat4 rotateWX(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, 0.0, 0.0, -s,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        s, 0.0, 0.0, c
+    );
+}
+
+// Helper function to create 3D rotation matrix for X axis (embedded in 4D)
+mat4 rotateX(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, c, -s, 0.0,
+        0.0, s, c, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+// Helper function to create 3D rotation matrix for Y axis (embedded in 4D)
+mat4 rotateY(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, 0.0, s, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -s, 0.0, c, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+// Helper function to create 3D rotation matrix for Z axis (embedded in 4D)
+mat4 rotateZ(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat4(
+        c, -s, 0.0, 0.0,
+        s, c, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+}
+
+void main() {
+    // Get normalized texture coordinates
+    vec2 uv = vUV.st;
+    
+    // Sample the input point from texture
+    vec4 point = texture(sTD2DInputs[0], uv)*2.-1;
+    
+    // Create combined 4D rotation matrix in specified order (order dependent):
+    mat4 rotationMatrix = 
+        rotateZ(rotXYZ.z) * 
+        rotateY(rotXYZ.y) * 
+        rotateX(rotXYZ.x) * 
+        rotateWZ(rotWXYZ.z) * 
+        rotateWY(rotWXYZ.y) * 
+        rotateWX(rotWXYZ.x);
+    
+    // Apply rotation to the point
+    vec4 rotatedPoint = rotationMatrix * point;
+    
+    // Output the rotated point
+    fragColor = rotatedPoint;
+}</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Vertex Rotation GLSL</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 11: Perspective GLSL -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>Perspective GLSL</h1>
+              <p>We have a few float uniforms in the perspective GLSL to give control on the 4D perspective and 3D perspective, to flatten it to 2D.</p>
+
+              <h3>Perspective Pipeline:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li><strong>4D to 3D:</strong> Project from 4D space to 3D</li>
+                <li><strong>3D to 2D:</strong> Standard perspective projection</li>
+                <li><strong>Camera controls:</strong> FOV, position, and depth</li>
+              </ul>
+            </div>
+            
+            <div class="section-right">
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showPerspectiveGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+                </div>
+                <div class="content-widget">
+                  <div class="widget-content" id="perspectiveGLSLContent">
+                    <div class="code-content">uniform float fov;			// Field of view in degrees. use 60
+uniform vec2 resolution;	// Resolution of the output TOP. use 33
+uniform float uPerspective; // use 2.3
+uniform float cameraZ;		// use -30
+
+out vec4 fragColor;
+void main() {
+	// Normalize UV and get pixel index
+	vec2 uv = gl_FragCoord.xy / resolution;
+	int index = int(uv.x * resolution);
+	float texX = (float(index) + 0.5) / int(resolution);
+	
+	vec4 pos = texture(sTD2DInputs[0], vec2(texX, 0.5)).rgba;
+	pos.rgb *= pos.a + uPerspective.x;
+
+	// Translate point relative to camera
+	vec3 camPos = vec3(0.0, 0.0, cameraZ);
+	vec3 relPos = pos.rgb - camPos;
+
+	// Convert FOV to focal length
+	float f = 1.0 / tan(radians(fov) * 0.5);
+
+	// Perform perspective divide
+	vec2 projected;
+	projected.x = f * relPos.x / relPos.z;
+	projected.y = f * relPos.y / relPos.z;
+
+	// Normalize projected coords to [0,1] for visualization (optional)
+	vec2 normXY = projected * 0.5 + 0.5;
+
+	// Output projected position in red and green channels
+	fragColor = vec4(normXY,0.0, 1.0); // use fragColor = vec4(pos.rgb, 1.0); for a 3D perspective
+}</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">Vertex Perspective GLSL</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 12: 2D Points to 2D Lines - WITH BLUR IMAGE -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>2D Points to 2D Lines</h1>
+              <p>Preparing my 2D points position into a lines points position utilizing the Euler cycle. Using RG for the lines first point XY position and GA. I'm sure this could have been done in the perspective shader but it was easier to do this.</p>
+
+              <p>Being familiar with the <span class="highlight">transform TOP</span> and knowing to set it to <span class="highlight">repeat</span> so the first point connects to the last point.</p>
+
+              <h3>Line Generation:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Convert point cloud to line segments</li>
+                <li>Use Euler cycle for proper connectivity</li>
+                <li>Transform TOP with repeat mode</li>
+                <li>Closed loop formation</li>
+              </ul>
+
+              <h3>Blur Result</h3>
+              <p>When we blur from one pixel to the next, we're interpolating linearly between the values using a box filter in the Blur TOP.</p>
+              
+              <p>This creates smooth transitions between line segments and helps with antialiasing in the final render. The blur operation essentially averages neighboring pixel values, creating smooth gradients that improve visual quality.</p>
+            </div>
+            
+            <div class="section-right">
+              <img src="Tesseract%20Tutorial%20Pictures/Network%20images/blur.png" alt="Blur Result" class="blur-image">
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>Transform1 & Reorder1 Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/transform1.png" alt="Transform1 Parameters">
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/reorder1.png" alt="Reorder1 Parameters">
+          </div>
+        </div>
+
+        <!-- Section 13: SDF Uneven Capsule -->
+        <div class="tutorial-section">
+          <div class="section-layout">
+            <div class="section-left">
+              <h1>SDF Uneven Capsule</h1>
+              <p>Again I was able to reuse a component I made in 2022 which would take in a texture where each pixel represents a capsule with two 2D points to be rendered in the SDF.</p>
+
+              <p>This uses <a href="https://iquilezles.org/articles/distfunctions2d/" target="_blank" style="color: #00ffff;">Inigo Quilez's SDF functions</a> for uneven capsules. No uniforms needed!</p>
+
+              <h3>SDF Rendering:</h3>
+              <ul style="margin-left: 2rem; line-height: 1.8;">
+                <li>Distance field calculation</li>
+                <li>Variable capsule radius</li>
+                <li>Efficient GPU rendering</li>
+                <li>Smooth antialiasing</li>
+              </ul>
+
+              <h3>Why Uneven Capsule vs Line SDF?</h3>
+              <p>I could have used a standard line SDF instead, but I wanted to use the 4D value to help drive the width of the uneven capsule.</p>
+              
+              <p>This gives us variable line thickness that responds to the 4th dimension, creating a more dynamic visual representation of the 4D structure. The capsule approach allows for organic, flowing line weights that enhance the perception of depth and dimension.</p>
+            </div>
+            
+            <div class="section-right">
+              <div class="widget-container">
+                <div class="widget-buttons">
+                  <button class="widget-btn widget-btn-fullscreen" onclick="showLineMindistGLSLFullscreen()" title="Fullscreen"></button>
+                  <button class="widget-btn widget-btn-copy" onclick="copyLineMindistGLSLToClipboard()" title="Copy to Clipboard"></button>
+                  <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+                </div>
+                <div class="content-widget">
+                  <div class="widget-content" id="lineMindistGLSLContent">
+                    <div class="code-content">// Pixel Shader
+float cro(in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }
+    
+float sdUnevenCapsule( in vec2 p, in vec2 pa, in vec2 pb, in float ra, in float rb )
+{
+    p  -= pa;
+    pb -= pa;
+    float h = dot(pb,pb);
+    vec2  q = vec2( dot(p,vec2(pb.y,-pb.x)), dot(p,pb) )/h;
+    
+    //-----------
+    
+    q.x = abs(q.x);
+    
+    float b = ra-rb;
+    vec2  c = vec2(sqrt(h-b*b),b);
+    
+    float k = cro(c,q);
+    float m = dot(c,q);
+    float n = dot(q,q);
+    
+         if( k < 0.0 ) return sqrt(h*(n            )) - ra;
+    else if( k > c.x ) return sqrt(h*(n+1.0-2.0*q.y)) - rb;
+                       return m                       - ra;
+}
+
+
+out vec4 fragColor;
+
+void main()
+{
+	// Get the UV coordinates of the current pixel
+	vec2 p = vUV.st;  // Pixel coordinates (0 to 1 range)
+
+	float minDist = 1e10; // Initialize with a large value
+
+	// Get the texture size of the first input
+	ivec2 texSize = textureSize(sTD2DInputs[0], 0);
+
+	// Iterate over each line segment in the texture
+	for (int i = 0; i < texSize.x; i++) // Adjusted to iterate horizontally if needed
+	{
+		// Fetch line segment points from the input texture
+		vec4 line = texelFetch(sTD2DInputs[0], ivec2(i, 0), 0); // Line data: p0.x, p0.y, p1.x, p1.y
+		vec2 width = vec2(0.15, 0.15);
+		vec2 uPoint0 = line.xy;
+		vec2 uPoint1 = line.zw;
+		vec2 v1 = line.xy;
+		vec2 v2 = line.zw;
+		float r1 = width.r/20;
+		float r2 = width.g/20;
+		
+		float d = sdUnevenCapsule( p, v2, v1, r2, r1 );
+
+		// Calculate the distance from the pixel to the closest point on the segment
+		float dist = length(p - d);
+
+		// Keep track of the minimum distance
+		minDist = min(minDist, d);
+	}
+
+	// Output the minimum distance as a grayscale value
+	fragColor = vec4(vec3(minDist), 1.0);
+}</div>
+                  </div>
+                  <div class="widget-header">
+                    <div class="widget-title">SDF Line Min Distance GLSL</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mobile Parameters -->
+          <div class="mobile-parameters">
+            <h4>SDF Line Min Distance Parameters</h4>
+            <img src="Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png" alt="Line Min Distance Parameters">
+          </div>
+        </div>
+
+        <!-- Section 14: Post Processing -->
+        <div class="tutorial-section">
+          <div class="section-full">
+            <h1>Post Processing</h1>
             <p>Using limits, ramps, threshold and lookups to create an interesting result.</p>
 
             <h3>Post Effects Chain:</h3>
@@ -1706,1048 +1785,1156 @@
             </ul>
 
             <p>These effects transform the raw SDF output into a visually appealing final result with proper contrast and color.</p>
-          `
-        };
-
-        return contentMap[section.id] || `<p>Content for section ${section.id} goes here.</p>`;
-      }
-
-      createWidget(widget) {
-        const container = document.createElement('div');
-        container.className = 'widget-container';
-
-        // Widget buttons
-        const buttons = document.createElement('div');
-        buttons.className = 'widget-buttons';
-        buttons.innerHTML = `
-          <button class="widget-btn widget-btn-fullscreen" title="Fullscreen"></button>
-          <button class="widget-btn widget-btn-copy" title="Copy to Clipboard"></button>
-          <button class="widget-btn widget-btn-github" title="Download from GitHub"></button>
-        `;
-
-        // Widget content
-        const contentWidget = document.createElement('div');
-        contentWidget.className = 'content-widget';
-
-        const content = document.createElement('div');
-        content.className = 'widget-content';
-        content.innerHTML = '<div class="widget-loading">Loading...</div>';
-
-        const header = document.createElement('div');
-        header.className = 'widget-header';
-        header.innerHTML = `<div class="widget-title">${widget.title}</div>`;
-
-        contentWidget.appendChild(content);
-        contentWidget.appendChild(header);
-
-        container.appendChild(buttons);
-        container.appendChild(contentWidget);
-
-        // Load content
-        this.loadWidgetContent(widget, content);
-
-        // Add event listeners
-        this.setupWidgetEvents(container, widget);
-
-        return container;
-      }
-
-      async loadWidgetContent(widget, contentElement) {
-        try {
-          const cacheKey = widget.file;
-          
-          if (this.contentCache.has(cacheKey)) {
-            this.renderWidgetContent(widget, contentElement, this.contentCache.get(cacheKey));
-            return;
-          }
-
-          let content;
-          const primaryUrl = `${this.config.githubBaseUrl}${widget.file}`;
-          
-          try {
-            const response = await fetch(primaryUrl);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            content = await response.text();
-          } catch (error) {
-            if (widget.fallbackFile) {
-              const fallbackUrl = `${this.config.githubBaseUrl}${widget.fallbackFile}`;
-              const fallbackResponse = await fetch(fallbackUrl);
-              if (!fallbackResponse.ok) throw new Error(`Fallback failed: HTTP ${fallbackResponse.status}`);
-              content = await fallbackResponse.text();
-            } else {
-              throw error;
-            }
-          }
-
-          this.contentCache.set(cacheKey, content);
-          this.renderWidgetContent(widget, contentElement, content);
-
-        } catch (error) {
-          console.error(`Failed to load ${widget.file}:`, error);
-          contentElement.innerHTML = `<div class="widget-error">Failed to load content: ${error.message}<br><small>Check if files exist on GitHub</small></div>`;
-        }
-      }
-
-      renderWidgetContent(widget, contentElement, content) {
-        if (widget.type === 'tsv') {
-          contentElement.innerHTML = this.renderTSVTable(content);
-        } else if (widget.type === 'glsl') {
-          const escapedContent = this.escapeHtml(content);
-          contentElement.innerHTML = `<pre><code class="language-glsl">${escapedContent}</code></pre>`;
-          
-          // Apply syntax highlighting
-          const codeElement = contentElement.querySelector('code');
-          if (window.Prism && codeElement) {
-            setTimeout(() => {
-              try {
-                Prism.highlightElement(codeElement);
-              } catch (e) {
-                // Fall back to basic styling
-                codeElement.style.color = '#ddd';
-              }
-            }, 100);
-          } else {
-            // Apply basic code styling if Prism not available
-            const pre = contentElement.querySelector('pre');
-            if (pre) {
-              pre.style.cssText = `
-                margin: 0;
-                padding: 1rem;
-                background: transparent;
-                overflow: hidden;
-                font-size: 0.75rem;
-                line-height: 1.3;
-                color: #ddd;
-                white-space: pre;
-                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-              `;
-            }
-          }
-        }
-      }
-
-      renderTSVTable(tsvContent) {
-        const lines = tsvContent.trim().split('\n');
-        const headers = lines[0].split('\t');
-        const rows = lines.slice(1);
-
-        let html = '<table class="tsv-table"><thead><tr>';
-        headers.forEach(header => {
-          html += `<th>${this.escapeHtml(header)}</th>`;
-        });
-        html += '</tr></thead><tbody>';
-
-        rows.forEach(row => {
-          if (row.trim()) {
-            const cells = row.split('\t');
-            html += '<tr>';
-            cells.forEach(cell => {
-              html += `<td>${this.escapeHtml(cell)}</td>`;
-            });
-            html += '</tr>';
-          }
-        });
-
-        html += '</tbody></table>';
-        return html;
-      }
-
-      escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      setupWidgetEvents(container, widget) {
-        const buttons = container.querySelectorAll('.widget-btn');
-        
-        if (buttons.length >= 3) {
-          buttons[0].addEventListener('click', (e) => {
-            e.preventDefault();
-            this.openWidgetFullscreen(widget, container);
-          });
-          
-          buttons[1].addEventListener('click', (e) => {
-            e.preventDefault();
-            this.copyWidgetContent(widget, container);
-          });
-          
-          buttons[2].addEventListener('click', (e) => {
-            e.preventDefault();
-            this.downloadFromGithub();
-          });
-        }
-      }
-
-      copyWidgetContent(widget, container) {
-        const content = container.querySelector('.widget-content');
-        let textToCopy = '';
-
-        if (widget.type === 'tsv') {
-          const table = content.querySelector('.tsv-table');
-          if (table) {
-            const rows = table.querySelectorAll('tr');
-            rows.forEach(row => {
-              const cells = row.querySelectorAll('th, td');
-              const rowData = Array.from(cells).map(cell => cell.textContent);
-              textToCopy += rowData.join('\t') + '\n';
-            });
-          }
-        } else if (widget.type === 'glsl') {
-          const code = content.querySelector('code');
-          if (code) {
-            textToCopy = code.textContent;
-          }
-        }
-
-        if (textToCopy) {
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            this.showCopyNotification();
-          }).catch(err => {
-            console.error('Failed to copy content:', err);
-          });
-        }
-      }
-
-      showCopyNotification() {
-        const notification = document.getElementById('copyNotification');
-        notification.classList.add('show');
-        setTimeout(() => {
-          notification.classList.remove('show');
-        }, 2000);
-      }
-
-      downloadFromGithub() {
-        window.open('https://github.com/TrueFiasco/TouchDesigner-Tesseract-Tutorial', '_blank');
-      }
-
-      openWidgetFullscreen(widget, container) {
-        // Create fullscreen modal
-        const modal = document.createElement('div');
-        modal.className = 'widget-fullscreen active';
-        modal.innerHTML = `
-          <div class="widget-fullscreen-header">
-            <h3>${widget.title}</h3>
-            <div class="widget-fullscreen-buttons">
-              <button class="widget-btn widget-btn-copy" title="Copy to Clipboard">📋</button>
-              <button class="widget-btn widget-btn-github" title="Download from GitHub">⬇</button>
-              <button class="nav-btn close-btn">×</button>
-            </div>
           </div>
-          <div class="widget-fullscreen-content"></div>
-        `;
-        
-        // Get content from original widget
-        const originalContent = container.querySelector('.widget-content');
-        const fullscreenContent = modal.querySelector('.widget-fullscreen-content');
-        
-        if (widget.type === 'tsv') {
-          const table = originalContent.querySelector('.tsv-table');
-          if (table) {
-            fullscreenContent.innerHTML = table.outerHTML;
-          }
-        } else if (widget.type === 'glsl') {
-          const code = originalContent.querySelector('code');
-          if (code) {
-            fullscreenContent.innerHTML = `<div class="code-content">${code.textContent}</div>`;
-          }
-        }
-        
-        // Add event listeners
-        modal.querySelector('.close-btn').addEventListener('click', () => {
-          document.body.removeChild(modal);
-        });
-        
-        modal.querySelector('.widget-btn-copy').addEventListener('click', () => {
-          this.copyWidgetContent(widget, container);
-        });
-        
-        modal.querySelector('.widget-btn-github').addEventListener('click', () => {
-          this.downloadFromGithub();
-        });
-        
-        // Close on escape
-        const escapeHandler = (e) => {
-          if (e.key === 'Escape') {
-            document.body.removeChild(modal);
-            document.removeEventListener('keydown', escapeHandler);
-          }
-        };
-        document.addEventListener('keydown', escapeHandler);
-        
-        document.body.appendChild(modal);
-      // Debug function to check title state
-      debugTitle() {
-        console.log('=== TITLE DEBUG ===');
-        console.log('Current section:', this.currentSection);
-        console.log('Config loaded:', !!this.config);
-        console.log('Sections available:', this.config?.sections?.length || 0);
-        
-        const titleElement = document.getElementById('currentSectionTitle');
-        console.log('Title element found:', !!titleElement);
-        console.log('Title element text:', titleElement?.textContent);
-        
-        if (this.currentSection > 0 && this.config?.sections) {
-          const section = this.config.sections[this.currentSection - 1];
-          console.log('Expected title:', section?.title);
-        }
-        
-        const tutorialContainer = document.getElementById('tutorialContainer');
-        console.log('Tutorial container active:', tutorialContainer?.classList.contains('active'));
-        console.log('==================');
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STATIC IMAGE CONTAINER -->
+    <div class="static-image-container">
+      <div class="image-transition-container" id="staticImageContainer">
+        <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Parameter Dialog -->
+  <div class="parameter-dialog" id="parameterDialog">
+    <h4 id="parameterTitle">Parameters</h4>
+    <div id="parameterContent"></div>
+    <button class="widget-btn" onclick="hideParameterDialog()" style="margin-top: 1rem;">Close</button>
+  </div>
+
+  <!-- Widget Fullscreen Modals -->
+  <div class="widget-fullscreen" id="tsvFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Euler Cycle TSV Data</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeTSVFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="tsvFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="rotationGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Rotation GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeRotationGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="rotationGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="perspectiveGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Perspective GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closePerspectiveGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="perspectiveGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="lineMindistGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>SDF Line Min Distance GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyLineMindistGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeLineMindistGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="lineMindistGLSLFullscreenContent"></div>
+  </div>
+
+  <!-- Copy Notification -->
+  <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    // Tutorial Section Configuration
+    const sectionConfig = {
+      1: { 
+        aspectRatio: "3615:1097", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/network_overview.png",
+        hotspots: []
+      },
+      2: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/chop_network.png",
+        hotspots: []
+      },
+      3: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_uv_control.png",
+        hotspots: [
+          { top: "35%", left: "17%", type: "select1-detailed" }
+        ]
+      },
+      4: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_velocity.png",
+        hotspots: [
+          { top: "4%", left: "29%", type: "math3-params" },
+          { top: "4%", left: "52%", type: "filter1-params" }
+        ]
+      },
+      5: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/centering_and_scaling.png",
+        hotspots: [
+          { top: "35%", left: "29%", type: "math1-params" },
+          { top: "35%", left: "41%", type: "speed2-params" }
+        ]
+      },
+      6: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/angular_velocity.png",
+        hotspots: [
+          { top: "30%", left: "65%", type: "math2-params" },
+          { top: "28%", left: "76%", type: "speed3-params" }
+        ]
+      },
+      7: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/mouse_wheel.png",
+        hotspots: [
+          { top: "67%", left: "3%", type: "mousein1-wheel" },
+          { top: "67%", left: "15%", type: "select2-params" },
+          { top: "67%", left: "29%", type: "filter4-params" },
+          { top: "67%", left: "41%", type: "filter3-params" },
+          { top: "67%", left: "53%", type: "filter2-params" }
+        ]
+      },
+      8: { 
+        aspectRatio: "1852:571", 
+        offset: {x: 0.1, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/merging_and_null.png",
+        hotspots: []
+      },
+      9: { 
+        aspectRatio: "1456:478", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/euler_in.png",
+        hotspots: []
+      },
+      10: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/rotate_vertex_glsl.png",
+        hotspots: [
+          { top: "35%", left: "40%", type: "vert_rotation" }
+        ]
+      },
+      11: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/prespective_glsl.png",
+        hotspots: [
+          { top: "40%", left: "50%", type: "vert_perspective" }
+        ]
+      },
+      12: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/2d_points_to_2d_lines.png",
+        hotspots: [
+          { top: "45%", left: "35%", type: "transform1" },
+          { top: "45%", left: "65%", type: "reorder1" }
+        ]
+      },
+      13: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/sdf_uneven_capsule.png",
+        hotspots: [
+          { top: "50%", left: "50%", type: "line_mindist" }
+        ]
+      },
+      14: { 
+        aspectRatio: "1920:571", 
+        offset: {x: 1.0, y: 0},
+        image: "Tesseract%20Tutorial%20Pictures/Network%20images/post_processing.png",
+        hotspots: []
       }
-      openTutorial() {
-        if (this.cleanupTimeout) {
-          clearTimeout(this.cleanupTimeout);
-          this.cleanupTimeout = null;
-        }
-        this.transitionToSection(1);
+    };
+
+    // Section titles for header
+    const sectionTitles = [
+      "TESSERACT Tutorial",
+      "TESSERACT Overview", 
+      "The CHOP Network",
+      "Input Data 1: Mouse UV Control",
+      "Rangeling CHOPs 1: Mouse Velocity",
+      "Rangeling CHOPs 2: Centering and Scaling", 
+      "Rangeling CHOPs 3: Angular Velocity",
+      "Rangeling CHOPs 4: Mouse Wheel",
+      "Rangeling CHOPs 5: Merging and Null",
+      "Input Data 2: Saved Data from TSV",
+      "Rotation Vertex GLSL",
+      "Perspective GLSL", 
+      "2D Points to 2D Lines",
+      "SDF Uneven Capsule",
+      "Post Processing"
+    ];
+
+    // Tutorial State
+    let currentSection = 0;
+    let previousSection = 0;
+    const totalSections = 15; // Hero + 14 tutorial sections
+    let tutorialOpen = false;
+    let cleanupTimeout = null;
+    let stickyHotspots = new Set(); // Track sticky hotspots
+
+    // Hypercube variables
+    let scene, camera, renderer, uniforms;
+    let mousePos = { x: 0, y: 0 };
+    let normalizedMouse = { x: 0, y: 0 };
+    let velocity = { x: 0, y: 0 };
+    let slowVelocity = { x: 0, y: 0 };
+    let angles = { rx: 0, ry: 0, rw: 0 };
+    let wheelVelocity = 0;
+    const maxSlowVelocity = 0.25;
+
+    // Mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Touch handling for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    // Image transition functions
+    function transitionToSection(newSection) {
+      if (newSection === currentSection) return;
+      
+      previousSection = currentSection;
+      currentSection = newSection;
+      
+      // Update section title in header
+      updateSectionTitle();
+      
+      // Handle section scroller
+      updateTutorial();
+      
+      // Handle image transitions in static container
+      if (currentSection > 0 && currentSection <= 14) {
+        transitionStaticImage(currentSection, previousSection);
+      }
+    }
+
+    function updateSectionTitle() {
+      const titleElement = document.getElementById('currentSectionTitle');
+      if (titleElement && currentSection >= 0 && currentSection < sectionTitles.length) {
+        titleElement.textContent = sectionTitles[currentSection];
+      }
+    }
+
+    function transitionStaticImage(newSection, oldSection) {
+      const config = sectionConfig[newSection];
+      if (!config) return;
+
+      const imageContainer = document.getElementById('staticImageContainer');
+      if (!imageContainer) return;
+
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
       }
 
-      closeTutorial() {
-        if (this.cleanupTimeout) {
-          clearTimeout(this.cleanupTimeout);
-          this.cleanupTimeout = null;
-        }
-        this.transitionToSection(0);
+      const existingImages = imageContainer.querySelectorAll('.tutorial-image');
+      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
+      
+      const newImage = document.createElement('img');
+      newImage.className = 'tutorial-image';
+      newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
+      newImage.src = config.image;
+
+      if (config.offset.x === 0 && config.offset.y === 0) {
+        newImage.style.transform = 'translate(0, 0)';
+        newImage.style.opacity = '0';
+        newImage.style.zIndex = '10';
+      } else {
+        const startX = config.offset.x * 100;
+        const startY = config.offset.y * 100;
+        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
+        newImage.style.opacity = '0';
+        newImage.style.zIndex = '10';
       }
 
-      goToPrevSection() {
-        if (this.currentSection > 1) {
-          this.transitionToSection(this.currentSection - 1);
-        }
+      if (currentImage) {
+        currentImage.style.zIndex = '5';
       }
 
-      goToNextSection() {
-        if (this.currentSection < this.totalSections) {
-          this.transitionToSection(this.currentSection + 1);
-        }
-      }
+      imageContainer.appendChild(newImage);
+      newImage.offsetHeight;
 
-      // Navigation methods
-      transitionToSection(newSection) {
-        if (newSection === this.currentSection) return;
-        
-        this.previousSection = this.currentSection;
-        this.currentSection = newSection;
-        
-        // Update tutorial state and title together
-        this.updateTutorial();
-        this.updateSectionTitle();
-        
-        if (this.currentSection > 0 && this.currentSection <= this.totalSections) {
-          this.transitionStaticImage(this.currentSection, this.previousSection);
-        }
-      }
+      updateHotspots(config.hotspots);
 
-      updateSectionTitle() {
-        const titleElement = document.getElementById('currentSectionTitle');
-        
-        if (!titleElement) {
-          console.error('currentSectionTitle element not found in DOM');
-          return;
-        }
-
-        if (!this.config || !this.config.sections) {
-          console.error('Config or sections not loaded');
-          titleElement.textContent = 'Loading...';
-          return;
-        }
-        
-        let newTitle = 'TESSERACT Tutorial';
-        
-        if (this.currentSection === 0) {
-          newTitle = 'TESSERACT Tutorial';
-        } else if (this.currentSection >= 1 && this.currentSection <= this.config.sections.length) {
-          const section = this.config.sections[this.currentSection - 1];
-          newTitle = section ? section.title : 'TESSERACT Tutorial';
-        }
-        
-        titleElement.textContent = newTitle;
-      }
-
-      updateTutorial() {
-        const scroller = document.getElementById('tutorialScroller');
-        const tutorialContainer = document.getElementById('tutorialContainer');
-        const progressBar = document.getElementById('progressBar');
-        
-        if (this.currentSection === 0) {
-          tutorialContainer.classList.remove('active');
-          progressBar.style.display = 'none';
-          this.tutorialOpen = false;
-        } else {
-          tutorialContainer.classList.add('active');
-          progressBar.style.display = 'flex';
-          this.tutorialOpen = true;
-          const offset = (this.currentSection - 1) * -100;
-          scroller.style.transform = `translateX(${offset}vw)`;
-        }
-        
-        this.updateProgressBar();
-      }
-
-      transitionStaticImage(newSection, oldSection) {
-        const sectionConfig = this.config.sections[newSection - 1];
-        if (!sectionConfig) return;
-
-        const imageContainer = document.getElementById('staticImageContainer');
-        if (!imageContainer) return;
-
-        if (this.cleanupTimeout) {
-          clearTimeout(this.cleanupTimeout);
-          this.cleanupTimeout = null;
-        }
-
-        const existingImages = imageContainer.querySelectorAll('.tutorial-image');
-        const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
-        
-        const newImage = document.createElement('img');
-        newImage.className = 'tutorial-image';
-        newImage.style.aspectRatio = sectionConfig.aspectRatio.replace(':', '/');
-        newImage.src = sectionConfig.image;
-
-        const offset = sectionConfig.scrollOffset;
-        if (offset.x === 0 && offset.y === 0) {
-          newImage.style.transform = 'translate(0, 0)';
-          newImage.style.opacity = '0';
-          newImage.style.zIndex = '10';
-        } else {
-          const startX = offset.x * 100;
-          const startY = offset.y * 100;
-          newImage.style.transform = `translate(${startX}%, ${startY}%)`;
-          newImage.style.opacity = '0';
-          newImage.style.zIndex = '10';
-        }
+      setTimeout(() => {
+        newImage.style.opacity = '1';
+        newImage.style.transform = 'translate(0, 0)';
 
         if (currentImage) {
-          currentImage.style.zIndex = '5';
-        }
-
-        imageContainer.appendChild(newImage);
-        newImage.offsetHeight;
-
-        // Update hotspots
-        this.updateHotspots(sectionConfig.hotspots || []);
-
-        setTimeout(() => {
-          newImage.style.opacity = '1';
-          newImage.style.transform = 'translate(0, 0)';
-
-          if (currentImage) {
-            if (offset.x === 0 && offset.y === 0) {
-              currentImage.style.opacity = '0';
-            } else {
-              const exitX = -offset.x * 100;
-              const exitY = -offset.y * 100;
-              currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
-              currentImage.style.opacity = '0';
-            }
-          }
-
-          this.cleanupTimeout = setTimeout(() => {
-            const allImages = imageContainer.querySelectorAll('.tutorial-image');
-            allImages.forEach(img => {
-              if (img !== newImage && img.parentNode === imageContainer) {
-                imageContainer.removeChild(img);
-              }
-            });
-            this.cleanupTimeout = null;
-          }, 850);
-        }, 10);
-      }
-
-      updateHotspots(hotspots) {
-        const hotspotContainer = document.getElementById('hotspotContainer');
-        if (!hotspotContainer) return;
-
-        // Clear existing hotspots
-        hotspotContainer.innerHTML = '';
-
-        // Don't show hotspots on mobile
-        if (this.isMobile) return;
-
-        hotspots.forEach((hotspot, index) => {
-          const element = document.createElement('div');
-          element.className = 'hotspot';
-          element.style.top = hotspot.top;
-          element.style.left = hotspot.left;
-          element.style.pointerEvents = 'auto';
-          element.dataset.hotspotId = index;
-          
-          element.onmouseenter = () => this.showParameterDialog(element, hotspot.type);
-          element.onmouseleave = () => this.hideParameterDialog();
-          element.onclick = () => this.toggleStickyHotspot(element, hotspot.type, index);
-          
-          hotspotContainer.appendChild(element);
-        });
-      }
-
-      showParameterDialog(element, type) {
-        // For now, just show a simple tooltip
-        // This could be expanded to show actual parameter images
-        const tooltip = document.createElement('div');
-        tooltip.className = 'parameter-tooltip';
-        tooltip.style.cssText = `
-          position: fixed;
-          background: rgba(0, 0, 0, 0.9);
-          color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 5px;
-          pointer-events: none;
-          z-index: 3000;
-          font-size: 0.8rem;
-          max-width: 200px;
-        `;
-        
-        const parameterNames = {
-          'select1-detailed': 'Select1 CHOP - Channel Selection',
-          'math3-params': 'Math3 CHOP Parameters',
-          'filter1-params': 'Filter1 CHOP Parameters',
-          'math1-params': 'Math1 CHOP Parameters',
-          'speed2-params': 'Speed2 CHOP Parameters',
-          'math2-params': 'Math2 CHOP Parameters',
-          'speed3-params': 'Speed3 CHOP Parameters',
-          'mousein1-wheel': 'MouseIn1 CHOP - Wheel Channel',
-          'select2-params': 'Select2 CHOP Parameters',
-          'filter4-params': 'Filter4 CHOP Parameters',
-          'filter3-params': 'Filter3 CHOP Parameters',
-          'filter2-params': 'Filter2 CHOP Parameters',
-          'vert_rotation': 'Vertex Rotation GLSL Parameters',
-          'vert_perspective': 'Vertex Perspective GLSL Parameters',
-          'transform1': 'Transform1 TOP Parameters',
-          'reorder1': 'Reorder1 CHOP Parameters',
-          'line_mindist': 'SDF Line Min Distance Parameters'
-        };
-        
-        tooltip.textContent = parameterNames[type] || 'Parameters';
-        
-        const rect = element.getBoundingClientRect();
-        tooltip.style.left = (rect.left + 45) + 'px';
-        tooltip.style.top = (rect.top - 50) + 'px';
-        
-        document.body.appendChild(tooltip);
-        this.currentTooltip = tooltip;
-      }
-
-      hideParameterDialog() {
-        if (this.currentTooltip) {
-          document.body.removeChild(this.currentTooltip);
-          this.currentTooltip = null;
-        }
-      }
-
-      toggleStickyHotspot(element, type, index) {
-        // Simple click handler - could be expanded for sticky behavior
-        console.log(`Clicked hotspot: ${type}`);
-      }
-
-      initProgressBar() {
-        const progressBar = document.getElementById('progressBar');
-        progressBar.innerHTML = '';
-        
-        for (let i = 1; i <= this.totalSections; i++) {
-          const dot = document.createElement('div');
-          dot.className = 'progress-dot';
-          if (i === this.currentSection) dot.classList.add('active');
-          dot.onclick = () => this.transitionToSection(i);
-          progressBar.appendChild(dot);
-        }
-      }
-
-      updateProgressBar() {
-        const dots = document.querySelectorAll('.progress-dot');
-        dots.forEach((dot, index) => {
-          dot.classList.toggle('active', (index + 1) === this.currentSection);
-        });
-      }
-
-      // Three.js Hypercube Implementation
-      async initHypercube() {
-        const canvas = document.getElementById('hypercube-canvas');
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-        
-        this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        
-        const vertexData = new Float32Array(33 * 4);
-        const vertices = [
-          [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
-          [0,1,0,1], [0,1,0,0], [0,1,1,0], [0,1,1,1], [1,1,1,1], [1,1,1,0], [1,1,0,0], [1,1,0,1],
-          [1,1,1,1], [1,0,1,1], [1,0,1,0], [1,0,0,0], [1,0,0,1], [1,0,1,1], [0,0,1,1], [0,0,1,0],
-          [1,0,1,0], [1,1,1,0], [0,1,1,0], [0,0,1,0], [0,0,0,0], [1,0,0,0], [1,1,0,0], [0,1,0,0],
-          [0,0,0,0]
-        ];
-        
-        vertices.forEach((vertex, i) => {
-          vertexData[i * 4] = (vertex[0] - 0.5) * 2;
-          vertexData[i * 4 + 1] = (vertex[1] - 0.5) * 2;
-          vertexData[i * 4 + 2] = (vertex[2] - 0.5) * 2;
-          vertexData[i * 4 + 3] = (vertex[3] - 0.5) * 2;
-        });
-        
-        const vertexTexture = new THREE.DataTexture(
-          vertexData, 33, 1, THREE.RGBAFormat, THREE.FloatType
-        );
-        vertexTexture.needsUpdate = true;
-        
-        const textTexture = await this.createTesseractTextTexture();
-        
-        const fragmentShader = `
-          uniform float u_time;
-          uniform vec2 u_resolution;
-          uniform sampler2D u_vertices;
-          uniform sampler2D u_textTexture;
-          uniform vec3 u_rotation;
-          uniform float u_lineWidth;
-          uniform float u_fov;
-          uniform float u_perspective;
-          uniform float u_cameraZ;
-          
-          mat4 rotateX(float angle) {
-            float c = cos(angle); float s = sin(angle);
-            return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, -s, 0.0, 0.0, s, c, 0.0, 0.0, 0.0, 0.0, 1.0);
-          }
-          
-          mat4 rotateY(float angle) {
-            float c = cos(angle); float s = sin(angle);
-            return mat4(c, 0.0, s, 0.0, 0.0, 1.0, 0.0, 0.0, -s, 0.0, c, 0.0, 0.0, 0.0, 0.0, 1.0);
-          }
-          
-          mat4 rotateWY(float angle) {
-            float c = cos(angle); float s = sin(angle);
-            return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, 0.0, -s, 0.0, 0.0, 1.0, 0.0, 0.0, s, 0.0, c);
-          }
-          
-          float distanceToLineSegment(vec2 p, vec2 a, vec2 b) {
-            vec2 pa = p - a; vec2 ba = b - a;
-            float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-            return length(pa - ba * h);
-          }
-          
-          vec2 project4DTo2D(vec4 point4D) {
-            vec3 pos3D = point4D.xyz * (point4D.w + u_perspective);
-            vec3 camPos = vec3(0.0, 0.0, u_cameraZ);
-            vec3 relPos = pos3D - camPos;
-            float f = 1.0 / tan(radians(u_fov) * 0.5);
-            vec2 projected = vec2(f * relPos.x / relPos.z, f * relPos.y / relPos.z);
-            return projected * 0.1;
-          }
-          
-          void main() {
-            vec2 st = gl_FragCoord.xy / u_resolution.xy;
-            vec2 screenSt = st;
-            st = (st - 0.5) * 2.0;
-            st.x *= u_resolution.x / u_resolution.y;
-            
-            vec4 textSample = texture2D(u_textTexture, screenSt);
-            float textMask = textSample.r;
-            
-            mat4 rotation = rotateWY(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
-            
-            float minDist = 1000.0;
-            
-            for (int i = 0; i < 32; i++) {
-              vec4 vertex1 = texture2D(u_vertices, vec2((float(i) + 0.5) / 33.0, 0.5));
-              vec4 vertex2 = texture2D(u_vertices, vec2((float(i + 1) + 0.5) / 33.0, 0.5));
-              
-              vertex1 = rotation * vertex1;
-              vertex2 = rotation * vertex2;
-              
-              vec2 p1 = project4DTo2D(vertex1);
-              vec2 p2 = project4DTo2D(vertex2);
-              
-              float dist = distanceToLineSegment(st, p1, p2);
-              minDist = min(minDist, dist);
-            }
-            
-            float intensity = smoothstep(0.0, u_lineWidth, minDist);
-            
-            vec3 lineColor = vec3(0.2, 0.8, 1.0);
-            vec3 glowColor = vec3(0.6, 0.3, 1.0);
-            vec3 bgColor = vec3(0.05, 0.05, 0.15);
-            
-            vec3 color = mix(lineColor, bgColor, intensity);
-            float glow = exp(-minDist * 30.0) * 0.5;
-            color += glow * glowColor;
-            
-            if (textMask > 0.1) {
-              float textGlow = exp(-minDist * 20.0) * 2.0;
-              vec3 textGlowColor = vec3(1.0, 0.8, 0.2);
-              color += textGlow * textGlowColor * textMask;
-              
-              if (minDist < u_lineWidth * 2.0) {
-                vec3 textLineColor = vec3(1.0, 0.9, 0.3);
-                float textInfluence = (1.0 - minDist / (u_lineWidth * 2.0)) * textMask;
-                color = mix(color, textLineColor, textInfluence * 0.7);
-              }
-              
-              float sparkleFreq = 15.0;
-              float sparkle = sin(st.x * sparkleFreq + u_time * 3.0) * sin(st.y * sparkleFreq + u_time * 2.5);
-              sparkle = pow(max(sparkle, 0.0), 3.0);
-              color += sparkle * 0.3 * textMask * vec3(1.0, 0.8, 0.4);
-            }
-            
-            float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
-            if (minDist < u_lineWidth * 0.5) {
-              float pulseMult = textMask > 0.1 ? 0.6 : 0.3;
-              color = mix(color, vec3(1.0), pulse * pulseMult);
-            }
-            
-            float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
-            color += sparkle * 0.05 * (1.0 - intensity) * (1.0 - textMask);
-            
-            gl_FragColor = vec4(color, 0.8);
-          }
-        `;
-
-        const vertexShader = `void main() { gl_Position = vec4(position, 1.0); }`;
-
-        this.uniforms = {
-          u_time: { value: 0.0 },
-          u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-          u_vertices: { value: vertexTexture },
-          u_textTexture: { value: textTexture },
-          u_rotation: { value: new THREE.Vector3(0, 0, 0) },
-          u_lineWidth: { value: 0.02 },
-          u_fov: { value: 7.0 },
-          u_perspective: { value: 2.3 },
-          u_cameraZ: { value: 10.0 }
-        };
-
-        const material = new THREE.ShaderMaterial({
-          uniforms: this.uniforms,
-          vertexShader: vertexShader,
-          fragmentShader: fragmentShader,
-          transparent: true
-        });
-
-        const plane = new THREE.PlaneGeometry(2, 2);
-        const mesh = new THREE.Mesh(plane, material);
-        this.scene.add(mesh);
-      }
-
-      async createTesseractTextTexture() {
-        await this.waitForFonts();
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        const baseFontSize = Math.min(window.innerWidth * 0.12, 144);
-        const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36);
-        
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        
-        ctx.font = `${baseFontSize}px "Spy Agency"`;
-        const titleY = centerY - 30;
-        ctx.fillText(this.config.tutorialTitle, centerX, titleY);
-        
-        ctx.font = `400 ${subtitleFontSize}px Orbitron`;
-        const subtitleLines = this.config.tutorialSubtitle.split('\n');
-        const subtitleY = titleY + baseFontSize * 0.8 + 20;
-        const lineSpacing = subtitleFontSize * 1.2;
-        
-        subtitleLines.forEach((line, index) => {
-          ctx.fillText(line, centerX, subtitleY + (index * lineSpacing));
-        });
-        
-        return new THREE.CanvasTexture(canvas);
-      }
-
-      async waitForFonts() {
-        return new Promise((resolve) => {
-          const testCanvas = document.createElement('canvas');
-          const testCtx = testCanvas.getContext('2d');
-          
-          function checkFonts() {
-            testCtx.font = '48px "Spy Agency", serif';
-            const spyAgencyWidth = testCtx.measureText('TESSERACT').width;
-            testCtx.font = '48px serif';
-            const serifWidth = testCtx.measureText('TESSERACT').width;
-            
-            if (Math.abs(spyAgencyWidth - serifWidth) > 1) {
-              resolve();
-            } else {
-              setTimeout(checkFonts, 100);
-            }
-          }
-          checkFonts();
-          setTimeout(resolve, 5000);
-        });
-      }
-
-      animate() {
-        requestAnimationFrame(() => this.animate());
-        
-        this.uniforms.u_time.value += 0.016;
-        
-        this.uniforms.u_rotation.value.x = this.angles.rx;
-        this.uniforms.u_rotation.value.y = this.angles.ry;
-        this.uniforms.u_rotation.value.z = this.angles.rw;
-        
-        this.angles.rx += this.velocity.x + this.slowVelocity.x;
-        this.angles.ry += this.velocity.y + this.slowVelocity.y;
-        this.angles.rw += this.wheelVelocity;
-        
-        this.velocity.x *= 0.95;
-        this.velocity.y *= 0.95;
-        this.wheelVelocity *= 0.96;
-        
-        const targetSlowVelX = this.normalizedMouse.y * 0.0125;
-        const targetSlowVelY = this.normalizedMouse.x * 0.0125;
-        
-        this.slowVelocity.x += (targetSlowVelX - this.slowVelocity.x) * 0.1;
-        this.slowVelocity.y += (targetSlowVelY - this.slowVelocity.y) * 0.1;
-        
-        const slowSpeed = Math.sqrt(this.slowVelocity.x * this.slowVelocity.x + this.slowVelocity.y * this.slowVelocity.y);
-        if (slowSpeed > this.maxSlowVelocity) {
-          this.slowVelocity.x = (this.slowVelocity.x / slowSpeed) * this.maxSlowVelocity;
-          this.slowVelocity.y = (this.slowVelocity.y / slowSpeed) * this.maxSlowVelocity;
-        }
-        
-        this.renderer.render(this.scene, this.camera);
-      }
-
-      setupEventListeners() {
-        // Mouse and touch events
-        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        document.addEventListener('wheel', (e) => this.onWheel(e));
-        
-        const canvas = document.getElementById('hypercube-canvas');
-        if (this.isMobile) {
-          canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
-          canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
-          canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
-        } else {
-          canvas.addEventListener('click', () => this.openTutorial());
-        }
-        
-        canvas.style.cursor = 'pointer';
-        
-        // Window resize
-        window.addEventListener('resize', () => this.onWindowResize());
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-          if (this.tutorialOpen) {
-            if (e.key === 'ArrowLeft') {
-              e.preventDefault();
-              this.goToPrevSection();
-            } else if (e.key === 'ArrowRight') {
-              e.preventDefault();
-              this.goToNextSection();
-            } else if (e.key === 'Escape') {
-              e.preventDefault();
-              this.closeTutorial();
-            }
-          }
-        });
-      }
-
-      setupHeroControls() {
-        const toggle = document.getElementById('heroSettingsToggle');
-        const panel = document.getElementById('heroControlsPanel');
-        
-        toggle.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (panel.style.display === 'none' || panel.style.display === '') {
-            panel.style.display = 'block';
+          if (config.offset.x === 0 && config.offset.y === 0) {
+            currentImage.style.opacity = '0';
           } else {
-            panel.style.display = 'none';
+            const exitX = -config.offset.x * 100;
+            const exitY = -config.offset.y * 100;
+            currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
+            currentImage.style.opacity = '0';
           }
-        });
+        }
 
-        panel.addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
+        cleanupTimeout = setTimeout(() => {
+          const allImages = imageContainer.querySelectorAll('.tutorial-image');
+          allImages.forEach(img => {
+            if (img !== newImage && img.parentNode === imageContainer) {
+              imageContainer.removeChild(img);
+            }
+          });
+          cleanupTimeout = null;
+        }, 850);
+      }, 10);
+    }
 
-        document.getElementById('hero-fov-control').addEventListener('input', (e) => {
-          if (this.uniforms) this.uniforms.u_fov.value = parseFloat(e.target.value);
-        });
+    function updateHotspots(hotspots) {
+      const hotspotContainer = document.getElementById('hotspotContainer');
+      if (!hotspotContainer) return;
 
-        document.getElementById('hero-perspective-control').addEventListener('input', (e) => {
-          if (this.uniforms) this.uniforms.u_perspective.value = parseFloat(e.target.value);
-        });
+      // Clear sticky hotspots and existing hotspots
+      stickyHotspots.clear();
+      hotspotContainer.innerHTML = '';
 
-        document.getElementById('hero-cameraz-control').addEventListener('input', (e) => {
-          if (this.uniforms) this.uniforms.u_cameraZ.value = parseFloat(e.target.value);
-        });
+      // Don't show hotspots on mobile
+      if (isMobile) return;
 
-        document.addEventListener('click', (e) => {
-          if (!toggle.contains(e.target) && !panel.contains(e.target)) {
-            panel.style.display = 'none';
-          }
-        });
-      }
-
-      // Event handlers
-      onMouseMove(event) {
-        if (this.tutorialOpen) return;
+      hotspots.forEach((hotspot, index) => {
+        const element = document.createElement('div');
+        element.className = 'hotspot';
+        element.style.top = hotspot.top;
+        element.style.left = hotspot.left;
+        element.style.pointerEvents = 'auto';
+        element.dataset.hotspotId = index;
         
-        const newMousePos = {
-          x: event.clientX / window.innerWidth,
-          y: event.clientY / window.innerHeight
+        element.onmouseenter = () => showParameterDialog(element, hotspot.type);
+        element.onmouseleave = () => {
+          if (!stickyHotspots.has(index)) {
+            hideParameterDialog();
+          }
+        };
+        element.onclick = () => {
+          const hotspotId = parseInt(element.dataset.hotspotId);
+          if (stickyHotspots.has(hotspotId)) {
+            stickyHotspots.delete(hotspotId);
+            element.classList.remove('sticky');
+            hideParameterDialog();
+          } else {
+            stickyHotspots.add(hotspotId);
+            element.classList.add('sticky');
+            showParameterDialog(element, hotspot.type);
+          }
         };
         
-        const deltaX = (newMousePos.x - this.mousePos.x) * 2.0;
-        const deltaY = (newMousePos.y - this.mousePos.y) * 2.0;
-        
-        this.velocity.x += deltaY * 0.15;
-        this.velocity.y += deltaX * 0.15;
-        
-        this.mousePos = newMousePos;
-        
-        this.normalizedMouse.x = (this.mousePos.x - 0.5) * 2;
-        this.normalizedMouse.y = (this.mousePos.y - 0.5) * 2;
-      }
+        hotspotContainer.appendChild(element);
+      });
+    }
 
-      onTouchStart(event) {
-        event.preventDefault();
+    // Initialize hypercube
+    async function initHypercube() {
+      const canvas = document.getElementById('hypercube-canvas');
+      scene = new THREE.Scene();
+      camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      const vertexData = new Float32Array(33 * 4);
+      const vertices = [
+        [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
+        [0,1,0,1], [0,1,0,0], [0,1,1,0], [0,1,1,1], [1,1,1,1], [1,1,1,0], [1,1,0,0], [1,1,0,1],
+        [1,1,1,1], [1,0,1,1], [1,0,1,0], [1,0,0,0], [1,0,0,1], [1,0,1,1], [0,0,1,1], [0,0,1,0],
+        [1,0,1,0], [1,1,1,0], [0,1,1,0], [0,0,1,0], [0,0,0,0], [1,0,0,0], [1,1,0,0], [0,1,0,0],
+        [0,0,0,0]
+      ];
+      
+      vertices.forEach((vertex, i) => {
+        vertexData[i * 4] = (vertex[0] - 0.5) * 2;
+        vertexData[i * 4 + 1] = (vertex[1] - 0.5) * 2;
+        vertexData[i * 4 + 2] = (vertex[2] - 0.5) * 2;
+        vertexData[i * 4 + 3] = (vertex[3] - 0.5) * 2;
+      });
+      
+      const vertexTexture = new THREE.DataTexture(
+        vertexData, 33, 1, THREE.RGBAFormat, THREE.FloatType
+      );
+      vertexTexture.needsUpdate = true;
+      
+      const textTexture = await createTesseractTextTexture();
+      
+      const fragmentShader = `
+        uniform float u_time;
+        uniform vec2 u_resolution;
+        uniform sampler2D u_vertices;
+        uniform sampler2D u_textTexture;
+        uniform vec3 u_rotation;
+        uniform float u_lineWidth;
+        uniform float u_fov;
+        uniform float u_perspective;
+        uniform float u_cameraZ;
+        
+        mat4 rotateX(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, -s, 0.0, 0.0, s, c, 0.0, 0.0, 0.0, 0.0, 1.0);
+        }
+        
+        mat4 rotateY(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(c, 0.0, s, 0.0, 0.0, 1.0, 0.0, 0.0, -s, 0.0, c, 0.0, 0.0, 0.0, 0.0, 1.0);
+        }
+        
+        mat4 rotateWY(float angle) {
+          float c = cos(angle); float s = sin(angle);
+          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, 0.0, -s, 0.0, 0.0, 1.0, 0.0, 0.0, s, 0.0, c);
+        }
+        
+        float distanceToLineSegment(vec2 p, vec2 a, vec2 b) {
+          vec2 pa = p - a; vec2 ba = b - a;
+          float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+          return length(pa - ba * h);
+        }
+        
+        vec2 project4DTo2D(vec4 point4D) {
+          vec3 pos3D = point4D.xyz * (point4D.w + u_perspective);
+          vec3 camPos = vec3(0.0, 0.0, u_cameraZ);
+          vec3 relPos = pos3D - camPos;
+          float f = 1.0 / tan(radians(u_fov) * 0.5);
+          vec2 projected = vec2(f * relPos.x / relPos.z, f * relPos.y / relPos.z);
+          return projected * 0.1;
+        }
+        
+        void main() {
+          vec2 st = gl_FragCoord.xy / u_resolution.xy;
+          vec2 screenSt = st;
+          st = (st - 0.5) * 2.0;
+          st.x *= u_resolution.x / u_resolution.y;
+          
+          vec4 textSample = texture2D(u_textTexture, screenSt);
+          float textMask = textSample.r;
+          
+          mat4 rotation = rotateWY(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
+          
+          float minDist = 1000.0;
+          
+          for (int i = 0; i < 32; i++) {
+            vec4 vertex1 = texture2D(u_vertices, vec2((float(i) + 0.5) / 33.0, 0.5));
+            vec4 vertex2 = texture2D(u_vertices, vec2((float(i + 1) + 0.5) / 33.0, 0.5));
+            
+            vertex1 = rotation * vertex1;
+            vertex2 = rotation * vertex2;
+            
+            vec2 p1 = project4DTo2D(vertex1);
+            vec2 p2 = project4DTo2D(vertex2);
+            
+            float dist = distanceToLineSegment(st, p1, p2);
+            minDist = min(minDist, dist);
+          }
+          
+          float intensity = smoothstep(0.0, u_lineWidth, minDist);
+          
+          vec3 lineColor = vec3(0.2, 0.8, 1.0);
+          vec3 glowColor = vec3(0.6, 0.3, 1.0);
+          vec3 bgColor = vec3(0.05, 0.05, 0.15);
+          
+          vec3 color = mix(lineColor, bgColor, intensity);
+          float glow = exp(-minDist * 30.0) * 0.5;
+          color += glow * glowColor;
+          
+          if (textMask > 0.1) {
+            float textGlow = exp(-minDist * 20.0) * 2.0;
+            vec3 textGlowColor = vec3(1.0, 0.8, 0.2);
+            color += textGlow * textGlowColor * textMask;
+            
+            if (minDist < u_lineWidth * 2.0) {
+              vec3 textLineColor = vec3(1.0, 0.9, 0.3);
+              float textInfluence = (1.0 - minDist / (u_lineWidth * 2.0)) * textMask;
+              color = mix(color, textLineColor, textInfluence * 0.7);
+            }
+            
+            float sparkleFreq = 15.0;
+            float sparkle = sin(st.x * sparkleFreq + u_time * 3.0) * sin(st.y * sparkleFreq + u_time * 2.5);
+            sparkle = pow(max(sparkle, 0.0), 3.0);
+            color += sparkle * 0.3 * textMask * vec3(1.0, 0.8, 0.4);
+          }
+          
+          float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
+          if (minDist < u_lineWidth * 0.5) {
+            float pulseMult = textMask > 0.1 ? 0.6 : 0.3;
+            color = mix(color, vec3(1.0), pulse * pulseMult);
+          }
+          
+          float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
+          color += sparkle * 0.05 * (1.0 - intensity) * (1.0 - textMask);
+          
+          gl_FragColor = vec4(color, 0.8);
+        }
+      `;
+
+      const vertexShader = `void main() { gl_Position = vec4(position, 1.0); }`;
+
+      uniforms = {
+        u_time: { value: 0.0 },
+        u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        u_vertices: { value: vertexTexture },
+        u_textTexture: { value: textTexture },
+        u_rotation: { value: new THREE.Vector3(0, 0, 0) },
+        u_lineWidth: { value: 0.02 },
+        u_fov: { value: 7.0 },
+        u_perspective: { value: 2.3 },
+        u_cameraZ: { value: 10.0 }
+      };
+
+      const material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        transparent: true
+      });
+
+      const plane = new THREE.PlaneGeometry(2, 2);
+      const mesh = new THREE.Mesh(plane, material);
+      scene.add(mesh);
+      
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('wheel', onWheel);
+      
+      // Mobile touch events
+      if (isMobile) {
+        canvas.addEventListener('touchstart', onTouchStart);
+        canvas.addEventListener('touchmove', onTouchMove);
+        canvas.addEventListener('touchend', onTouchEnd);
+      } else {
+        canvas.addEventListener('click', openTutorial);
+      }
+      
+      canvas.style.cursor = 'pointer';
+    }
+
+    // Create text texture for TESSERACT
+    async function createTesseractTextTexture() {
+      await waitForFonts();
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      const baseFontSize = Math.min(window.innerWidth * 0.12, 144);
+      const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      ctx.font = `${baseFontSize}px "Spy Agency"`;
+      const titleY = centerY - 30;
+      ctx.fillText('TESSERACT', centerX, titleY);
+      
+      ctx.font = `400 ${subtitleFontSize}px Orbitron`;
+      const subtitleLine1 = 'TouchDesigner Tutorial using GLSL';
+      const subtitleLine2 = 'click to start';
+      const subtitleY = titleY + baseFontSize * 0.8 + 20;
+      const lineSpacing = subtitleFontSize * 1.2;
+      
+      ctx.fillText(subtitleLine1, centerX, subtitleY);
+      ctx.fillText(subtitleLine2, centerX, subtitleY + lineSpacing);
+      
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    async function waitForFonts() {
+      return new Promise((resolve) => {
+        const testCanvas = document.createElement('canvas');
+        const testCtx = testCanvas.getContext('2d');
+        
+        function checkFonts() {
+          testCtx.font = '48px "Spy Agency", serif';
+          const spyAgencyWidth = testCtx.measureText('TESSERACT').width;
+          testCtx.font = '48px serif';
+          const serifWidth = testCtx.measureText('TESSERACT').width;
+          
+          if (Math.abs(spyAgencyWidth - serifWidth) > 1) {
+            resolve();
+          } else {
+            setTimeout(checkFonts, 100);
+          }
+        }
+        checkFonts();
+        setTimeout(resolve, 5000);
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      uniforms.u_time.value += 0.016;
+      
+      uniforms.u_rotation.value.x = angles.rx;
+      uniforms.u_rotation.value.y = angles.ry;
+      uniforms.u_rotation.value.z = angles.rw;
+      
+      angles.rx += velocity.x + slowVelocity.x;
+      angles.ry += velocity.y + slowVelocity.y;
+      angles.rw += wheelVelocity;
+      
+      velocity.x *= 0.95;
+      velocity.y *= 0.95;
+      wheelVelocity *= 0.96;
+      
+      const targetSlowVelX = normalizedMouse.y * 0.0125;
+      const targetSlowVelY = normalizedMouse.x * 0.0125;
+      
+      slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
+      slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+      
+      const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
+      if (slowSpeed > maxSlowVelocity) {
+        slowVelocity.x = (slowVelocity.x / slowSpeed) * maxSlowVelocity;
+        slowVelocity.y = (slowVelocity.y / slowSpeed) * maxSlowVelocity;
+      }
+      
+      renderer.render(scene, camera);
+    }
+
+    // Mouse and touch event handlers
+    function onMouseMove(event) {
+      if (tutorialOpen) return;
+      
+      const newMousePos = {
+        x: event.clientX / window.innerWidth,
+        y: event.clientY / window.innerHeight
+      };
+      
+      const deltaX = (newMousePos.x - mousePos.x) * 2.0;
+      const deltaY = (newMousePos.y - mousePos.y) * 2.0;
+      
+      velocity.x += deltaY * 0.15;
+      velocity.y += deltaX * 0.15;
+      
+      mousePos = newMousePos;
+      
+      normalizedMouse.x = (mousePos.x - 0.5) * 2;
+      normalizedMouse.y = (mousePos.y - 0.5) * 2;
+    }
+
+    // Mobile touch handlers
+    function onTouchStart(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
+
+    function onTouchMove(event) {
+      event.preventDefault();
+      if (!tutorialOpen) {
         const touch = event.touches[0];
-        this.touchStartX = touch.clientX;
-        this.touchStartY = touch.clientY;
+        const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
+        const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
+        
+        velocity.x += deltaY * 0.1;
+        velocity.y += deltaX * 0.1;
       }
+    }
 
-      onTouchMove(event) {
-        event.preventDefault();
-        if (!this.tutorialOpen) {
-          const touch = event.touches[0];
-          const deltaX = (touch.clientX - this.touchStartX) / window.innerWidth;
-          const deltaY = (touch.clientY - this.touchStartY) / window.innerHeight;
-          
-          this.velocity.x += deltaY * 0.1;
-          this.velocity.y += deltaX * 0.1;
+    function onTouchEnd(event) {
+      event.preventDefault();
+      if (!tutorialOpen) {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        // Swipe detection for opening tutorial
+        if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
+          openTutorial();
         }
-      }
-
-      onTouchEnd(event) {
-        event.preventDefault();
-        if (!this.tutorialOpen) {
-          const touch = event.changedTouches[0];
-          const deltaX = touch.clientX - this.touchStartX;
-          const deltaY = touch.clientY - this.touchStartY;
-          
-          if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
-            this.openTutorial();
-          }
-        } else {
-          const touch = event.changedTouches[0];
-          const deltaX = touch.clientX - this.touchStartX;
-          const deltaY = touch.clientY - this.touchStartY;
-          
-          if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-            if (deltaX > 0) {
-              this.goToPrevSection();
-            } else {
-              this.goToNextSection();
-            }
-          }
-        }
-      }
-
-      onWheel(event) {
-        if (this.tutorialOpen) {
-          event.preventDefault();
-          const delta = event.deltaY;
-          
-          if (delta > 0) {
-            this.goToNextSection();
+      } else {
+        // Swipe navigation in tutorial
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0) {
+            // Swipe right - previous section
+            goToPrevSection();
           } else {
-            this.goToPrevSection();
+            // Swipe left - next section
+            goToNextSection();
           }
-          return;
-        }
-        
-        const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
-        this.wheelVelocity += wheelDelta * 0.07;
-      }
-
-      onWindowResize() {
-        if (this.camera && this.renderer && this.uniforms) {
-          this.renderer.setSize(window.innerWidth, window.innerHeight);
-          this.uniforms.u_resolution.value.x = window.innerWidth;
-          this.uniforms.u_resolution.value.y = window.innerHeight;
-        }
-      }
-
-      // Navigation methods
-      openTutorial() {
-        if (this.cleanupTimeout) {
-          clearTimeout(this.cleanupTimeout);
-          this.cleanupTimeout = null;
-        }
-        
-        // Transition to first section
-        this.transitionToSection(1);
-      }
-
-      closeTutorial() {
-        if (this.cleanupTimeout) {
-          clearTimeout(this.cleanupTimeout);
-          this.cleanupTimeout = null;
-        }
-        this.transitionToSection(0);
-      }
-
-      goToPrevSection() {
-        if (this.currentSection > 1) {
-          this.transitionToSection(this.currentSection - 1);
-        }
-      }
-
-      goToNextSection() {
-        if (this.currentSection < this.totalSections) {
-          this.transitionToSection(this.currentSection + 1);
         }
       }
     }
 
-    // Global navigation functions for compatibility
-    function goToHero() {
-      if (window.tutorialSystem) {
-        window.tutorialSystem.closeTutorial();
+    function updateTutorial() {
+      const scroller = document.getElementById('tutorialScroller');
+      const tutorialContainer = document.getElementById('tutorialContainer');
+      const progressBar = document.getElementById('progressBar');
+      
+      if (currentSection === 0) {
+        tutorialContainer.classList.remove('active');
+        progressBar.style.display = 'none';
+        tutorialOpen = false;
+      } else {
+        tutorialContainer.classList.add('active');
+        progressBar.style.display = 'flex';
+        tutorialOpen = true;
+        const offset = (currentSection - 1) * -100;
+        scroller.style.transform = `translateX(${offset}vw)`;
       }
+      
+      updateProgressBar();
+    }
+
+    // Navigation functions
+    function openTutorial() {
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
+      }
+      transitionToSection(1);
+      initProgressBar();
+    }
+
+    function closeTutorial() {
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
+      }
+      transitionToSection(0);
+    }
+
+    function goToHero() {
+      closeTutorial();
     }
 
     function goToTutorialsPage() {
       window.open('https://truefiasco.org/tutorials', '_blank');
     }
 
-    function closeTutorial() {
-      if (window.tutorialSystem) {
-        window.tutorialSystem.closeTutorial();
+    function goToNextSection() {
+      if (currentSection < 14) {
+        transitionToSection(currentSection + 1);
       }
     }
 
     function goToPrevSection() {
-      if (window.tutorialSystem) {
-        window.tutorialSystem.goToPrevSection();
+      if (currentSection > 1) {
+        transitionToSection(currentSection - 1);
       }
     }
 
-    function goToNextSection() {
-      if (window.tutorialSystem) {
-        window.tutorialSystem.goToNextSection();
+    function downloadTesseractResources() {
+      // Open GitHub repository in new tab
+      window.open('https://github.com/TrueFiasco/TouchDesigner-Tesseract-Tutorial', '_blank');
+    }
+
+    function initProgressBar() {
+      const progressBar = document.getElementById('progressBar');
+      progressBar.innerHTML = '';
+      
+      for (let i = 1; i <= 14; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (i === currentSection) dot.classList.add('active');
+        dot.onclick = () => transitionToSection(i);
+        progressBar.appendChild(dot);
       }
     }
 
-    // Initialize tutorial system when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        window.tutorialSystem = new TutorialSystem();
+    function updateProgressBar() {
+      const dots = document.querySelectorAll('.progress-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', (index + 1) === currentSection);
       });
-    } else {
-      window.tutorialSystem = new TutorialSystem();
     }
+
+    // FIXED: Enhanced parameter dialog functions with smart positioning
+    function showParameterDialog(element, type) {
+      const dialog = document.getElementById('parameterDialog');
+      const title = document.getElementById('parameterTitle');
+      const content = document.getElementById('parameterContent');
+      
+      const parameterData = {
+        'math1-params': { title: 'Math1 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/math1.png' },
+        'mousein1-wheel': { title: 'MouseIn1 CHOP - Wheel Channel', image: 'Tesseract%20Tutorial%20Pictures/parameters/mousein1.png' },
+        'select2-params': { title: 'Select2 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/select2.png' },
+        'filter2-params': { title: 'Filter2 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/filter2.png' },
+        'filter3-params': { title: 'Filter3 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/filter3.png' },
+        'filter4-params': { title: 'Filter4 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/filter4.png' },
+        'vert_rotation': { title: 'Vertex Rotation GLSL Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/vert_rotation.png' },
+        'vert_perspective': { title: 'Vertex Perspective GLSL Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/vert_perspective.png' },
+        'transform1': { title: 'Transform1 TOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/transform1.png' },
+        'reorder1': { title: 'Reorder1 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/reorder1.png' },
+        'line_mindist': { title: 'SDF Line Min Distance Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/line_mindist.png' },
+        'limits-params': { title: 'Limits TOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/limits.png' },
+        'ramp-params': { title: 'Ramp TOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/ramp.png' },
+        'lookup-params': { title: 'Lookup TOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/lookup.png' },
+        'select1-detailed': { title: 'Select1 CHOP - Channel Selection', image: 'Tesseract%20Tutorial%20Pictures/parameters/select1.png' },
+        'math3-params': { title: 'Math3 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/math3.png' },
+        'filter1-params': { title: 'Filter1 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/filter1.png' },
+        'speed2-params': { title: 'Speed2 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/speed2.png' },
+        'math2-params': { title: 'Math2 CHOP Parameters', image: 'Tesseract%20Tutorial%20Pictures/parameters/math2.png' },
+        'speed3-params': { title: 'Speed3 CHOP Parameters', params: ['Integration method', 'Velocity to position', 'Frame rate: 60Hz'] }
+      };
+      
+      const data = parameterData[type] || { title: 'Parameters', params: ['Custom parameters will be shown here'] };
+      
+      title.textContent = data.title;
+      
+      if (data.image) {
+        content.innerHTML = `<img src="${data.image}" style="width: 100%; max-width: 525px; border-radius: 5px;" alt="${data.title}">`;
+      } else if (data.params) {
+        content.innerHTML = data.params.map(param => `<div class="parameter-item">${param}</div>`).join('');
+      } else {
+        content.innerHTML = '<div class="parameter-item">No parameters available</div>';
+      }
+      
+      // FIXED: Smart positioning logic to keep dialog within viewport bounds
+      const rect = element.getBoundingClientRect();
+      const dialogWidth = 600; // max-width from CSS
+      const dialogHeight = 400; // estimated height (adjust based on content)
+      const padding = 20; // minimum distance from screen edge
+      
+      let left = rect.left + 45; // default position (adjusted for larger hotspot)
+      let top = rect.top - 50;
+      
+      // Check right edge - if dialog would go off screen, position it to the left
+      if (left + dialogWidth > window.innerWidth - padding) {
+        left = rect.left - dialogWidth - 10; // Position to left of hotspot
+      }
+      
+      // Check left edge - ensure it doesn't go off the left side
+      if (left < padding) {
+        left = padding;
+      }
+      
+      // Check top edge - if dialog would go above screen, position it below
+      if (top < padding) {
+        top = rect.bottom + 10; // Position below hotspot
+      }
+      
+      // Check bottom edge - if dialog would go below screen, reposition
+      if (top + dialogHeight > window.innerHeight - padding) {
+        top = window.innerHeight - dialogHeight - padding;
+      }
+      
+      dialog.style.left = `${left}px`;
+      dialog.style.top = `${top}px`;
+      dialog.classList.add('active');
+    }
+
+    function hideParameterDialog() {
+      const dialog = document.getElementById('parameterDialog');
+      dialog.classList.remove('active');
+      
+      // Clear all sticky hotspots
+      stickyHotspots.clear();
+      document.querySelectorAll('.hotspot.sticky').forEach(hotspot => {
+        hotspot.classList.remove('sticky');
+      });
+    }
+
+    // Widget fullscreen functions - FIXED: Enhanced for proper scrolling
+    function showTSVFullscreen() {
+      const modal = document.getElementById('tsvFullscreen');
+      const content = document.getElementById('tsvFullscreenContent');
+      content.innerHTML = document.getElementById('tsvContent').innerHTML;
+      modal.classList.add('active');
+    }
+
+    function closeTSVFullscreen() {
+      document.getElementById('tsvFullscreen').classList.remove('active');
+    }
+
+    function showRotationGLSLFullscreen() {
+      const modal = document.getElementById('rotationGLSLFullscreen');
+      const content = document.getElementById('rotationGLSLFullscreenContent');
+      
+      // Get the code content and ensure it's properly structured for scrolling
+      const originalCodeContent = document.querySelector('#rotationGLSLContent .code-content');
+      const codeText = originalCodeContent.textContent;
+      
+      // Create properly structured content for fullscreen with explicit height
+      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+      modal.classList.add('active');
+    }
+
+    function closeRotationGLSLFullscreen() {
+      document.getElementById('rotationGLSLFullscreen').classList.remove('active');
+    }
+
+    function showPerspectiveGLSLFullscreen() {
+      const modal = document.getElementById('perspectiveGLSLFullscreen');
+      const content = document.getElementById('perspectiveGLSLFullscreenContent');
+      
+      // Get the code content and ensure it's properly structured for scrolling
+      const originalCodeContent = document.querySelector('#perspectiveGLSLContent .code-content');
+      const codeText = originalCodeContent.textContent;
+      
+      // Create properly structured content for fullscreen with explicit height
+      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+      modal.classList.add('active');
+    }
+
+    function closePerspectiveGLSLFullscreen() {
+      document.getElementById('perspectiveGLSLFullscreen').classList.remove('active');
+    }
+
+    function showLineMindistGLSLFullscreen() {
+      const modal = document.getElementById('lineMindistGLSLFullscreen');
+      const content = document.getElementById('lineMindistGLSLFullscreenContent');
+      
+      // Get the code content and ensure it's properly structured for scrolling
+      const originalCodeContent = document.querySelector('#lineMindistGLSLContent .code-content');
+      const codeText = originalCodeContent.textContent;
+      
+      // Create properly structured content for fullscreen with explicit height
+      content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+      modal.classList.add('active');
+    }
+
+    function closeLineMindistGLSLFullscreen() {
+      document.getElementById('lineMindistGLSLFullscreen').classList.remove('active');
+    }
+
+    // Copy notification helper
+    function showCopyNotification() {
+      const notification = document.getElementById('copyNotification');
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 2000);
+    }
+
+    // Copy to clipboard functions
+    function copyTSVToClipboard() {
+      const table = document.getElementById('tsvTable');
+      let tsvText = '';
+      
+      // Add header row
+      tsvText += 'tx\tty\ttz\ttw\n';
+      
+      // Add data rows
+      const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const rowData = [];
+        for (let cell of cells) {
+          rowData.push(cell.textContent);
+        }
+        tsvText += rowData.join('\t') + '\n';
+      }
+      
+      navigator.clipboard.writeText(tsvText).then(() => {
+        console.log('TSV data copied to clipboard');
+        showCopyNotification();
+      }).catch(err => {
+        console.error('Failed to copy TSV data: ', err);
+      });
+    }
+
+    function copyRotationGLSLToClipboard() {
+      // Check if fullscreen is active, if so copy from fullscreen content
+      const fullscreenModal = document.getElementById('rotationGLSLFullscreen');
+      let codeContent;
+      
+      if (fullscreenModal && fullscreenModal.classList.contains('active')) {
+        codeContent = document.querySelector('#rotationGLSLFullscreenContent .code-content');
+      } else {
+        codeContent = document.querySelector('#rotationGLSLContent .code-content');
+      }
+      
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Rotation GLSL code copied to clipboard');
+        showCopyNotification();
+      }).catch(err => {
+        console.error('Failed to copy rotation GLSL code: ', err);
+      });
+    }
+
+    function copyPerspectiveGLSLToClipboard() {
+      // Check if fullscreen is active, if so copy from fullscreen content
+      const fullscreenModal = document.getElementById('perspectiveGLSLFullscreen');
+      let codeContent;
+      
+      if (fullscreenModal && fullscreenModal.classList.contains('active')) {
+        codeContent = document.querySelector('#perspectiveGLSLFullscreenContent .code-content');
+      } else {
+        codeContent = document.querySelector('#perspectiveGLSLContent .code-content');
+      }
+      
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Perspective GLSL code copied to clipboard');
+        showCopyNotification();
+      }).catch(err => {
+        console.error('Failed to copy perspective GLSL code: ', err);
+      });
+    }
+
+    function copyLineMindistGLSLToClipboard() {
+      // Check if fullscreen is active, if so copy from fullscreen content
+      const fullscreenModal = document.getElementById('lineMindistGLSLFullscreen');
+      let codeContent;
+      
+      if (fullscreenModal && fullscreenModal.classList.contains('active')) {
+        codeContent = document.querySelector('#lineMindistGLSLFullscreenContent .code-content');
+      } else {
+        codeContent = document.querySelector('#lineMindistGLSLContent .code-content');
+      }
+      
+      const text = codeContent.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Line Mindist GLSL code copied to clipboard');
+        showCopyNotification();
+      }).catch(err => {
+        console.error('Failed to copy line mindist GLSL code: ', err);
+      });
+    }
+
+    // Hero settings panel functionality
+    function setupHeroControls() {
+      const toggle = document.getElementById('heroSettingsToggle');
+      const panel = document.getElementById('heroControlsPanel');
+      
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (panel.style.display === 'none' || panel.style.display === '') {
+          panel.style.display = 'block';
+        } else {
+          panel.style.display = 'none';
+        }
+      });
+
+      // Prevent tutorial opening when clicking on panel
+      panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      // Control inputs
+      document.getElementById('hero-fov-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_fov.value = parseFloat(e.target.value);
+      });
+
+      document.getElementById('hero-perspective-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_perspective.value = parseFloat(e.target.value);
+      });
+
+      document.getElementById('hero-cameraz-control').addEventListener('input', function(e) {
+        if (uniforms) uniforms.u_cameraZ.value = parseFloat(e.target.value);
+      });
+
+      // Close panel when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!toggle.contains(e.target) && !panel.contains(e.target)) {
+          panel.style.display = 'none';
+        }
+      });
+    }
+
+    // FIXED: Updated wheel event handling to allow scrolling in fullscreen modals
+    function onWheel(event) {
+      // Check if any fullscreen modal is open
+      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
+      
+      // If a modal is open, allow normal scrolling within the modal content
+      if (anyModalOpen) {
+        // Don't prevent default - allow normal scrolling
+        return;
+      }
+
+      // If tutorial is open but no modal, handle section navigation
+      if (tutorialOpen) {
+        event.preventDefault();
+        const delta = event.deltaY;
+        
+        if (delta > 0) {
+          goToNextSection();
+        } else {
+          goToPrevSection();
+        }
+        return;
+      }
+      
+      // If on hero page, handle wheel velocity for the hypercube
+      const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
+      wheelVelocity += wheelDelta * 0.07;
+    }
+
+    function onWindowResize() {
+      if (camera && renderer && uniforms) {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        uniforms.u_resolution.value.x = window.innerWidth;
+        uniforms.u_resolution.value.y = window.innerHeight;
+      }
+    }
+
+    async function init() {
+      await initHypercube();
+      setupHeroControls();
+      animate();
+      initProgressBar();
+      updateSectionTitle();
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    window.addEventListener('resize', onWindowResize);
+
+    // Close modals with escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeTSVFullscreen();
+        closeRotationGLSLFullscreen();
+        closePerspectiveGLSLFullscreen();
+        closeLineMindistGLSLFullscreen();
+        hideParameterDialog();
+      }
+    });
   </script>
 </body>
 </html>
