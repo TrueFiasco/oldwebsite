@@ -143,7 +143,7 @@
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.3);
       font-size: 0.9rem;
-      min-width: 250px;
+      min-width: 280px;
       display: none;
       pointer-events: auto;
     }
@@ -182,6 +182,25 @@
       outline: none;
       border-color: #4ecdc4;
       background: rgba(255, 255, 255, 0.15);
+    }
+
+    .info-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .info-section h4 {
+      color: #4ecdc4;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .info-section p {
+      margin-bottom: 0.3rem;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
     }
 
     /* Tutorial Container */
@@ -1121,6 +1140,17 @@
         <label for="hero-cameraz-control">Camera Z:</label>
         <input type="number" id="hero-cameraz-control" value="10" step="1" min="-100" max="50">
       </div>
+      
+      <!-- Mobile Accelerometer Toggle -->
+      <div class="control-group" id="accelerometerToggleGroup" style="display: none;">
+        <label for="accelerometer-toggle">Accelerometer:</label>
+        <input type="checkbox" id="accelerometer-toggle" style="width: auto; margin-left: 0.5rem;">
+      </div>
+      
+      <div class="info-section">
+        <h4>Controls Info</h4>
+        <p id="controlsInfo">• Move mouse to rotate in 3D space<br>• Scroll to rotate through 4th dimension</p>
+      </div>
     </div>
     
     <div class="hero-content">
@@ -1893,8 +1923,16 @@
     let wheelVelocity = 0;
     const maxSlowVelocity = 0.25;
 
-    // Mobile detection
+    // Mobile detection and accelerometer
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let accelerometerSupported = false;
+    let accelerometerEnabled = false;
+    let accelerometerPermission = false;
+
+    // Accelerometer data
+    let deviceAcceleration = { x: 0, y: 0, z: 0 };
+    let deviceOrientation = { alpha: 0, beta: 0, gamma: 0 };
+    let lastOrientation = { alpha: 0, beta: 0, gamma: 0 };
 
     // Touch handling for mobile
     let touchStartX = 0;
@@ -2062,12 +2100,6 @@
 
       if (config.offset.x === 0 && config.offset.y === 0) {
         newImage.style.transform = 'translate(0, 0)';
-        newImage.style.opacity = '0';
-        newImage.style.zIndex = '10';
-      } else {
-        const startX = config.offset.x * 100;
-        const startY = config.offset.y * 100;
-        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
         newImage.style.opacity = '0';
         newImage.style.zIndex = '10';
       }
@@ -2406,11 +2438,15 @@
       velocity.y *= 0.95;
       wheelVelocity *= 0.96;
       
-      const targetSlowVelX = normalizedMouse.y * 0.0125;
-      const targetSlowVelY = normalizedMouse.x * 0.0125;
-      
-      slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
-      slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+      // Only use mouse position for slow velocity if accelerometer is not enabled
+      if (!accelerometerEnabled) {
+        const targetSlowVelX = normalizedMouse.y * 0.0125;
+        const targetSlowVelY = normalizedMouse.x * 0.0125;
+        
+        slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
+        slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
+      }
+      // Note: When accelerometer is enabled, slowVelocity is updated in onDeviceOrientation
       
       const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
       if (slowSpeed > maxSlowVelocity) {
@@ -2419,76 +2455,6 @@
       }
       
       renderer.render(scene, camera);
-    }
-
-    // Mouse and touch event handlers
-    function onMouseMove(event) {
-      if (tutorialOpen) return;
-      
-      const newMousePos = {
-        x: event.clientX / window.innerWidth,
-        y: event.clientY / window.innerHeight
-      };
-      
-      const deltaX = (newMousePos.x - mousePos.x) * 2.0;
-      const deltaY = (newMousePos.y - mousePos.y) * 2.0;
-      
-      velocity.x += deltaY * 0.15;
-      velocity.y += deltaX * 0.15;
-      
-      mousePos = newMousePos;
-      
-      normalizedMouse.x = (mousePos.x - 0.5) * 2;
-      normalizedMouse.y = (mousePos.y - 0.5) * 2;
-    }
-
-    // Mobile touch handlers
-    function onTouchStart(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }
-
-    function onTouchMove(event) {
-      event.preventDefault();
-      if (!tutorialOpen) {
-        const touch = event.touches[0];
-        const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
-        const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
-        
-        velocity.x += deltaY * 0.1;
-        velocity.y += deltaX * 0.1;
-      }
-    }
-
-    function onTouchEnd(event) {
-      event.preventDefault();
-      if (!tutorialOpen) {
-        const touch = event.changedTouches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-        
-        // Swipe detection for opening tutorial
-        if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
-          openTutorial();
-        }
-      } else {
-        // Swipe navigation in tutorial
-        const touch = event.changedTouches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-        
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          if (deltaX > 0) {
-            // Swipe right - previous section
-            goToPrevSection();
-          } else {
-            // Swipe left - next section
-            goToNextSection();
-          }
-        }
-      }
     }
 
     function updateTutorial() {
@@ -2575,6 +2541,239 @@
       dots.forEach((dot, index) => {
         dot.classList.toggle('active', (index + 1) === currentSection);
       });
+    }
+
+    // Mouse and touch event handlers
+    function onMouseMove(event) {
+      if (tutorialOpen || (isMobile && accelerometerEnabled)) return;
+      
+      const newMousePos = {
+        x: event.clientX / window.innerWidth,
+        y: event.clientY / window.innerHeight
+      };
+      
+      const deltaX = (newMousePos.x - mousePos.x) * 2.0;
+      const deltaY = (newMousePos.y - mousePos.y) * 2.0;
+      
+      velocity.x += deltaY * 0.15;
+      velocity.y += deltaX * 0.15;
+      
+      mousePos = newMousePos;
+      
+      normalizedMouse.x = (mousePos.x - 0.5) * 2;
+      normalizedMouse.y = (mousePos.y - 0.5) * 2;
+    }
+
+    // Mobile touch handlers
+    function onTouchStart(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
+
+    function onTouchMove(event) {
+      event.preventDefault();
+      // Only handle touch movement if accelerometer is not enabled
+      if (!tutorialOpen && !accelerometerEnabled) {
+        const touch = event.touches[0];
+        const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
+        const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
+        
+        velocity.x += deltaY * 0.1;
+        velocity.y += deltaX * 0.1;
+      }
+    }
+
+    function onTouchEnd(event) {
+      event.preventDefault();
+      
+      // Request iOS permission on first touch if needed
+      requestiOSPermissionIfNeeded();
+      
+      if (!tutorialOpen) {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        // Swipe detection for opening tutorial
+        if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
+          openTutorial();
+        }
+      } else {
+        // Swipe navigation in tutorial
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0) {
+            // Swipe right - previous section
+            goToPrevSection();
+          } else {
+            // Swipe left - next section
+            goToNextSection();
+          }
+        }
+      }
+    }
+
+    // Accelerometer and Device Orientation Handlers
+    function onDeviceMotion(event) {
+      if (!accelerometerEnabled || tutorialOpen) return;
+      
+      // Get acceleration data (without gravity)
+      const accel = event.accelerationIncludingGravity;
+      if (accel) {
+        // Scale and apply acceleration as velocity (similar to mouse movement velocity)
+        // Device coordinate system: x = left/right, y = forward/back, z = up/down
+        
+        // Map device axes to hypercube rotations with sensitivity scaling
+        const accelSensitivity = 0.002; // Adjust this to match mouse sensitivity
+        
+        // Y acceleration (forward/back tilt) controls X rotation
+        velocity.x += accel.y * accelSensitivity;
+        // X acceleration (left/right tilt) controls Y rotation  
+        velocity.y += accel.x * accelSensitivity;
+        
+        // Optional: Use Z acceleration for additional effects
+        // velocity.z could control another parameter if needed
+      }
+    }
+
+    function onDeviceOrientation(event) {
+      if (!accelerometerEnabled || tutorialOpen) return;
+      
+      // Get orientation data
+      const alpha = event.alpha || 0; // Compass (0-360°)
+      const beta = event.beta || 0;   // Front/back tilt (-180 to 180°)
+      const gamma = event.gamma || 0; // Left/right tilt (-90 to 90°)
+      
+      // Store orientation data
+      deviceOrientation = { alpha, beta, gamma };
+      
+      // Use orientation as constant force (similar to mouse position)
+      const orientationSensitivity = 0.0001; // Much smaller than acceleration
+      
+      // Convert to normalized values and apply as slow velocity
+      // Beta (front/back) controls X rotation
+      const normalizedBeta = Math.max(-45, Math.min(45, beta)) / 45; // Clamp to ±45°
+      const targetSlowVelX = normalizedBeta * orientationSensitivity;
+      
+      // Gamma (left/right) controls Y rotation
+      const normalizedGamma = Math.max(-45, Math.min(45, gamma)) / 45; // Clamp to ±45°
+      const targetSlowVelY = normalizedGamma * orientationSensitivity;
+      
+      // Alpha rotation rate for W-axis (4th dimension)
+      const alphaDelta = alpha - lastOrientation.alpha;
+      // Handle 0-360° wraparound
+      let adjustedAlphaDelta = alphaDelta;
+      if (adjustedAlphaDelta > 180) adjustedAlphaDelta -= 360;
+      if (adjustedAlphaDelta < -180) adjustedAlphaDelta += 360;
+      
+      wheelVelocity += adjustedAlphaDelta * 0.001; // Scale rotation rate
+      
+      lastOrientation = { alpha, beta, gamma };
+      
+      // Update slow velocity targets (orientation becomes the constant force)
+      const forceBlend = 0.1; // How quickly to blend to target
+      slowVelocity.x += (targetSlowVelX - slowVelocity.x) * forceBlend;
+      slowVelocity.y += (targetSlowVelY - slowVelocity.y) * forceBlend;
+    }
+
+    // Accelerometer setup and permission handling
+    async function setupAccelerometer() {
+      if (!isMobile) return;
+      
+      // Check if DeviceMotionEvent and DeviceOrientationEvent are supported
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceOrientationEvent !== 'undefined') {
+        accelerometerSupported = true;
+        
+        // For iOS 13+ we need to request permission
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          // iOS requires user gesture, so we'll request permission on first interaction
+          accelerometerPermission = false; // Will be requested on first touch
+        } else {
+          // Android or older iOS - assume permission granted
+          accelerometerPermission = true;
+          
+          // Show the accelerometer toggle in settings
+          const toggleGroup = document.getElementById('accelerometerToggleGroup');
+          if (toggleGroup) {
+            toggleGroup.style.display = 'flex';
+          }
+          
+          // Auto-enable accelerometer on mobile
+          enableAccelerometer(true);
+        }
+        
+        // Update controls info
+        updateControlsInfo();
+      }
+    }
+
+    // iOS permission request on first user interaction
+    async function requestiOSPermissionIfNeeded() {
+      if (accelerometerSupported && !accelerometerPermission && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission === 'granted') {
+            accelerometerPermission = true;
+            
+            // Show the accelerometer toggle in settings
+            const toggleGroup = document.getElementById('accelerometerToggleGroup');
+            if (toggleGroup) {
+              toggleGroup.style.display = 'flex';
+            }
+            
+            // Auto-enable accelerometer
+            enableAccelerometer(true);
+            updateControlsInfo();
+          }
+        } catch (error) {
+          console.log('DeviceOrientation permission denied or failed:', error);
+        }
+      }
+    }
+
+    function enableAccelerometer(enable) {
+      if (!accelerometerSupported || !accelerometerPermission) return;
+      
+      if (enable && !accelerometerEnabled) {
+        // Add event listeners
+        window.addEventListener('devicemotion', onDeviceMotion);
+        window.addEventListener('deviceorientation', onDeviceOrientation);
+        accelerometerEnabled = true;
+        
+        // Update checkbox
+        const toggle = document.getElementById('accelerometer-toggle');
+        if (toggle) toggle.checked = true;
+        
+      } else if (!enable && accelerometerEnabled) {
+        // Remove event listeners
+        window.removeEventListener('devicemotion', onDeviceMotion);
+        window.removeEventListener('deviceorientation', onDeviceOrientation);
+        accelerometerEnabled = false;
+        
+        // Update checkbox
+        const toggle = document.getElementById('accelerometer-toggle');
+        if (toggle) toggle.checked = false;
+      }
+      
+      updateControlsInfo();
+    }
+
+    function updateControlsInfo() {
+      const controlsInfo = document.getElementById('controlsInfo');
+      if (!controlsInfo) return;
+      
+      if (isMobile && accelerometerEnabled) {
+        controlsInfo.innerHTML = '• Tilt device to rotate in 3D space<br>• Rotate device to control 4th dimension<br>• Touch to open tutorial';
+      } else if (isMobile) {
+        controlsInfo.innerHTML = '• Touch and drag to rotate<br>• Swipe to navigate sections<br>• Touch to open tutorial';
+      } else {
+        controlsInfo.innerHTML = '• Move mouse to rotate in 3D space<br>• Scroll to rotate through 4th dimension';
+      }
     }
 
     // FIXED: Enhanced parameter dialog functions with smart positioning
@@ -2862,6 +3061,14 @@
         if (uniforms) uniforms.u_cameraZ.value = parseFloat(e.target.value);
       });
 
+      // Accelerometer toggle
+      const accelerometerToggle = document.getElementById('accelerometer-toggle');
+      if (accelerometerToggle) {
+        accelerometerToggle.addEventListener('change', function(e) {
+          enableAccelerometer(e.target.checked);
+        });
+      }
+
       // Close panel when clicking outside
       document.addEventListener('click', (e) => {
         if (!toggle.contains(e.target) && !panel.contains(e.target)) {
@@ -2910,6 +3117,7 @@
     async function init() {
       await initHypercube();
       setupHeroControls();
+      await setupAccelerometer(); // Setup accelerometer for mobile
       loadDynamicContent(); // Load TSV and code snippets
       animate();
       initProgressBar();
@@ -2936,4 +3144,10 @@
     });
   </script>
 </body>
-</html>
+</html>';
+        newImage.style.zIndex = '10';
+      } else {
+        const startX = config.offset.x * 100;
+        const startY = config.offset.y * 100;
+        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
+        newImage.style.opacity = '0
