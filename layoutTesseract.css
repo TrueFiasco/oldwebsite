@@ -76,8 +76,9 @@ body {
   text-align: center;
   z-index: 2;
   pointer-events: none;
-  opacity: 0;
-  display: none; /* Completely hide hero content */
+  opacity: 1;
+  display: block;
+  pointer-events: auto;
 }
 
 .hero-title {
