@@ -1740,6 +1740,9 @@
 
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Tesseract Shader Module -->
+  <script src="shaderTesseract.js"></script>
 
   <script>
     // Tutorial Section Configuration
@@ -1883,22 +1886,8 @@
     let cleanupTimeout = null;
     let stickyHotspots = new Set(); // Track sticky hotspots
 
-    // Hypercube variables
-    let scene, camera, renderer, uniforms;
-    let mousePos = { x: 0, y: 0 };
-    let normalizedMouse = { x: 0, y: 0 };
-    let velocity = { x: 0, y: 0 };
-    let slowVelocity = { x: 0, y: 0 };
-    let angles = { rx: 0, ry: 0, rw: 0 };
-    let wheelVelocity = 0;
-    const maxSlowVelocity = 0.25;
-
     // Mobile detection
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // Touch handling for mobile
-    let touchStartX = 0;
-    let touchStartY = 0;
 
     // Data loading state
     let dataLoaded = {
@@ -1907,6 +1896,9 @@
       perspectiveGLSL: false,
       lineDistanceGLSL: false
     };
+
+    // Initialize Tesseract Shader instance
+    let tesseractShader = null;
 
     // Load dynamic content
     function loadDynamicContent() {
@@ -2148,347 +2140,6 @@
         
         hotspotContainer.appendChild(element);
       });
-    }
-
-    // Initialize hypercube
-    async function initHypercube() {
-      const canvas = document.getElementById('hypercube-canvas');
-      scene = new THREE.Scene();
-      camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-      
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      
-      const vertexData = new Float32Array(33 * 4);
-      const vertices = [
-        [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
-        [0,1,0,1], [0,1,0,0], [0,1,1,0], [0,1,1,1], [1,1,1,1], [1,1,1,0], [1,1,0,0], [1,1,0,1],
-        [1,1,1,1], [1,0,1,1], [1,0,1,0], [1,0,0,0], [1,0,0,1], [1,0,1,1], [0,0,1,1], [0,0,1,0],
-        [1,0,1,0], [1,1,1,0], [0,1,1,0], [0,0,1,0], [0,0,0,0], [1,0,0,0], [1,1,0,0], [0,1,0,0],
-        [0,0,0,0]
-      ];
-      
-      vertices.forEach((vertex, i) => {
-        vertexData[i * 4] = (vertex[0] - 0.5) * 2;
-        vertexData[i * 4 + 1] = (vertex[1] - 0.5) * 2;
-        vertexData[i * 4 + 2] = (vertex[2] - 0.5) * 2;
-        vertexData[i * 4 + 3] = (vertex[3] - 0.5) * 2;
-      });
-      
-      const vertexTexture = new THREE.DataTexture(
-        vertexData, 33, 1, THREE.RGBAFormat, THREE.FloatType
-      );
-      vertexTexture.needsUpdate = true;
-      
-      const textTexture = await createTesseractTextTexture();
-      
-      const fragmentShader = `
-        uniform float u_time;
-        uniform vec2 u_resolution;
-        uniform sampler2D u_vertices;
-        uniform sampler2D u_textTexture;
-        uniform vec3 u_rotation;
-        uniform float u_lineWidth;
-        uniform float u_fov;
-        uniform float u_perspective;
-        uniform float u_cameraZ;
-        
-        mat4 rotateX(float angle) {
-          float c = cos(angle); float s = sin(angle);
-          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, -s, 0.0, 0.0, s, c, 0.0, 0.0, 0.0, 0.0, 1.0);
-        }
-        
-        mat4 rotateY(float angle) {
-          float c = cos(angle); float s = sin(angle);
-          return mat4(c, 0.0, s, 0.0, 0.0, 1.0, 0.0, 0.0, -s, 0.0, c, 0.0, 0.0, 0.0, 0.0, 1.0);
-        }
-        
-        mat4 rotateWY(float angle) {
-          float c = cos(angle); float s = sin(angle);
-          return mat4(1.0, 0.0, 0.0, 0.0, 0.0, c, 0.0, -s, 0.0, 0.0, 1.0, 0.0, 0.0, s, 0.0, c);
-        }
-        
-        float distanceToLineSegment(vec2 p, vec2 a, vec2 b) {
-          vec2 pa = p - a; vec2 ba = b - a;
-          float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-          return length(pa - ba * h);
-        }
-        
-        vec2 project4DTo2D(vec4 point4D) {
-          vec3 pos3D = point4D.xyz * (point4D.w + u_perspective);
-          vec3 camPos = vec3(0.0, 0.0, u_cameraZ);
-          vec3 relPos = pos3D - camPos;
-          float f = 1.0 / tan(radians(u_fov) * 0.5);
-          vec2 projected = vec2(f * relPos.x / relPos.z, f * relPos.y / relPos.z);
-          return projected * 0.1;
-        }
-        
-        void main() {
-          vec2 st = gl_FragCoord.xy / u_resolution.xy;
-          vec2 screenSt = st;
-          st = (st - 0.5) * 2.0;
-          st.x *= u_resolution.x / u_resolution.y;
-          
-          vec4 textSample = texture2D(u_textTexture, screenSt);
-          float textMask = textSample.r;
-          
-          mat4 rotation = rotateWY(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
-          
-          float minDist = 1000.0;
-          
-          for (int i = 0; i < 32; i++) {
-            vec4 vertex1 = texture2D(u_vertices, vec2((float(i) + 0.5) / 33.0, 0.5));
-            vec4 vertex2 = texture2D(u_vertices, vec2((float(i + 1) + 0.5) / 33.0, 0.5));
-            
-            vertex1 = rotation * vertex1;
-            vertex2 = rotation * vertex2;
-            
-            vec2 p1 = project4DTo2D(vertex1);
-            vec2 p2 = project4DTo2D(vertex2);
-            
-            float dist = distanceToLineSegment(st, p1, p2);
-            minDist = min(minDist, dist);
-          }
-          
-          float intensity = smoothstep(0.0, u_lineWidth, minDist);
-          
-          vec3 lineColor = vec3(0.2, 0.8, 1.0);
-          vec3 glowColor = vec3(0.6, 0.3, 1.0);
-          vec3 bgColor = vec3(0.05, 0.05, 0.15);
-          
-          vec3 color = mix(lineColor, bgColor, intensity);
-          float glow = exp(-minDist * 30.0) * 0.5;
-          color += glow * glowColor;
-          
-          if (textMask > 0.1) {
-            float textGlow = exp(-minDist * 20.0) * 2.0;
-            vec3 textGlowColor = vec3(1.0, 0.8, 0.2);
-            color += textGlow * textGlowColor * textMask;
-            
-            if (minDist < u_lineWidth * 2.0) {
-              vec3 textLineColor = vec3(1.0, 0.9, 0.3);
-              float textInfluence = (1.0 - minDist / (u_lineWidth * 2.0)) * textMask;
-              color = mix(color, textLineColor, textInfluence * 0.7);
-            }
-            
-            float sparkleFreq = 15.0;
-            float sparkle = sin(st.x * sparkleFreq + u_time * 3.0) * sin(st.y * sparkleFreq + u_time * 2.5);
-            sparkle = pow(max(sparkle, 0.0), 3.0);
-            color += sparkle * 0.3 * textMask * vec3(1.0, 0.8, 0.4);
-          }
-          
-          float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
-          if (minDist < u_lineWidth * 0.5) {
-            float pulseMult = textMask > 0.1 ? 0.6 : 0.3;
-            color = mix(color, vec3(1.0), pulse * pulseMult);
-          }
-          
-          float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
-          color += sparkle * 0.05 * (1.0 - intensity) * (1.0 - textMask);
-          
-          gl_FragColor = vec4(color, 0.8);
-        }
-      `;
-
-      const vertexShader = `void main() { gl_Position = vec4(position, 1.0); }`;
-
-      uniforms = {
-        u_time: { value: 0.0 },
-        u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-        u_vertices: { value: vertexTexture },
-        u_textTexture: { value: textTexture },
-        u_rotation: { value: new THREE.Vector3(0, 0, 0) },
-        u_lineWidth: { value: 0.02 },
-        u_fov: { value: 7.0 },
-        u_perspective: { value: 2.3 },
-        u_cameraZ: { value: 10.0 }
-      };
-
-      const material = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: vertexShader,
-        fragmentShader: fragmentShader,
-        transparent: true
-      });
-
-      const plane = new THREE.PlaneGeometry(2, 2);
-      const mesh = new THREE.Mesh(plane, material);
-      scene.add(mesh);
-      
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('wheel', onWheel);
-      
-      // Mobile touch events
-      if (isMobile) {
-        canvas.addEventListener('touchstart', onTouchStart);
-        canvas.addEventListener('touchmove', onTouchMove);
-        canvas.addEventListener('touchend', onTouchEnd);
-      } else {
-        canvas.addEventListener('click', openTutorial);
-      }
-      
-      canvas.style.cursor = 'pointer';
-    }
-
-    // Create text texture for TESSERACT
-    async function createTesseractTextTexture() {
-      await waitForFonts();
-      
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      const baseFontSize = Math.min(window.innerWidth * 0.12, 144);
-      const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36);
-      
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      
-      ctx.font = `${baseFontSize}px "Spy Agency"`;
-      const titleY = centerY - 30;
-      ctx.fillText('TESSERACT', centerX, titleY);
-      
-      ctx.font = `400 ${subtitleFontSize}px Orbitron`;
-      const subtitleLine1 = 'TouchDesigner Tutorial using GLSL';
-      const subtitleLine2 = 'click to start';
-      const subtitleY = titleY + baseFontSize * 0.8 + 20;
-      const lineSpacing = subtitleFontSize * 1.2;
-      
-      ctx.fillText(subtitleLine1, centerX, subtitleY);
-      ctx.fillText(subtitleLine2, centerX, subtitleY + lineSpacing);
-      
-      return new THREE.CanvasTexture(canvas);
-    }
-
-    async function waitForFonts() {
-      return new Promise((resolve) => {
-        const testCanvas = document.createElement('canvas');
-        const testCtx = testCanvas.getContext('2d');
-        
-        function checkFonts() {
-          testCtx.font = '48px "Spy Agency", serif';
-          const spyAgencyWidth = testCtx.measureText('TESSERACT').width;
-          testCtx.font = '48px serif';
-          const serifWidth = testCtx.measureText('TESSERACT').width;
-          
-          if (Math.abs(spyAgencyWidth - serifWidth) > 1) {
-            resolve();
-          } else {
-            setTimeout(checkFonts, 100);
-          }
-        }
-        checkFonts();
-        setTimeout(resolve, 5000);
-      });
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      
-      uniforms.u_time.value += 0.016;
-      
-      uniforms.u_rotation.value.x = angles.rx;
-      uniforms.u_rotation.value.y = angles.ry;
-      uniforms.u_rotation.value.z = angles.rw;
-      
-      angles.rx += velocity.x + slowVelocity.x;
-      angles.ry += velocity.y + slowVelocity.y;
-      angles.rw += wheelVelocity;
-      
-      velocity.x *= 0.95;
-      velocity.y *= 0.95;
-      wheelVelocity *= 0.96;
-      
-      const targetSlowVelX = normalizedMouse.y * 0.0125;
-      const targetSlowVelY = normalizedMouse.x * 0.0125;
-      
-      slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
-      slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
-      
-      const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
-      if (slowSpeed > maxSlowVelocity) {
-        slowVelocity.x = (slowVelocity.x / slowSpeed) * maxSlowVelocity;
-        slowVelocity.y = (slowVelocity.y / slowSpeed) * maxSlowVelocity;
-      }
-      
-      renderer.render(scene, camera);
-    }
-
-    // Mouse and touch event handlers
-    function onMouseMove(event) {
-      if (tutorialOpen) return;
-      
-      const newMousePos = {
-        x: event.clientX / window.innerWidth,
-        y: event.clientY / window.innerHeight
-      };
-      
-      const deltaX = (newMousePos.x - mousePos.x) * 2.0;
-      const deltaY = (newMousePos.y - mousePos.y) * 2.0;
-      
-      velocity.x += deltaY * 0.15;
-      velocity.y += deltaX * 0.15;
-      
-      mousePos = newMousePos;
-      
-      normalizedMouse.x = (mousePos.x - 0.5) * 2;
-      normalizedMouse.y = (mousePos.y - 0.5) * 2;
-    }
-
-    // Mobile touch handlers
-    function onTouchStart(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }
-
-    function onTouchMove(event) {
-      event.preventDefault();
-      if (!tutorialOpen) {
-        const touch = event.touches[0];
-        const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
-        const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
-        
-        velocity.x += deltaY * 0.1;
-        velocity.y += deltaX * 0.1;
-      }
-    }
-
-    function onTouchEnd(event) {
-      event.preventDefault();
-      if (!tutorialOpen) {
-        const touch = event.changedTouches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-        
-        // Swipe detection for opening tutorial
-        if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
-          openTutorial();
-        }
-      } else {
-        // Swipe navigation in tutorial
-        const touch = event.changedTouches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-        
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          if (deltaX > 0) {
-            // Swipe right - previous section
-            goToPrevSection();
-          } else {
-            // Swipe left - next section
-            goToNextSection();
-          }
-        }
-      }
     }
 
     function updateTutorial() {
@@ -2830,46 +2481,6 @@
       });
     }
 
-    // Hero settings panel functionality
-    function setupHeroControls() {
-      const toggle = document.getElementById('heroSettingsToggle');
-      const panel = document.getElementById('heroControlsPanel');
-      
-      toggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (panel.style.display === 'none' || panel.style.display === '') {
-          panel.style.display = 'block';
-        } else {
-          panel.style.display = 'none';
-        }
-      });
-
-      // Prevent tutorial opening when clicking on panel
-      panel.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-
-      // Control inputs
-      document.getElementById('hero-fov-control').addEventListener('input', function(e) {
-        if (uniforms) uniforms.u_fov.value = parseFloat(e.target.value);
-      });
-
-      document.getElementById('hero-perspective-control').addEventListener('input', function(e) {
-        if (uniforms) uniforms.u_perspective.value = parseFloat(e.target.value);
-      });
-
-      document.getElementById('hero-cameraz-control').addEventListener('input', function(e) {
-        if (uniforms) uniforms.u_cameraZ.value = parseFloat(e.target.value);
-      });
-
-      // Close panel when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!toggle.contains(e.target) && !panel.contains(e.target)) {
-          panel.style.display = 'none';
-        }
-      });
-    }
-
     // FIXED: Updated wheel event handling to allow scrolling in fullscreen modals
     function onWheel(event) {
       // Check if any fullscreen modal is open
@@ -2894,26 +2505,24 @@
         return;
       }
       
-      // If on hero page, handle wheel velocity for the hypercube
-      const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
-      wheelVelocity += wheelDelta * 0.07;
-    }
-
-    function onWindowResize() {
-      if (camera && renderer && uniforms) {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        uniforms.u_resolution.value.x = window.innerWidth;
-        uniforms.u_resolution.value.y = window.innerHeight;
-      }
+      // If on hero page, the shader will handle wheel events for the hypercube
     }
 
     async function init() {
-      await initHypercube();
-      setupHeroControls();
+      // Initialize Tesseract shader
+      tesseractShader = new TesseractShader('hypercube-canvas', {
+        onTutorialOpen: openTutorial,
+        getTutorialState: () => tutorialOpen
+      });
+      
+      await tesseractShader.init();
+      
       loadDynamicContent(); // Load TSV and code snippets
-      animate();
       initProgressBar();
       updateSectionTitle();
+      
+      // Setup wheel event for tutorial navigation
+      document.addEventListener('wheel', onWheel);
     }
     
     if (document.readyState === 'loading') {
@@ -2921,8 +2530,6 @@
     } else {
       init();
     }
-
-    window.addEventListener('resize', onWindowResize);
 
     // Close modals with escape key
     document.addEventListener('keydown', (e) => {
