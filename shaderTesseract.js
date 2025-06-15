@@ -106,8 +106,8 @@ class TesseractShader {
     const mesh = new THREE.Mesh(plane, material);
     this.scene.add(mesh);
     
-    // Set cursor style
-    canvas.style.cursor = 'pointer';
+    // REMOVED: Set cursor style to pointer (no longer clickable)
+    // canvas.style.cursor = 'pointer';
   }
 
   /**
@@ -324,13 +324,12 @@ class TesseractShader {
     document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     document.addEventListener('wheel', (e) => this.onWheel(e));
     
-    // Canvas click/touch events
+    // REMOVED: Canvas click events (no longer needed for tutorial trigger)
+    // Canvas touch events (only for mobile gestures, not tutorial trigger)
     if (this.isMobile) {
       canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
       canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
       canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
-    } else {
-      canvas.addEventListener('click', () => this.onCanvasClick());
     }
     
     // Window resize
@@ -494,16 +493,8 @@ class TesseractShader {
 
   onTouchEnd(event) {
     event.preventDefault();
-    if (!this.getTutorialState()) {
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - this.touchStartX;
-      const deltaY = touch.clientY - this.touchStartY;
-      
-      // Tap detection for opening tutorial
-      if (Math.abs(deltaX) < 50 && Math.abs(deltaY) < 50) {
-        this.onCanvasClick();
-      }
-    }
+    // REMOVED: Tutorial opening via tap detection
+    // Touch events now only handle hypercube rotation gestures
   }
 
   onWheel(event) {
@@ -514,9 +505,7 @@ class TesseractShader {
     this.wheelVelocity += wheelDelta * 0.07;
   }
 
-  onCanvasClick() {
-    this.onTutorialOpen();
-  }
+  // REMOVED: onCanvasClick() method (no longer needed)
 
   onWindowResize() {
     if (this.camera && this.renderer && this.uniforms) {
@@ -543,7 +532,7 @@ class TesseractShader {
     
     const canvas = document.getElementById(this.canvasId);
     if (canvas) {
-      canvas.removeEventListener('click', this.onCanvasClick);
+      // REMOVED: click event listener removal (no longer exists)
       canvas.removeEventListener('touchstart', this.onTouchStart);
       canvas.removeEventListener('touchmove', this.onTouchMove);
       canvas.removeEventListener('touchend', this.onTouchEnd);
