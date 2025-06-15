@@ -25,6 +25,22 @@
   font-display: swap;
 }
 
+.hero-start-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid rgba(0, 255, 255, 0.5);
+  color: #00ffff;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-start-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
 /* === BASE STYLES & RESET === */
 * {
   margin: 0;
