@@ -593,589 +593,20 @@
     <!-- Tutorial transition overlay -->
     <div class="tutorial-transition" id="tutorialTransition"></div>
 
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Tesseract Shader Module -->
+    <script src="shaderTesseract.js"></script>
+
     <script>
-        // Hypercube vertices from TouchDesigner (33 points in Euler cycle)
-        const hypercubeVertices = [
-            [0,0,0,0], [0,0,0,1], [1,0,0,1], [1,1,0,1], [0,1,0,1], [0,0,0,1], [0,0,1,1], [0,1,1,1],
-            [0,1,0,1], [0,1,0,0], [0,1,1,0], [0,1,1,1], [1,1,1,1], [1,1,1,0], [1,1,0,0], [1,1,0,1],
-            [1,1,1,1], [1,0,1,1], [1,0,1,0], [1,0,0,0], [1,0,0,1], [1,0,1,1], [0,0,1,1], [0,0,1,0],
-            [1,0,1,0], [1,1,1,0], [0,1,1,0], [0,0,1,0], [0,0,0,0], [1,0,0,0], [1,1,0,0], [0,1,0,0],
-            [0,0,0,0]
-        ];
-
-        // Animation and interaction variables
-        let scene, camera, renderer, uniforms;
-        let mousePos = { x: 0, y: 0 };
-        let normalizedMouse = { x: 0, y: 0 };
-        let velocity = { x: 0, y: 0 };
-        let slowVelocity = { x: 0, y: 0 };
-        let angles = { rx: 0, ry: 0, rw: 0 };
-        let wheelVelocity = 0;
-        
-        // Toggle states for velocity control
-        let velocityEnabled = { rx: true, ry: true, rw: true };
-        
-        // Smoothing filters
-        let mouseHistory = [];
-        let wheelHistory = [];
-        const historyLength = 30; // 0.5 seconds at 60fps
-        const maxSlowVelocity = 0.25;
-
         // Tutorial navigation state
         let tutorialTransitioning = false;
-
-        // Function to wait for fonts to load
-        function waitForFonts() {
-            return new Promise((resolve) => {
-                const testCanvas = document.createElement('canvas');
-                const testCtx = testCanvas.getContext('2d');
-                
-                function checkFonts() {
-                    // Test Spy Agency
-                    testCtx.font = '48px "Spy Agency", serif';
-                    const spyAgencyWidth = testCtx.measureText('TRUE FIASCO').width;
-                    
-                    testCtx.font = '48px serif';
-                    const serifWidth = testCtx.measureText('TRUE FIASCO').width;
-                    
-                    // Test Orbitron
-                    testCtx.font = '500 48px Orbitron, sans-serif';
-                    const orbitronWidth = testCtx.measureText('Start Learning').width;
-                    
-                    testCtx.font = '500 48px sans-serif';
-                    const sansSerifWidth = testCtx.measureText('Start Learning').width;
-                    
-                    // If both fonts have loaded (widths are different from fallbacks)
-                    if (Math.abs(spyAgencyWidth - serifWidth) > 1 && 
-                        Math.abs(orbitronWidth - sansSerifWidth) > 1) {
-                        console.log('Both fonts loaded successfully!');
-                        resolve();
-                    } else {
-                        console.log('Waiting for fonts to load...');
-                        setTimeout(checkFonts, 100);
-                    }
-                }
-                
-                checkFonts();
-                
-                // Fallback timeout after 5 seconds
-                setTimeout(() => {
-                    console.log('Font loading timeout reached');
-                    resolve();
-                }, 5000);
-            });
-        }
-
-        // Function to create text texture
-        async function createTextTexture() {
-            console.log('Creating text texture...');
-            
-            // Wait for fonts to load first
-            await waitForFonts();
-            console.log('Fonts loaded! Creating canvas...');
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Add roundRect polyfill if not available
-            if (!ctx.roundRect) {
-                ctx.roundRect = function(x, y, width, height, radius) {
-                    this.beginPath();
-                    this.moveTo(x + radius, y);
-                    this.lineTo(x + width - radius, y);
-                    this.quadraticCurveTo(x + width, y, x + width, y + radius);
-                    this.lineTo(x + width, y + height - radius);
-                    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                    this.lineTo(x + radius, y + height);
-                    this.quadraticCurveTo(x, y + height, x, y + height - radius);
-                    this.lineTo(x, y + radius);
-                    this.quadraticCurveTo(x, y, x + radius, y);
-                    this.closePath();
-                };
-            }
-            
-            // Set canvas size to match window
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Get hero section bounds
-            const heroSection = document.querySelector('.hero-section');
-            const heroContent = document.querySelector('.hero-content');
-            const heroTitle = document.querySelector('.hero-title');
-            const heroSubtitle = document.querySelector('.hero-subtitle');
-            const ctaButton = document.querySelector('.cta-button');
-            
-            if (!heroSection || !heroContent) return null;
-            
-            const heroRect = heroSection.getBoundingClientRect();
-            const contentRect = heroContent.getBoundingClientRect();
-            
-            // Set text properties
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            // Calculate responsive font sizes based on window size (50% bigger)
-            const baseFontSize = Math.min(window.innerWidth * 0.12, 144); // 50% bigger: was 0.08, 96
-            const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36); // 50% bigger: was 0.024, 24
-            const buttonFontSize = Math.min(window.innerWidth * 0.027, 27); // 50% bigger: was 0.018, 18
-            
-            // Position text to match the hero section layout
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Draw main title with Spy Agency
-            ctx.font = `${baseFontSize}px "Spy Agency"`;
-            console.log('Title font:', ctx.font);
-            console.log('Title text width:', ctx.measureText('TRUE FIASCO').width);
-            const titleY = centerY - 60;
-            ctx.fillText('TRUE FIASCO', centerX, titleY);
-            
-            // Draw subtitle with line break
-            ctx.font = `400 ${subtitleFontSize}px Orbitron`;
-            const subtitleLine1 = 'Explore higher dimensions through';
-            const subtitleLine2 = 'immersive visualization';
-            const subtitleY = titleY + baseFontSize * 0.8 + 20;
-            const lineSpacing = subtitleFontSize * 1.2; // 20% more than font size for line spacing
-            
-            ctx.fillText(subtitleLine1, centerX, subtitleY);
-            ctx.fillText(subtitleLine2, centerX, subtitleY + lineSpacing);
-            
-            // Draw CTA button outline (we'll make it hollow so light can go through)
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 2;
-            ctx.font = `500 ${buttonFontSize}px Orbitron`; // Medium weight
-            console.log('Button font:', ctx.font);
-            
-            const buttonText = 'Start Learning';
-            const buttonMetrics = ctx.measureText(buttonText);
-            const buttonWidth = buttonMetrics.width + 90; // 50% bigger: was 60
-            const buttonHeight = 75; // 50% bigger: was 50
-            const buttonY = subtitleY + lineSpacing + subtitleFontSize + 60; // Account for two-line subtitle
-            const buttonX = centerX;
-            
-            // Draw button border
-            ctx.beginPath();
-            ctx.roundRect(buttonX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 37); // 50% bigger radius: was 25
-            ctx.stroke();
-            
-            // Draw button text
-            ctx.fillText(buttonText, buttonX, buttonY);
-            
-            return canvas;
-        }
-
-        async function initHypercube() {
-            scene = new THREE.Scene();
-            camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-            
-            renderer = new THREE.WebGLRenderer({
-                canvas: document.getElementById('hypercube-canvas'),
-                alpha: true,
-                antialias: false // Disable for better performance
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            // Create vertex texture
-            const vertexData = new Float32Array(33 * 4);
-            hypercubeVertices.forEach((vertex, i) => {
-                vertexData[i * 4] = (vertex[0] - 0.5) * 2; // Center and scale
-                vertexData[i * 4 + 1] = (vertex[1] - 0.5) * 2;
-                vertexData[i * 4 + 2] = (vertex[2] - 0.5) * 2;
-                vertexData[i * 4 + 3] = (vertex[3] - 0.5) * 2;
-            });
-            
-            const vertexTexture = new THREE.DataTexture(
-                vertexData, 33, 1, THREE.RGBAFormat, THREE.FloatType
-            );
-            vertexTexture.needsUpdate = true;
-            
-            // Create text texture (now waits for fonts)
-            const textCanvas = await createTextTexture();
-            let textTexture = null;
-            if (textCanvas) {
-                textTexture = new THREE.CanvasTexture(textCanvas);
-                textTexture.needsUpdate = true;
-            } else {
-                // Create a blank texture as fallback
-                const blankCanvas = document.createElement('canvas');
-                blankCanvas.width = window.innerWidth;
-                blankCanvas.height = window.innerHeight;
-                textTexture = new THREE.CanvasTexture(blankCanvas);
-            }
-
-            // Vertex shader (pass-through)
-            const vertexShader = `
-                void main() {
-                    gl_Position = vec4(position, 1.0);
-                }
-            `;
-
-            // Fragment shader combining rotation, projection, and distance field
-            const fragmentShader = `
-                uniform float u_time;
-                uniform vec2 u_resolution;
-                uniform sampler2D u_vertices;
-                uniform sampler2D u_textTexture;
-                uniform vec3 u_rotation; // rx, ry, rw
-                uniform float u_lineWidth;
-                uniform float u_fov; // 60 degrees
-                uniform float u_perspective; // 2.3
-                uniform float u_cameraZ; // -30
-                
-                // 4D rotation matrices
-                mat4 rotateX(float angle) {
-                    float c = cos(angle);
-                    float s = sin(angle);
-                    return mat4(
-                        1.0, 0.0, 0.0, 0.0,
-                        0.0, c, -s, 0.0,
-                        0.0, s, c, 0.0,
-                        0.0, 0.0, 0.0, 1.0
-                    );
-                }
-                
-                mat4 rotateY(float angle) {
-                    float c = cos(angle);
-                    float s = sin(angle);
-                    return mat4(
-                        c, 0.0, s, 0.0,
-                        0.0, 1.0, 0.0, 0.0,
-                        -s, 0.0, c, 0.0,
-                        0.0, 0.0, 0.0, 1.0
-                    );
-                }
-                
-                mat4 rotateWY(float angle) {
-                    float c = cos(angle);
-                    float s = sin(angle);
-                    return mat4(
-                        1.0, 0.0, 0.0, 0.0,
-                        0.0, c, 0.0, -s,
-                        0.0, 0.0, 1.0, 0.0,
-                        0.0, s, 0.0, c
-                    );
-                }
-                
-                // Distance from point to line segment
-                float distanceToLineSegment(vec2 p, vec2 a, vec2 b) {
-                    vec2 pa = p - a;
-                    vec2 ba = b - a;
-                    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-                    return length(pa - ba * h);
-                }
-                
-                // Project 4D point to 2D using exact TouchDesigner method
-                vec2 project4DTo2D(vec4 point4D) {
-                    // Apply perspective scaling: pos.rgb *= pos.a + uPerspective
-                    vec3 pos3D = point4D.xyz * (point4D.w + u_perspective);
-                    
-                    // Translate point relative to camera
-                    vec3 camPos = vec3(0.0, 0.0, u_cameraZ);
-                    vec3 relPos = pos3D - camPos;
-                    
-                    // Convert FOV to focal length
-                    float f = 1.0 / tan(radians(u_fov) * 0.5);
-                    
-                    // Perform perspective divide
-                    vec2 projected;
-                    projected.x = f * relPos.x / relPos.z;
-                    projected.y = f * relPos.y / relPos.z;
-                    
-                    return projected * 0.1; // Scale for screen visibility
-                }
-                
-                void main() {
-                    vec2 st = gl_FragCoord.xy / u_resolution.xy;
-                    vec2 screenSt = st; // Keep original screen coordinates for text sampling
-                    st = (st - 0.5) * 2.0; // Convert to [-1, 1]
-                    
-                    // Apply aspect ratio correction
-                    st.x *= u_resolution.x / u_resolution.y;
-                    
-                    // Sample text texture
-                    vec4 textSample = texture2D(u_textTexture, screenSt);
-                    float textMask = textSample.r; // Use red channel as mask
-                    
-                    // Create rotation matrix
-                    mat4 rotation = rotateWY(u_rotation.z) * rotateY(u_rotation.y) * rotateX(u_rotation.x);
-                    
-                    float minDist = 1000.0;
-                    
-                    // Process all line segments
-                    for (int i = 0; i < 32; i++) {
-                        // Get two consecutive vertices
-                        vec4 vertex1 = texture2D(u_vertices, vec2((float(i) + 0.5) / 33.0, 0.5));
-                        vec4 vertex2 = texture2D(u_vertices, vec2((float(i + 1) + 0.5) / 33.0, 0.5));
-                        
-                        // Apply 4D rotation
-                        vertex1 = rotation * vertex1;
-                        vertex2 = rotation * vertex2;
-                        
-                        // Project to 2D
-                        vec2 p1 = project4DTo2D(vertex1);
-                        vec2 p2 = project4DTo2D(vertex2);
-                        
-                        // Calculate distance to line segment
-                        float dist = distanceToLineSegment(st, p1, p2);
-                        minDist = min(minDist, dist);
-                    }
-                    
-                    // Create visual effect
-                    float intensity = smoothstep(0.0, u_lineWidth, minDist);
-                    
-                    // Color scheme
-                    vec3 lineColor = vec3(0.2, 0.8, 1.0);
-                    vec3 glowColor = vec3(0.6, 0.3, 1.0);
-                    vec3 bgColor = vec3(0.05, 0.05, 0.15);
-                    
-                    // Base line
-                    vec3 color = mix(lineColor, bgColor, intensity);
-                    
-                    // Add glow
-                    float glow = exp(-minDist * 30.0) * 0.5;
-                    color += glow * glowColor;
-                    
-                    // Text interaction: where text exists, enhance the glow and change color
-                    if (textMask > 0.1) {
-                        // Enhance glow in text areas
-                        float textGlow = exp(-minDist * 20.0) * 2.0;
-                        vec3 textGlowColor = vec3(1.0, 0.8, 0.2); // Golden glow for text
-                        color += textGlow * textGlowColor * textMask;
-                        
-                        // Make lines brighter near text
-                        if (minDist < u_lineWidth * 2.0) {
-                            vec3 textLineColor = vec3(1.0, 0.9, 0.3);
-                            float textInfluence = (1.0 - minDist / (u_lineWidth * 2.0)) * textMask;
-                            color = mix(color, textLineColor, textInfluence * 0.7);
-                        }
-                        
-                        // Add energetic sparkles around text
-                        float sparkleFreq = 15.0;
-                        float sparkle = sin(st.x * sparkleFreq + u_time * 3.0) * sin(st.y * sparkleFreq + u_time * 2.5);
-                        sparkle = pow(max(sparkle, 0.0), 3.0);
-                        color += sparkle * 0.3 * textMask * vec3(1.0, 0.8, 0.4);
-                    }
-                    
-                    // Add pulsing effect
-                    float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
-                    if (minDist < u_lineWidth * 0.5) {
-                        float pulseMult = textMask > 0.1 ? 0.6 : 0.3; // Stronger pulse on text
-                        color = mix(color, vec3(1.0), pulse * pulseMult);
-                    }
-                    
-                    // Add some sparkle based on 4D position (but not on text areas)
-                    float sparkle = sin(st.x * 20.0 + u_time) * sin(st.y * 20.0 + u_time * 1.1);
-                    color += sparkle * 0.05 * (1.0 - intensity) * (1.0 - textMask);
-                    
-                    gl_FragColor = vec4(color, 0.8);
-                }
-            `;
-
-            uniforms = {
-                u_time: { value: 0.0 },
-                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                u_vertices: { value: vertexTexture },
-                u_textTexture: { value: textTexture },
-                u_rotation: { value: new THREE.Vector3(0, 0, 0) },
-                u_lineWidth: { value: 0.02 },
-                u_fov: { value: 7.0 }, // Changed from 10.0 to 7.0
-                u_perspective: { value: 2.3 }, // Changed from 2.1 to 2.3
-                u_cameraZ: { value: 10.0 }
-            };
-
-            const material = new THREE.ShaderMaterial({
-                uniforms: uniforms,
-                vertexShader: vertexShader,
-                fragmentShader: fragmentShader,
-                transparent: true
-            });
-
-            const plane = new THREE.PlaneGeometry(2, 2);
-            const mesh = new THREE.Mesh(plane, material);
-            scene.add(mesh);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Update time
-            uniforms.u_time.value += 0.016;
-            
-            // Update rotations
-            uniforms.u_rotation.value.x = angles.rx;
-            uniforms.u_rotation.value.y = angles.ry;
-            uniforms.u_rotation.value.z = angles.rw;
-            
-            // Apply velocity to angles (only if enabled)
-            if (velocityEnabled.rx) {
-                angles.rx += velocity.x + slowVelocity.x;
-            }
-            if (velocityEnabled.ry) {
-                angles.ry += velocity.y + slowVelocity.y;
-            }
-            if (velocityEnabled.rw) {
-                angles.rw += wheelVelocity;
-            }
-            
-            // Apply gaussian smoothing to fast velocity (velocity decay)
-            if (velocityEnabled.rx) {
-                velocity.x *= 0.95;
-            }
-            if (velocityEnabled.ry) {
-                velocity.y *= 0.95;
-            }
-            
-            // Apply wheel velocity decay
-            if (velocityEnabled.rw) {
-                wheelVelocity *= 0.96;
-            }
-            
-            // Update slow velocity based on mouse position
-            const targetSlowVelX = normalizedMouse.y * 0.0125; // Remember: U controls Y rotation (1/4 acceleration)
-            const targetSlowVelY = normalizedMouse.x * 0.0125; // V controls X rotation (1/4 acceleration)
-            
-            // Accelerate towards target with max velocity constraint (only if enabled)
-            if (velocityEnabled.rx) {
-                slowVelocity.x += (targetSlowVelX - slowVelocity.x) * 0.1;
-            }
-            if (velocityEnabled.ry) {
-                slowVelocity.y += (targetSlowVelY - slowVelocity.y) * 0.1;
-            }
-            
-            // Clamp slow velocity
-            const slowSpeed = Math.sqrt(slowVelocity.x * slowVelocity.x + slowVelocity.y * slowVelocity.y);
-            if (slowSpeed > maxSlowVelocity) {
-                slowVelocity.x = (slowVelocity.x / slowSpeed) * maxSlowVelocity;
-                slowVelocity.y = (slowVelocity.y / slowSpeed) * maxSlowVelocity;
-            }
-            
-            renderer.render(scene, camera);
-        }
-
-        async function updateTextTexture() {
-            if (!uniforms || !uniforms.u_textTexture) return;
-            
-            const textCanvas = await createTextTexture();
-            if (textCanvas) {
-                const newTextTexture = new THREE.CanvasTexture(textCanvas);
-                newTextTexture.needsUpdate = true;
-                uniforms.u_textTexture.value = newTextTexture;
-            }
-        }
-
-        // Variables for button interaction
-        let buttonBounds = null;
         
-        function updateButtonBounds() {
-            // Calculate button bounds for click detection (updated for bigger text and two-line subtitle)
-            const subtitleFontSize = Math.min(window.innerWidth * 0.036, 36); // 50% bigger
-            const baseFontSize = Math.min(window.innerWidth * 0.12, 144); // 50% bigger
-            const lineSpacing = subtitleFontSize * 1.2; // Same spacing as canvas
-            
-            const centerY = window.innerHeight / 2;
-            const titleY = centerY - 60;
-            const subtitleY = titleY + baseFontSize * 0.8 + 20;
-            const buttonY = subtitleY + lineSpacing + subtitleFontSize + 60; // Account for two-line subtitle
-            
-            const buttonWidth = 270; // 50% bigger: was 180
-            const buttonHeight = 75; // 50% bigger: was 50
-            const buttonX = window.innerWidth / 2;
-            
-            buttonBounds = {
-                left: buttonX - buttonWidth/2,
-                right: buttonX + buttonWidth/2,
-                top: buttonY - buttonHeight/2,
-                bottom: buttonY + buttonHeight/2
-            };
-        }
-        
-        function onCanvasClick(event) {
-            if (!buttonBounds) return;
-            
-            const rect = renderer.domElement.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            
-            // Check if click is within button bounds
-            if (x >= buttonBounds.left && x <= buttonBounds.right &&
-                y >= buttonBounds.top && y <= buttonBounds.bottom) {
-                // Scroll to tutorials section
-                const target = document.querySelector('#tutorials');
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        }
+        // Initialize Tesseract shader instance
+        let tesseractShader = null;
 
-        function onWindowResize() {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            uniforms.u_resolution.value.x = window.innerWidth;
-            uniforms.u_resolution.value.y = window.innerHeight;
-            updateTextTexture(); // Update text texture on resize
-            updateButtonBounds(); // Update button bounds on resize
-        }
-
-        function onMouseMove(event) {
-            // Don't process mouse movement during tutorial transition
-            if (tutorialTransitioning) return;
-            
-            const newMousePos = {
-                x: event.clientX / window.innerWidth,
-                y: event.clientY / window.innerHeight
-            };
-            
-            // Check if mouse is over button for cursor change
-            if (buttonBounds) {
-                const x = event.clientX;
-                const y = event.clientY;
-                
-                if (x >= buttonBounds.left && x <= buttonBounds.right &&
-                    y >= buttonBounds.top && y <= buttonBounds.bottom) {
-                    document.getElementById('hypercube-canvas').style.cursor = 'pointer';
-                } else {
-                    document.getElementById('hypercube-canvas').style.cursor = 'default';
-                }
-            }
-            
-            // Calculate mouse velocity (slope)
-            const deltaX = (newMousePos.x - mousePos.x) * 2.0; // Double the slope
-            const deltaY = (newMousePos.y - mousePos.y) * 2.0;
-            
-            // Add to velocity with gaussian filtering effect (only if enabled)
-            if (velocityEnabled.rx) {
-                velocity.x += deltaY * 0.15; // Remember: mouse Y controls X rotation (halved velocity)
-            }
-            if (velocityEnabled.ry) {
-                velocity.y += deltaX * 0.15; // Mouse X controls Y rotation (halved velocity)
-            }
-            
-            // Update mouse position
-            mousePos = newMousePos;
-            
-            // Update normalized mouse position (-1 to 1)
-            normalizedMouse.x = (mousePos.x - 0.5) * 2;
-            normalizedMouse.y = (mousePos.y - 0.5) * 2;
-        }
-
-        function onWheel(event) {
-            // Don't process wheel during tutorial transition
-            if (tutorialTransitioning) return;
-            
-            // Add wheel input with filtering (only if enabled)
-            if (velocityEnabled.rw) {
-                const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
-                wheelVelocity += wheelDelta * 0.07;
-            }
-        }
-
-        // Tutorial function - this was missing!
+        // Tutorial functions
         function openTesseractTutorial() {
             if (tutorialTransitioning) return; // Prevent multiple clicks during transition
             
@@ -1209,11 +640,104 @@
             }, 250); // Half-way through the transition
         }
 
+        // Button click handler for hero section
+        function onStartLearningClick() {
+            // Scroll to tutorials section
+            const target = document.querySelector('#tutorials');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
         // Initialize
         async function init() {
-            await initHypercube();
-            animate();
-            updateButtonBounds();
+            // Initialize Tesseract shader with custom configuration
+            tesseractShader = new TesseractShader('hypercube-canvas', {
+                title: 'TRUE FIASCO',
+                subtitle: [
+                    'Explore higher dimensions through',
+                    'immersive visualization'
+                ],
+                button: 'Start Learning',
+                titleFont: 'Spy Agency',
+                subtitleFont: 'Orbitron',
+                onCanvasClick: onStartLearningClick,
+                getTutorialState: () => tutorialTransitioning
+            });
+            
+            await tesseractShader.init();
+            
+            setupControlPanels();
+        }
+
+        // Setup control panels
+        function setupControlPanels() {
+            // Settings toggle functionality
+            document.getElementById('settings-toggle').addEventListener('click', function() {
+                const panel = document.getElementById('controls-panel');
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    panel.style.display = 'block';
+                } else {
+                    panel.style.display = 'none';
+                }
+            });
+
+            // Control panel event listeners
+            document.getElementById('fov-control').addEventListener('input', function(e) {
+                tesseractShader.setShaderParams({ fov: parseFloat(e.target.value) });
+            });
+
+            document.getElementById('perspective-control').addEventListener('input', function(e) {
+                tesseractShader.setShaderParams({ perspective: parseFloat(e.target.value) });
+            });
+
+            document.getElementById('cameraz-control').addEventListener('input', function(e) {
+                tesseractShader.setShaderParams({ cameraZ: parseFloat(e.target.value) });
+            });
+
+            // Reset and control buttons
+            document.getElementById('reset-rotation').addEventListener('click', function() {
+                tesseractShader.resetRotation();
+            });
+
+            document.getElementById('stop-rx').addEventListener('click', function() {
+                const enabled = tesseractShader.toggleVelocity('rx');
+                const button = document.getElementById('stop-rx');
+                if (enabled) {
+                    button.textContent = 'Stop RX Velocity';
+                    button.classList.remove('disabled');
+                } else {
+                    button.textContent = 'Enable RX Velocity';
+                    button.classList.add('disabled');
+                }
+            });
+
+            document.getElementById('stop-ry').addEventListener('click', function() {
+                const enabled = tesseractShader.toggleVelocity('ry');
+                const button = document.getElementById('stop-ry');
+                if (enabled) {
+                    button.textContent = 'Stop RY Velocity';
+                    button.classList.remove('disabled');
+                } else {
+                    button.textContent = 'Enable RY Velocity';
+                    button.classList.add('disabled');
+                }
+            });
+
+            document.getElementById('stop-rw').addEventListener('click', function() {
+                const enabled = tesseractShader.toggleVelocity('rw');
+                const button = document.getElementById('stop-rw');
+                if (enabled) {
+                    button.textContent = 'Stop RW Velocity';
+                    button.classList.remove('disabled');
+                } else {
+                    button.textContent = 'Enable RW Velocity';
+                    button.classList.add('disabled');
+                }
+            });
         }
         
         // Start when DOM is ready
@@ -1222,83 +746,6 @@
         } else {
             init();
         }
-
-        // Event listeners
-        window.addEventListener('resize', onWindowResize);
-        document.addEventListener('mousemove', onMouseMove); // Changed to document since canvas has pointer-events: none
-        document.addEventListener('wheel', onWheel); // Changed to document
-        document.getElementById('hypercube-canvas').addEventListener('click', onCanvasClick); // Add click listener
-
-        // Settings toggle functionality
-        document.getElementById('settings-toggle').addEventListener('click', function() {
-            const panel = document.getElementById('controls-panel');
-            if (panel.style.display === 'none' || panel.style.display === '') {
-                panel.style.display = 'block';
-            } else {
-                panel.style.display = 'none';
-            }
-        });
-
-        // Control panel event listeners
-        document.getElementById('fov-control').addEventListener('input', function(e) {
-            uniforms.u_fov.value = parseFloat(e.target.value);
-        });
-
-        document.getElementById('perspective-control').addEventListener('input', function(e) {
-            uniforms.u_perspective.value = parseFloat(e.target.value);
-        });
-
-        document.getElementById('cameraz-control').addEventListener('input', function(e) {
-            uniforms.u_cameraZ.value = parseFloat(e.target.value);
-        });
-
-        // Reset and control buttons
-        document.getElementById('reset-rotation').addEventListener('click', function() {
-            angles.rx = 0;
-            angles.ry = 0;
-            angles.rw = 0;
-        });
-
-        document.getElementById('stop-rx').addEventListener('click', function() {
-            velocityEnabled.rx = !velocityEnabled.rx;
-            const button = document.getElementById('stop-rx');
-            if (velocityEnabled.rx) {
-                button.textContent = 'Stop RX Velocity';
-                button.classList.remove('disabled');
-            } else {
-                button.textContent = 'Enable RX Velocity';
-                button.classList.add('disabled');
-                velocity.x = 0;
-                slowVelocity.x = 0;
-            }
-        });
-
-        document.getElementById('stop-ry').addEventListener('click', function() {
-            velocityEnabled.ry = !velocityEnabled.ry;
-            const button = document.getElementById('stop-ry');
-            if (velocityEnabled.ry) {
-                button.textContent = 'Stop RY Velocity';
-                button.classList.remove('disabled');
-            } else {
-                button.textContent = 'Enable RY Velocity';
-                button.classList.add('disabled');
-                velocity.y = 0;
-                slowVelocity.y = 0;
-            }
-        });
-
-        document.getElementById('stop-rw').addEventListener('click', function() {
-            velocityEnabled.rw = !velocityEnabled.rw;
-            const button = document.getElementById('stop-rw');
-            if (velocityEnabled.rw) {
-                button.textContent = 'Stop RW Velocity';
-                button.classList.remove('disabled');
-            } else {
-                button.textContent = 'Enable RW Velocity';
-                button.classList.add('disabled');
-                wheelVelocity = 0;
-            }
-        });
 
         // Smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
