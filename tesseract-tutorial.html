@@ -303,26 +303,29 @@
       will-change: transform;
     }
 
-    /* FIXED: Enhanced tutorial section with proper spacing */
+    /* FIXED: Enhanced tutorial section with dynamic spacing */
     .tutorial-section {
       min-width: 100vw;
-      min-height: calc(100vh - 60px);
-      padding: 2rem 2rem 450px 2rem; /* INCREASED bottom padding from 120px to 450px */
+      min-height: calc(100vh - 60px); /* Account for header height */
+      padding: 2rem 2rem 2rem 2rem; /* Remove fixed bottom padding */
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-y: auto;
-      padding-top: 2rem;
-      margin-top: 0;
       background: linear-gradient(180deg, #1a1a2e 0%, #191b1f 50%, #191b1f 100%);
       z-index: 5; /* Base z-index for sections */
+    }
+
+    /* Dynamic bottom spacing based on content and image presence */
+    .tutorial-section.has-background-image {
+      padding-bottom: 420px; /* Only when background image is present */
     }
 
     /* FIXED: Enhanced section layouts with proper z-index hierarchy and consistent 2/3 - 1/3 split */
     .section-layout {
       display: flex;
       gap: 2rem;
-      flex: 1; /* Take available space */
+      flex: 1; /* Take all available space */
       z-index: 20; /* INCREASED from 10 to 20 */
       position: relative;
       margin-top: 1rem;
@@ -893,11 +896,16 @@
       opacity: 1;
     }
 
-    /* FIXED: Mobile responsive improvements with consistent 2/3-1/3 maintained on desktop */
+    /* FIXED: Mobile responsive improvements with dynamic padding */
     @media (max-width: 768px) {
       .tutorial-section {
-        padding: 1rem 1rem 300px 1rem; /* INCREASED bottom padding from 120px to 300px on mobile */
-        padding-top: 1rem;
+        padding: 1rem 1rem 1rem 1rem; /* Remove fixed bottom padding */
+        min-height: calc(100vh - 60px);
+      }
+      
+      /* Only add bottom padding on mobile when background image exists */
+      .tutorial-section.has-background-image {
+        padding-bottom: 270px; /* Less padding on mobile */
       }
       
       .hero-title {
@@ -1054,7 +1062,12 @@
     /* FIXED: Additional mobile spacing for very narrow screens */
     @media (max-width: 480px) {
       .tutorial-section {
-        padding: 0.75rem 0.75rem 280px 0.75rem; /* Even more conservative on very small screens */
+        padding: 0.75rem 0.75rem 0.75rem 0.75rem; /* Remove fixed bottom padding */
+      }
+      
+      /* Only add bottom padding on mobile when background image exists */
+      .tutorial-section.has-background-image {
+        padding-bottom: 250px; /* Conservative padding for very small screens */
       }
       
       .mobile-parameters {
@@ -1440,10 +1453,7 @@
                     <table class="tsv-table" id="tsvTable">
                       <thead>
                         <tr>
-                          <th>tx</th>
-                          <th>ty</th>
-                          <th>tz</th>
-                          <th>tw</th>
+                          <!-- Headers will be loaded dynamically from TSV file -->
                         </tr>
                       </thead>
                       <tbody>
@@ -1897,17 +1907,30 @@
 
     // Load dynamic content
     function loadDynamicContent() {
-      // TSV loader
+      // TSV loader - load headers from file
       fetch('https://raw.githubusercontent.com/TrueFiasco/website/main/Tesseract%20Tutorial%20Pictures/code/euler%20cycle.tsv')
         .then(res => {
           if (!res.ok) throw new Error('Failed to load TSV');
           return res.text();
         })
         .then(tsv => {
-          const rows = tsv.trim().split('\n').slice(1); // Skip header row from TSV since we have it in HTML
+          const rows = tsv.trim().split('\n');
+          const headers = rows[0].split('\t');
+          const dataRows = rows.slice(1);
+          
+          // Update table headers
+          const thead = document.querySelector('#tsvTable thead tr');
+          thead.innerHTML = '';
+          headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header.trim();
+            thead.appendChild(th);
+          });
+          
+          // Update table body
           const tbody = document.querySelector('#tsvTable tbody');
           tbody.innerHTML = '';
-          rows.forEach(row => {
+          dataRows.forEach(row => {
             const cells = row.split('\t');
             const tr = document.createElement('tr');
             cells.forEach(cell => {
@@ -1996,12 +2019,30 @@
       }
     }
 
+    // Dynamic padding management
+    function updateSectionPadding(sectionIndex) {
+      const section = document.querySelector(`#tutorialScroller .tutorial-section:nth-child(${sectionIndex})`);
+      if (!section) return;
+      
+      const config = sectionConfig[sectionIndex];
+      const hasBackgroundImage = config && config.image;
+      
+      if (hasBackgroundImage) {
+        section.classList.add('has-background-image');
+      } else {
+        section.classList.remove('has-background-image');
+      }
+    }
+
     function transitionStaticImage(newSection, oldSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
 
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
+
+      // Update section padding
+      updateSectionPadding(newSection);
 
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
@@ -2462,6 +2503,9 @@
         tutorialOpen = true;
         const offset = (currentSection - 1) * -100;
         scroller.style.transform = `translateX(${offset}vw)`;
+        
+        // Update padding for current section
+        updateSectionPadding(currentSection);
       }
       
       updateProgressBar();
@@ -2693,8 +2737,13 @@
       const table = document.getElementById('tsvTable');
       let tsvText = '';
       
-      // Add header row
-      tsvText += 'tx\tty\ttz\ttw\n';
+      // Add header row (dynamically loaded)
+      const headerCells = table.getElementsByTagName('thead')[0].getElementsByTagName('th');
+      const headers = [];
+      for (let header of headerCells) {
+        headers.push(header.textContent);
+      }
+      tsvText += headers.join('\t') + '\n';
       
       // Add data rows
       const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
