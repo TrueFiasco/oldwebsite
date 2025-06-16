@@ -105,11 +105,6 @@ class TesseractShader {
     const plane = new THREE.PlaneGeometry(2, 2);
     const mesh = new THREE.Mesh(plane, material);
     this.scene.add(mesh);
-    
-    // FIXED: Set cursor style based on device type
-    if (!this.isMobile) {
-      canvas.style.cursor = 'pointer';
-    }
   }
 
   /**
@@ -254,6 +249,7 @@ class TesseractShader {
 
   /**
    * Create text texture for TESSERACT title
+   * UPDATED: Now shows appropriate text for button-based interface
    */
   async createTesseractTextTexture() {
     await this.waitForFonts();
@@ -275,13 +271,15 @@ class TesseractShader {
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     
+    // Main title
     ctx.font = `${baseFontSize}px "Spy Agency"`;
     const titleY = centerY - 30;
     ctx.fillText('TESSERACT', centerX, titleY);
     
+    // Updated subtitle text - removed "click to start" since we have a button
     ctx.font = `400 ${subtitleFontSize}px Orbitron`;
     const subtitleLine1 = 'TouchDesigner Tutorial using GLSL';
-    const subtitleLine2 = 'click to start';
+    const subtitleLine2 = 'Interactive 4D Hypercube Visualization';
     const subtitleY = titleY + baseFontSize * 0.8 + 20;
     const lineSpacing = subtitleFontSize * 1.2;
     
@@ -325,11 +323,6 @@ class TesseractShader {
     // Mouse events
     document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     document.addEventListener('wheel', (e) => this.onWheel(e));
-    
-    // FIXED: Restore canvas click events for desktop
-    if (!this.isMobile) {
-      canvas.addEventListener('click', (e) => this.onCanvasClick(e));
-    }
     
     // Canvas touch events (only for mobile gestures, not tutorial trigger)
     if (this.isMobile) {
@@ -500,7 +493,6 @@ class TesseractShader {
   onTouchEnd(event) {
     event.preventDefault();
     // Touch events now only handle hypercube rotation gestures
-    // Tutorial opening is handled by the button
   }
 
   onWheel(event) {
@@ -509,24 +501,6 @@ class TesseractShader {
     
     const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
     this.wheelVelocity += wheelDelta * 0.07;
-  }
-
-  // FIXED: Restored canvas click functionality for desktop
-  onCanvasClick(event) {
-    // Only open tutorial if not already in tutorial and not clicking on controls
-    if (this.getTutorialState()) return;
-    
-    // Check if clicking on settings toggle or panel
-    const settingsToggle = document.getElementById('heroSettingsToggle');
-    const settingsPanel = document.getElementById('heroControlsPanel');
-    
-    if (settingsToggle && settingsToggle.contains(event.target)) return;
-    if (settingsPanel && settingsPanel.contains(event.target)) return;
-    
-    // Open tutorial
-    if (this.onTutorialOpen) {
-      this.onTutorialOpen();
-    }
   }
 
   onWindowResize() {
@@ -554,10 +528,6 @@ class TesseractShader {
     
     const canvas = document.getElementById(this.canvasId);
     if (canvas) {
-      // FIXED: Remove click event listener for desktop
-      if (!this.isMobile) {
-        canvas.removeEventListener('click', this.onCanvasClick);
-      }
       canvas.removeEventListener('touchstart', this.onTouchStart);
       canvas.removeEventListener('touchmove', this.onTouchMove);
       canvas.removeEventListener('touchend', this.onTouchEnd);
