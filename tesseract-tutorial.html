@@ -687,7 +687,10 @@
       const modal = document.getElementById('tsvFullscreen');
       const content = document.getElementById('tsvFullscreenContent');
       if (modal && content) {
-        content.innerHTML = document.getElementById('tsvContent').innerHTML;
+        const tsvContent = document.getElementById('tsvContent');
+        if (tsvContent) {
+          content.innerHTML = tsvContent.innerHTML;
+        }
         modal.classList.add('active');
       }
     }
@@ -706,10 +709,12 @@
       if (modal && content) {
         // Get the code content and ensure it's properly structured for scrolling
         const originalCodeContent = document.querySelector('#rotationGLSLContent .code-content');
-        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
-        
-        // Create properly structured content for fullscreen with explicit height
-        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        if (originalCodeContent) {
+          const codeText = originalCodeContent.textContent;
+          
+          // Create properly structured content for fullscreen with explicit height
+          content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        }
         modal.classList.add('active');
       }
     }
@@ -728,10 +733,12 @@
       if (modal && content) {
         // Get the code content and ensure it's properly structured for scrolling
         const originalCodeContent = document.querySelector('#perspectiveGLSLContent .code-content');
-        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
-        
-        // Create properly structured content for fullscreen with explicit height
-        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        if (originalCodeContent) {
+          const codeText = originalCodeContent.textContent;
+          
+          // Create properly structured content for fullscreen with explicit height
+          content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        }
         modal.classList.add('active');
       }
     }
@@ -750,10 +757,12 @@
       if (modal && content) {
         // Get the code content and ensure it's properly structured for scrolling
         const originalCodeContent = document.querySelector('#lineDistanceGLSLContent .code-content');
-        const codeText = originalCodeContent ? originalCodeContent.textContent : 'Code not available';
-        
-        // Create properly structured content for fullscreen with explicit height
-        content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        if (originalCodeContent) {
+          const codeText = originalCodeContent.textContent;
+          
+          // Create properly structured content for fullscreen with explicit height
+          content.innerHTML = `<div class="code-content" style="height: auto; overflow: visible; white-space: pre-wrap;">${codeText}</div>`;
+        }
         modal.classList.add('active');
       }
     }
@@ -825,14 +834,16 @@
         codeContent = document.querySelector('#rotationGLSLContent .code-content');
       }
       
-      const text = codeContent ? codeContent.textContent : '';
-      
-      navigator.clipboard.writeText(text).then(() => {
-        console.log('Rotation GLSL code copied to clipboard');
-        showCopyNotification();
-      }).catch(err => {
-        console.error('Failed to copy rotation GLSL code: ', err);
-      });
+      if (codeContent) {
+        const text = codeContent.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          console.log('Rotation GLSL code copied to clipboard');
+          showCopyNotification();
+        }).catch(err => {
+          console.error('Failed to copy rotation GLSL code: ', err);
+        });
+      }
     }
 
     function copyPerspectiveGLSLToClipboard() {
@@ -846,14 +857,16 @@
         codeContent = document.querySelector('#perspectiveGLSLContent .code-content');
       }
       
-      const text = codeContent ? codeContent.textContent : '';
-      
-      navigator.clipboard.writeText(text).then(() => {
-        console.log('Perspective GLSL code copied to clipboard');
-        showCopyNotification();
-      }).catch(err => {
-        console.error('Failed to copy perspective GLSL code: ', err);
-      });
+      if (codeContent) {
+        const text = codeContent.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          console.log('Perspective GLSL code copied to clipboard');
+          showCopyNotification();
+        }).catch(err => {
+          console.error('Failed to copy perspective GLSL code: ', err);
+        });
+      }
     }
 
     function copyLineDistanceGLSLToClipboard() {
@@ -867,14 +880,16 @@
         codeContent = document.querySelector('#lineDistanceGLSLContent .code-content');
       }
       
-      const text = codeContent ? codeContent.textContent : '';
-      
-      navigator.clipboard.writeText(text).then(() => {
-        console.log('Line Distance GLSL code copied to clipboard');
-        showCopyNotification();
-      }).catch(err => {
-        console.error('Failed to copy line distance GLSL code: ', err);
-      });
+      if (codeContent) {
+        const text = codeContent.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          console.log('Line Distance GLSL code copied to clipboard');
+          showCopyNotification();
+        }).catch(err => {
+          console.error('Failed to copy line distance GLSL code: ', err);
+        });
+      }
     }
 
     // Updated wheel event handling to allow scrolling in fullscreen modals
@@ -924,9 +939,9 @@
         // Setup wheel event for tutorial navigation
         document.addEventListener('wheel', onWheel);
         
-        console.log('Application initialized successfully');
+        console.log('Tutorial application initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize application:', error);
+        console.error('Failed to initialize tutorial application:', error);
       }
     }
     
