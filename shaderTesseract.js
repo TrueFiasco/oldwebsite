@@ -333,11 +333,11 @@ class TesseractShader {
       canvas.style.cursor = 'default';
     }
     
-    // MOBILE: Touch events for rotation only (button handles tutorial opening)
+    // MOBILE: Touch events for rotation - use document instead of canvas to avoid pointer-events: none
     if (this.isMobile) {
-      canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
-      canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
-      canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
+      document.addEventListener('touchstart', (e) => this.onTouchStart(e));
+      document.addEventListener('touchmove', (e) => this.onTouchMove(e));
+      document.addEventListener('touchend', (e) => this.onTouchEnd(e));
     }
     
     // Window resize
@@ -481,6 +481,11 @@ class TesseractShader {
   }
 
   onTouchStart(event) {
+    // MOBILE: Check if touch is on the tutorial button area
+    if (this.isTouchOnButton(event)) {
+      return; // Don't interfere with button interaction
+    }
+    
     event.preventDefault();
     const touch = event.touches[0];
     this.touchStartX = touch.clientX;
@@ -488,6 +493,11 @@ class TesseractShader {
   }
 
   onTouchMove(event) {
+    // MOBILE: Check if touch is on the tutorial button area
+    if (this.isTouchOnButton(event)) {
+      return; // Don't interfere with button interaction
+    }
+    
     event.preventDefault();
     if (!this.getTutorialState()) {
       const touch = event.touches[0];
@@ -500,9 +510,38 @@ class TesseractShader {
   }
 
   onTouchEnd(event) {
+    // MOBILE: Check if touch is on the tutorial button area
+    if (this.isTouchOnButton(event)) {
+      return; // Don't interfere with button interaction
+    }
+    
     event.preventDefault();
     // Touch events now only handle hypercube rotation gestures
     // Tutorial opening is handled by the button on mobile
+  }
+
+  /**
+   * Check if touch event is on the tutorial button area
+   */
+  isTouchOnButton(event) {
+    if (!this.isMobile) return false;
+    
+    const buttonContainer = document.getElementById('mobileTutorialBtn');
+    if (!buttonContainer) return false;
+    
+    const rect = buttonContainer.getBoundingClientRect();
+    const touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches[0];
+    
+    if (!touch) return false;
+    
+    // Add some padding around the button area to be safe
+    const padding = 20;
+    return (
+      touch.clientX >= rect.left - padding &&
+      touch.clientX <= rect.right + padding &&
+      touch.clientY >= rect.top - padding &&
+      touch.clientY <= rect.bottom + padding
+    );
   }
 
   onCanvasClick(event) {
@@ -561,10 +600,13 @@ class TesseractShader {
       if (!this.isMobile) {
         canvas.removeEventListener('click', this.onCanvasClick);
       }
-      // Remove touch event listeners for mobile
-      canvas.removeEventListener('touchstart', this.onTouchStart);
-      canvas.removeEventListener('touchmove', this.onTouchMove);
-      canvas.removeEventListener('touchend', this.onTouchEnd);
+    }
+    
+    // Remove touch event listeners for mobile (now on document)
+    if (this.isMobile) {
+      document.removeEventListener('touchstart', this.onTouchStart);
+      document.removeEventListener('touchmove', this.onTouchMove);
+      document.removeEventListener('touchend', this.onTouchEnd);
     }
     
     this.isInitialized = false;
