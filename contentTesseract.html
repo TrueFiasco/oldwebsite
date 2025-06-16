@@ -523,4 +523,86 @@
               <p>Each post-processing step serves a specific purpose in creating the final visual:</p>
               <ul style="margin-left: 1rem; line-height: 1.8;">
                 <li><strong>Limits:</strong> Prevent over-bright or under-dark values</li>
-                <li><strong>Ramps:</strong> Create
+                <li><strong>Ramps:</strong> Create smooth color transitions</li>
+                <li><strong>Threshold:</strong> Create sharp cutoffs for specific effects</li>
+                <li><strong>Lookups:</strong> Apply color palettes and artistic looks</li>
+              </ul>
+              
+              <p>The combination of these effects allows for fine-tuned control over the final appearance of our 4D hypercube visualization.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STATIC IMAGE CONTAINER -->
+    <div class="static-image-container">
+      <div class="image-transition-container" id="staticImageContainer">
+        <div id="hotspotContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Parameter Dialog -->
+  <div class="parameter-dialog" id="parameterDialog">
+    <h4 id="parameterTitle">Parameters</h4>
+    <div id="parameterContent"></div>
+    <button class="widget-btn" onclick="hideParameterDialog()" style="margin-top: 1rem;">Close</button>
+  </div>
+
+  <!-- Widget Fullscreen Modals -->
+  <div class="widget-fullscreen" id="tsvFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Euler Cycle TSV Data</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyTSVToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeTSVFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="tsvFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="rotationGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Rotation GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyRotationGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeRotationGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="rotationGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="perspectiveGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>Vertex Perspective GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyPerspectiveGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closePerspectiveGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="perspectiveGLSLFullscreenContent"></div>
+  </div>
+
+  <div class="widget-fullscreen" id="lineDistanceGLSLFullscreen">
+    <div class="widget-fullscreen-header">
+      <h3>SDF Line Min Distance GLSL Code</h3>
+      <div class="widget-fullscreen-buttons">
+        <button class="widget-btn widget-btn-copy" onclick="copyLineDistanceGLSLToClipboard()" title="Copy to Clipboard"></button>
+        <button class="widget-btn widget-btn-github" onclick="downloadTesseractResources()" title="Download from GitHub"></button>
+        <button class="nav-btn close-btn" onclick="closeLineDistanceGLSLFullscreen()">×</button>
+      </div>
+    </div>
+    <div class="widget-fullscreen-content" id="lineDistanceGLSLFullscreenContent"></div>
+  </div>
+
+  <!-- Copy Notification -->
+  <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
