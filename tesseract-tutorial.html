@@ -41,10 +41,13 @@
       <h1 class="hero-title" style="opacity: 0; pointer-events: none;">TESSERACT</h1>
       <p class="hero-subtitle" style="opacity: 0; pointer-events: none;">TouchDesigner Tutorial using GLSL<br>click to start</p>
       
-      <!-- Start Tutorial Button - visible for both mobile and desktop -->
-      <button class="hero-start-btn" onclick="openTutorial()">
+      <!-- Start Tutorial Button - visible primarily for mobile, but also as backup for desktop -->
+      <button class="hero-start-btn" onclick="openTutorial()" id="heroStartBtn">
         Start Tutorial
       </button>
+      
+      <!-- Desktop instruction - only visible on desktop -->
+      <p class="desktop-instruction">Click anywhere to start</p>
     </div>
   </div>
 
@@ -530,6 +533,7 @@
 
     // Navigation functions
     function openTutorial() {
+      console.log('openTutorial called'); // Debug log
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
@@ -946,10 +950,40 @@
       }
     }
     
+    // Ensure button works on both desktop and mobile
+    function setupHeroButton() {
+      const heroBtn = document.getElementById('heroStartBtn');
+      if (heroBtn) {
+        // Add click event
+        heroBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Button clicked');
+          openTutorial();
+        });
+        
+        // Add touch event for mobile as backup
+        heroBtn.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Button touched');
+          openTutorial();
+        });
+        
+        console.log('Hero button events attached');
+      } else {
+        console.error('Hero button not found');
+      }
+    }
+    
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('DOMContentLoaded', function() {
+        init();
+        setupHeroButton();
+      });
     } else {
       init();
+      setupHeroButton();
     }
 
     // Close modals with escape key
