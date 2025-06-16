@@ -952,35 +952,82 @@
     // Ensure button works on mobile only, click anywhere works on desktop
     function setupHeroInteraction() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log('Device detection:', isMobile ? 'MOBILE' : 'DESKTOP');
+      
+      const mobileBtn = document.getElementById('mobileTutorialBtn');
       
       if (isMobile) {
-        // MOBILE: Setup button interaction only
-        const mobileBtn = document.getElementById('mobileTutorialBtn');
+        // MOBILE: Show button and setup interaction
         if (mobileBtn) {
+          // Force show the button
+          mobileBtn.style.display = 'block';
+          mobileBtn.style.visibility = 'visible';
+          mobileBtn.style.opacity = '1';
+          mobileBtn.style.pointerEvents = 'auto';
+          
+          console.log('Mobile button container forced visible');
+          
           const btn = mobileBtn.querySelector('.mobile-start-btn');
+          console.log('Mobile button element found:', !!btn);
+          
           if (btn) {
-            // Add click event
-            btn.addEventListener('click', function(e) {
+            // Make button fully interactive
+            btn.style.pointerEvents = 'auto';
+            btn.style.zIndex = '1000000';
+            
+            // Clear any existing event listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            // Add all event types for maximum compatibility
+            newBtn.addEventListener('click', function(e) {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Mobile button clicked');
+              console.log('✅ Mobile button CLICKED - Opening tutorial!');
               openTutorial();
-            });
+            }, { passive: false });
             
-            // Add touch event as backup
-            btn.addEventListener('touchend', function(e) {
+            newBtn.addEventListener('touchstart', function(e) {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Mobile button touched');
-              openTutorial();
-            });
+              console.log('📱 Mobile button TOUCH START');
+              newBtn.style.background = 'rgba(0, 255, 255, 0.4)';
+            }, { passive: false });
             
-            console.log('Mobile button events attached');
+            newBtn.addEventListener('touchend', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('✅ Mobile button TOUCH END - Opening tutorial!');
+              newBtn.style.background = 'rgba(0, 255, 255, 0.15)';
+              openTutorial();
+            }, { passive: false });
+            
+            // Add visual feedback after setup
+            setTimeout(() => {
+              newBtn.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
+              setTimeout(() => {
+                newBtn.style.boxShadow = '0 6px 25px rgba(0, 255, 255, 0.3)';
+              }, 2000);
+            }, 500);
+            
+            console.log('✅ Mobile button events attached successfully');
+          } else {
+            console.error('❌ Mobile button element (.mobile-start-btn) not found');
           }
+        } else {
+          console.error('❌ Mobile button container (#mobileTutorialBtn) not found');
         }
       } else {
-        // DESKTOP: Click anywhere functionality is handled by the shader
-        console.log('Desktop click anywhere enabled via shader');
+        // DESKTOP: Completely hide button
+        if (mobileBtn) {
+          mobileBtn.style.display = 'none';
+          mobileBtn.style.visibility = 'hidden';
+          mobileBtn.style.opacity = '0';
+          mobileBtn.style.pointerEvents = 'none';
+          console.log('🖥️ Desktop - Mobile button completely hidden');
+        }
+        
+        console.log('🖥️ Desktop click anywhere enabled via shader');
       }
     }
     
