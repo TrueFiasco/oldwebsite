@@ -37,10 +37,11 @@
     </div>
     
     <div class="hero-content">
-      <h1 class="hero-title">TESSERACT</h1>
-      <p class="hero-subtitle">TouchDesigner Tutorial using GLSL<br>click to start</p>
+      <!-- Hidden HTML titles - only shader text will be visible -->
+      <h1 class="hero-title" style="opacity: 0; pointer-events: none;">TESSERACT</h1>
+      <p class="hero-subtitle" style="opacity: 0; pointer-events: none;">TouchDesigner Tutorial using GLSL<br>click to start</p>
       
-      <!-- Start Tutorial Button -->
+      <!-- Start Tutorial Button - visible for both mobile and desktop -->
       <button class="hero-start-btn" onclick="openTutorial()">
         Start Tutorial
       </button>
