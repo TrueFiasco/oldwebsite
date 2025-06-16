@@ -37,17 +37,16 @@
     </div>
     
     <div class="hero-content">
-      <!-- Hidden HTML titles - only shader text will be visible -->
-      <h1 class="hero-title" style="opacity: 0; pointer-events: none;">TESSERACT</h1>
-      <p class="hero-subtitle" style="opacity: 0; pointer-events: none;">TouchDesigner Tutorial using GLSL<br>click to start</p>
-      
-      <!-- Start Tutorial Button - visible primarily for mobile, but also as backup for desktop -->
-      <button class="hero-start-btn" onclick="openTutorial()" id="heroStartBtn">
+      <!-- Hidden HTML titles - only shader text will be visible on both desktop and mobile -->
+      <h1 class="hero-title" style="opacity: 0; pointer-events: none; position: absolute; visibility: hidden;">TESSERACT</h1>
+      <p class="hero-subtitle" style="opacity: 0; pointer-events: none; position: absolute; visibility: hidden;">TouchDesigner Tutorial using GLSL<br>Interactive 4D Hypercube Visualization</p>
+    </div>
+
+    <!-- Mobile-only tutorial button at bottom of screen -->
+    <div class="mobile-tutorial-button" id="mobileTutorialBtn">
+      <button class="mobile-start-btn" onclick="openTutorial()">
         Start Tutorial
       </button>
-      
-      <!-- Desktop instruction - only visible on desktop -->
-      <p class="desktop-instruction">Click anywhere to start</p>
     </div>
   </div>
 
@@ -950,40 +949,49 @@
       }
     }
     
-    // Ensure button works on both desktop and mobile
-    function setupHeroButton() {
-      const heroBtn = document.getElementById('heroStartBtn');
-      if (heroBtn) {
-        // Add click event
-        heroBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Button clicked');
-          openTutorial();
-        });
-        
-        // Add touch event for mobile as backup
-        heroBtn.addEventListener('touchend', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Button touched');
-          openTutorial();
-        });
-        
-        console.log('Hero button events attached');
+    // Ensure button works on mobile only, click anywhere works on desktop
+    function setupHeroInteraction() {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // MOBILE: Setup button interaction only
+        const mobileBtn = document.getElementById('mobileTutorialBtn');
+        if (mobileBtn) {
+          const btn = mobileBtn.querySelector('.mobile-start-btn');
+          if (btn) {
+            // Add click event
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Mobile button clicked');
+              openTutorial();
+            });
+            
+            // Add touch event as backup
+            btn.addEventListener('touchend', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Mobile button touched');
+              openTutorial();
+            });
+            
+            console.log('Mobile button events attached');
+          }
+        }
       } else {
-        console.error('Hero button not found');
+        // DESKTOP: Click anywhere functionality is handled by the shader
+        console.log('Desktop click anywhere enabled via shader');
       }
     }
     
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
         init();
-        setupHeroButton();
+        setupHeroInteraction();
       });
     } else {
       init();
-      setupHeroButton();
+      setupHeroInteraction();
     }
 
     // Close modals with escape key
