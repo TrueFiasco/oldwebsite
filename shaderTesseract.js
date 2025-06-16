@@ -249,7 +249,7 @@ class TesseractShader {
 
   /**
    * Create text texture for TESSERACT title
-   * UPDATED: Now shows appropriate text for button-based interface
+   * Shows only title and subtitle - no interaction hints
    */
   async createTesseractTextTexture() {
     await this.waitForFonts();
@@ -276,7 +276,7 @@ class TesseractShader {
     const titleY = centerY - 30;
     ctx.fillText('TESSERACT', centerX, titleY);
     
-    // Updated subtitle text - removed "click to start" since we have a button
+    // Clean subtitle text - same for both mobile and desktop
     ctx.font = `400 ${subtitleFontSize}px Orbitron`;
     const subtitleLine1 = 'TouchDesigner Tutorial using GLSL';
     const subtitleLine2 = 'Interactive 4D Hypercube Visualization';
@@ -320,11 +320,20 @@ class TesseractShader {
   setupEventListeners() {
     const canvas = document.getElementById(this.canvasId);
     
-    // Mouse events
+    // Mouse events for rotation
     document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     document.addEventListener('wheel', (e) => this.onWheel(e));
     
-    // Canvas touch events (only for mobile gestures, not tutorial trigger)
+    // DESKTOP: Click anywhere functionality (except on controls)
+    if (!this.isMobile) {
+      canvas.addEventListener('click', (e) => this.onCanvasClick(e));
+      canvas.style.cursor = 'pointer';
+    } else {
+      // MOBILE: Remove cursor pointer, no click anywhere
+      canvas.style.cursor = 'default';
+    }
+    
+    // MOBILE: Touch events for rotation only (button handles tutorial opening)
     if (this.isMobile) {
       canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
       canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
@@ -493,6 +502,26 @@ class TesseractShader {
   onTouchEnd(event) {
     event.preventDefault();
     // Touch events now only handle hypercube rotation gestures
+    // Tutorial opening is handled by the button on mobile
+  }
+
+  onCanvasClick(event) {
+    // DESKTOP ONLY: Click anywhere to open tutorial (except on controls)
+    if (!this.getTutorialState() && !this.isMobile) {
+      // Check if click was on controls panel or settings toggle
+      const settingsToggle = document.getElementById('heroSettingsToggle');
+      const controlsPanel = document.getElementById('heroControlsPanel');
+      const closeButton = document.querySelector('.close-btn');
+      
+      // Don't open tutorial if clicking on controls
+      if (settingsToggle && settingsToggle.contains(event.target)) return;
+      if (controlsPanel && controlsPanel.contains(event.target)) return;
+      if (closeButton && closeButton.contains(event.target)) return;
+      
+      event.preventDefault();
+      console.log('Canvas clicked - opening tutorial');
+      this.onTutorialOpen();
+    }
   }
 
   onWheel(event) {
@@ -528,6 +557,11 @@ class TesseractShader {
     
     const canvas = document.getElementById(this.canvasId);
     if (canvas) {
+      // Remove click event listener for desktop
+      if (!this.isMobile) {
+        canvas.removeEventListener('click', this.onCanvasClick);
+      }
+      // Remove touch event listeners for mobile
       canvas.removeEventListener('touchstart', this.onTouchStart);
       canvas.removeEventListener('touchmove', this.onTouchMove);
       canvas.removeEventListener('touchend', this.onTouchEnd);
