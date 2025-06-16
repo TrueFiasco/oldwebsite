@@ -952,24 +952,13 @@
     // Ensure button works on mobile only, click anywhere works on desktop
     function setupHeroInteraction() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      console.log('Device detection:', isMobile ? 'MOBILE' : 'DESKTOP');
       
       if (isMobile) {
         // MOBILE: Setup button interaction only
         const mobileBtn = document.getElementById('mobileTutorialBtn');
-        console.log('Mobile button container found:', !!mobileBtn);
-        
         if (mobileBtn) {
           const btn = mobileBtn.querySelector('.mobile-start-btn');
-          console.log('Mobile button element found:', !!btn);
-          
           if (btn) {
-            // Check if button is actually visible
-            const styles = window.getComputedStyle(mobileBtn);
-            console.log('Button container display:', styles.display);
-            console.log('Button container visibility:', styles.visibility);
-            console.log('Button container z-index:', styles.zIndex);
-            
             // Add click event
             btn.addEventListener('click', function(e) {
               e.preventDefault();
@@ -986,29 +975,12 @@
               openTutorial();
             });
             
-            // Add touchstart for immediate feedback
-            btn.addEventListener('touchstart', function(e) {
-              e.preventDefault();
-              console.log('Mobile button touch started');
-            });
-            
-            console.log('Mobile button events attached successfully');
-          } else {
-            console.error('Mobile button element (.mobile-start-btn) not found');
+            console.log('Mobile button events attached');
           }
-        } else {
-          console.error('Mobile button container (#mobileTutorialBtn) not found');
         }
       } else {
         // DESKTOP: Click anywhere functionality is handled by the shader
         console.log('Desktop click anywhere enabled via shader');
-        
-        // Double-check that mobile button is hidden on desktop
-        const mobileBtn = document.getElementById('mobileTutorialBtn');
-        if (mobileBtn) {
-          const styles = window.getComputedStyle(mobileBtn);
-          console.log('Desktop - Mobile button should be hidden. Display:', styles.display);
-        }
       }
     }
     
