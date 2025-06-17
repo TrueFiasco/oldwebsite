@@ -1212,7 +1212,7 @@
         
         this.touchData.isTracking = false;
         
-        console.log(`📱 Swipe ended: deltaX=${deltaX}, deltaY=${deltaY}, velocity=${velocity.toFixed(2)}, valid=${isValidGesture}`);
+        console.log('📱 Swipe ended: deltaX=' + deltaX + ', deltaY=' + deltaY + ', velocity=' + velocity.toFixed(2) + ', valid=' + isValidGesture);
       }
       
       validateGesture(deltaX, deltaY, distance, velocity, duration) {
@@ -1227,22 +1227,22 @@
         }
         
         if (distance < this.config.minDistance) {
-          console.log(`❌ Swipe ignored: distance ${distance} < ${this.config.minDistance}`);
+          console.log('❌ Swipe ignored: distance ' + distance + ' < ' + this.config.minDistance);
           return false;
         }
         
         if (deltaY > this.config.maxVerticalDrift) {
-          console.log(`❌ Swipe ignored: vertical drift ${deltaY} > ${this.config.maxVerticalDrift}`);
+          console.log('❌ Swipe ignored: vertical drift ' + deltaY + ' > ' + this.config.maxVerticalDrift);
           return false;
         }
         
         if (velocity < this.config.minVelocity) {
-          console.log(`❌ Swipe ignored: velocity ${velocity.toFixed(2)} < ${this.config.minVelocity}`);
+          console.log('❌ Swipe ignored: velocity ' + velocity.toFixed(2) + ' < ' + this.config.minVelocity);
           return false;
         }
         
         if (duration < this.config.minDuration || duration > this.config.maxDuration) {
-          console.log(`❌ Swipe ignored: duration ${duration} outside bounds [${this.config.minDuration}, ${this.config.maxDuration}]`);
+          console.log('❌ Swipe ignored: duration ' + duration + ' outside bounds [' + this.config.minDuration + ', ' + this.config.maxDuration + ']');
           return false;
         }
         
@@ -1262,7 +1262,7 @@
           canSwipe = currentSection < 14;
         }
         
-        console.log(`📱 Processing ${direction} swipe: ${currentSection} → ${targetSection}, canSwipe: ${canSwipe}`);
+        console.log('📱 Processing ' + direction + ' swipe: ' + currentSection + ' → ' + targetSection + ', canSwipe: ' + canSwipe);
         
         if (canSwipe) {
           this.executeSwipeNavigation(targetSection);
@@ -1293,7 +1293,8 @@
       }
       
       showSwipeSuccess(direction) {
-        const indicator = document.getElementById(`swipeIndicator${direction === 'left' ? 'Left' : 'Right'}`);
+        const indicatorId = 'swipeIndicator' + (direction === 'left' ? 'Left' : 'Right');
+        const indicator = document.getElementById(indicatorId);
         if (indicator) {
           indicator.classList.remove('boundary');
           indicator.classList.add('show');
