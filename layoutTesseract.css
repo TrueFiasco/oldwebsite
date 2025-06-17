@@ -907,6 +907,7 @@ p {
 }
 
 /* === MOBILE RESPONSIVE STYLES === */
+/* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
   /* === HERO SECTION MOBILE === */
   .hero-section {
@@ -917,130 +918,140 @@ p {
     display: block !important; /* Show mobile button on mobile */
   }
 
-  /* === HEADER LAYOUT FIXES === */
+  /* === MOBILE HEADER - TWO LINES === */
   .tutorial-header {
-    flex-direction: row !important; /* Force horizontal layout */
-    align-items: center !important; /* Center vertically */
-    min-height: 60px;
+    flex-direction: column !important; /* Stack vertically for 2 lines */
+    align-items: stretch !important; /* Full width */
+    min-height: auto;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    flex-wrap: nowrap; /* Prevent wrapping */
+    flex-wrap: nowrap;
   }
 
-  .tutorial-title {
-    /* Make title take minimal space and prevent wrapping */
-    flex: 0 1 auto !important; /* Don't grow, can shrink, auto width */
-    max-width: none !important;
-    text-align: left !important;
-    font-size: clamp(0.85rem, 4vw, 1.1rem) !important; /* Smaller, more responsive font */
-    margin-right: 0.5rem;
-    margin-bottom: 0;
-    line-height: 1.1;
-    white-space: nowrap !important; /* Prevent text wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis; /* Show ... if text is too long */
-    hyphens: none !important; /* Disable hyphenation */
-    word-break: normal !important; /* Disable word breaking */
-    overflow-wrap: normal !important; /* Disable word wrapping */
-  }
-
+  /* First line: Buttons only */
   .tutorial-nav {
-    /* Make nav buttons flexible and single line */
     display: flex !important;
     flex-direction: row !important;
-    justify-content: flex-end;
+    justify-content: center !important; /* Center the buttons */
     align-items: center;
-    flex: 1 1 auto; /* Grow to fill remaining space */
-    width: auto !important;
-    gap: 0.25rem;
-    flex-wrap: nowrap !important; /* Prevent button wrapping */
-    min-width: 0; /* Allow shrinking */
+    width: 100% !important;
+    gap: 0.5rem;
+    flex-wrap: nowrap !important;
+    order: 1; /* Show buttons first */
+  }
+
+  /* Second line: Title only */
+  .tutorial-title {
+    flex: none !important;
+    max-width: 100% !important;
+    text-align: center !important; /* Center the title */
+    font-size: clamp(1rem, 5vw, 1.4rem) !important; /* Larger since it has its own line */
+    margin: 0;
+    line-height: 1.2;
+    white-space: normal !important; /* Allow normal wrapping since it has space */
+    overflow: visible;
+    text-overflow: clip;
+    hyphens: none !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important; /* Allow breaking long words if needed */
+    order: 2; /* Show title second */
   }
 
   .nav-btn {
-    /* Make buttons smaller and more compact */
-    font-size: 0.7rem !important;
-    padding: 0.35rem 0.6rem !important;
+    /* Slightly larger buttons since they have their own line */
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.8rem !important;
     min-width: auto;
-    flex-shrink: 1; /* Allow buttons to shrink */
-    white-space: nowrap; /* Prevent text wrapping in buttons */
+    flex-shrink: 1;
+    white-space: nowrap;
   }
 
   .nav-btn.circular {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    flex-shrink: 0; /* Don't shrink circular buttons */
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    flex-shrink: 0;
     padding: 0 !important;
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
   }
 
   .close-btn {
-    width: 30px !important;
-    height: 30px !important;
-    min-width: 30px !important;
-    flex-shrink: 0; /* Don't shrink close button */
-    font-size: 1rem !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    flex-shrink: 0;
+    font-size: 1.1rem !important;
   }
 
-  /* === IMAGE CONTAINER FIXES === */
+/* === FIXED IMAGE CONTAINER - NO JUMPING === */
   .static-image-container {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: auto !important; /* Remove fixed height */
-    max-height: 40vh; /* Limit maximum height */
+    height: auto !important;
+    max-height: 40vh;
     background: rgb(25, 27, 31);
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     z-index: 1;
+    /* Fix jumping by stabilizing the container */
+    min-height: 150px; /* Minimum height to prevent collapse */
   }
 
   .image-transition-container {
     position: relative;
     width: 100%;
-    height: auto !important; /* Remove fixed height */
+    height: auto !important;
     overflow: hidden;
     z-index: 1;
+    /* Stabilize transitions */
+    min-height: inherit;
   }
 
   .tutorial-image {
-    position: relative !important; /* Change from absolute */
+    position: relative !important;
     top: auto !important;
     left: auto !important;
     width: 100%;
-    height: auto !important; /* Let height be determined by aspect ratio */
-    max-height: 40vh; /* Limit image height */
+    height: auto !important;
+    max-height: 40vh;
     object-fit: contain;
     opacity: 0;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Simplified transition - remove transforms that cause jumping */
+    transition: opacity 0.6s ease !important;
     z-index: 1;
     display: block;
+    /* Prevent layout shifts during transitions */
+    transform: none !important;
   }
 
-  /* When image is active/visible */
+  /* When image is active/visible - no transform animations */
   .tutorial-image[style*="opacity: 1"] {
     opacity: 1 !important;
+    transform: none !important;
   }
 
-  /* === TUTORIAL SECTION ADJUSTMENTS === */
+
+/* === TUTORIAL SECTION ADJUSTMENTS === */
   .tutorial-section {
     padding: 0.25rem 1rem 1rem 1rem;
-    min-height: calc(100vh - 60px);
-    padding-bottom: 1rem !important; /* Remove fixed padding */
+    min-height: calc(100vh - 80px); /* Account for taller header */
+    padding-bottom: 1rem !important;
   }
   
   .tutorial-section.has-background-image {
-    padding-bottom: 1rem !important; /* Remove excessive padding */
+    padding-bottom: 1rem !important;
   }
 
   .section-layout {
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 1rem; /* Reduced from 1.5rem */
+    margin-bottom: 1rem;
     margin-top: 0.125rem;
-    padding-bottom: 1rem; /* Add some bottom padding */
+    padding-bottom: 1rem;
+    /* Ensure content doesn't overlap with image area */
+    margin-bottom: 180px; /* Space for image container */
   }
 
   .section-left,
@@ -1144,28 +1155,29 @@ p {
 /* === EXTRA SMALL MOBILE STYLES === */
 @media (max-width: 480px) {
   .tutorial-title {
-    font-size: clamp(0.75rem, 3.5vw, 1rem) !important; /* Even smaller on very small screens */
+    font-size: clamp(0.9rem, 4.5vw, 1.2rem) !important; /* Adjusted for 2-line layout */
   }
 
   .nav-btn {
-    font-size: 0.65rem !important;
-    padding: 0.3rem 0.5rem !important;
+    font-size: 0.7rem !important;
+    padding: 0.35rem 0.7rem !important;
   }
 
   .nav-btn.circular {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
   }
 
   .close-btn {
-    width: 26px !important;
-    height: 26px !important;
-    min-width: 26px !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
   }
 
   .static-image-container {
-    max-height: 35vh; /* Slightly smaller on very small screens */
+    max-height: 35vh;
+    min-height: 120px; /* Smaller minimum for small screens */
   }
 
   .tutorial-image {
@@ -1174,10 +1186,11 @@ p {
 
   .tutorial-section {
     padding: 0.2rem 0.75rem 0.75rem 0.75rem;
+    min-height: calc(100vh - 90px); /* Account for slightly taller header on small screens */
   }
   
-  .tutorial-section.has-background-image {
-    padding-bottom: 1rem !important;
+  .section-layout {
+    margin-bottom: 150px; /* Adjust for smaller image area */
   }
   
   .mobile-parameters {
@@ -1194,4 +1207,5 @@ p {
     font-size: 1rem;
     padding: 0.8rem 1.5rem;
   }
+}
 }
