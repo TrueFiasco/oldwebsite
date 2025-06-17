@@ -342,6 +342,19 @@
           });
       });
     }
+    function updateSectionPadding(sectionIndex) {
+      const section = document.querySelector(`#tutorialScroller .tutorial-section:nth-child(${sectionIndex})`);
+      if (!section) return;
+      
+      const config = sectionConfig[sectionIndex];
+      const hasBackgroundImage = config && config.image;
+      
+      if (hasBackgroundImage) {
+        section.classList.add('has-background-image');
+      } else {
+        section.classList.remove('has-background-image');
+      }
+    }
 
     // Image transition functions
     function transitionToSection(newSection) {
