@@ -713,14 +713,75 @@
     function updateHotspots(hotspots) {
       const hotspotContainer = document.getElementById('hotspotContainer');
       if (!hotspotContainer) return;
-
+    
       stickyHotspots.clear();
       hotspotContainer.innerHTML = '';
-
+    
       if (isMobile) return; // No hotspots on mobile
       
-      // Hotspot creation logic here (simplified for brevity)
-      // Full implementation in original code
+      // Create hotspots for desktop
+      hotspots.forEach((hotspotConfig, index) => {
+        const hotspot = document.createElement('div');
+        hotspot.className = 'hotspot';
+        hotspot.style.top = hotspotConfig.top;
+        hotspot.style.left = hotspotConfig.left;
+        hotspot.dataset.type = hotspotConfig.type;
+        hotspot.dataset.index = index;
+        
+        // Add click handler for hotspots
+        hotspot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showParameterDialog(hotspotConfig.type, e.clientX, e.clientY);
+        });
+        
+        // Add hover handlers
+        hotspot.addEventListener('mouseenter', (e) => {
+          if (!stickyHotspots.has(hotspot)) {
+            showParameterDialog(hotspotConfig.type, e.clientX, e.clientY);
+          }
+        });
+        
+        hotspot.addEventListener('mouseleave', (e) => {
+          if (!stickyHotspots.has(hotspot)) {
+            hideParameterDialog();
+          }
+        });
+        
+        hotspotContainer.appendChild(hotspot);
+      });
+    }
+
+    function showParameterDialog(type, x, y) {
+      const dialog = document.getElementById('parameterDialog');
+      if (!dialog) return;
+      
+      // Simple mapping: type -> filename
+      const imagePath = `Tesseract%20Tutorial%20Pictures/Parameters/${type}.png`;
+      const title = type; // Just use the filename as title
+      
+      // Update dialog content
+      const titleEl = dialog.querySelector('h3');
+      const imageEl = dialog.querySelector('img');
+      
+      if (titleEl) titleEl.textContent = title;
+      if (imageEl) {
+        imageEl.src = imagePath;
+        imageEl.style.display = 'block';
+      }
+      
+      // Position dialog
+      dialog.style.left = Math.min(x, window.innerWidth - 320) + 'px';
+      dialog.style.top = Math.min(y, window.innerHeight - 200) + 'px';
+      
+      // Show dialog
+      dialog.classList.add('active');
+    }
+
+    function hideParameterDialog() {
+      const dialog = document.getElementById('parameterDialog');
+      if (dialog) {
+        dialog.classList.remove('active');
+      }
     }
 
     function onWheel(event) {
