@@ -47,6 +47,128 @@
       background: rgba(255, 107, 107, 0.8);
       color: #fff;
     }
+    
+    /* Motion control UI styles */
+    .motion-control-panel {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 1rem;
+      border-radius: 12px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.85rem;
+      min-width: 200px;
+      display: none;
+      pointer-events: auto;
+    }
+    
+    .motion-indicator {
+      position: fixed;
+      top: 2rem;
+      right: 70px;
+      z-index: 150;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 255, 127, 0.2);
+      border: 2px solid rgba(0, 255, 127, 0.6);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    
+    .motion-indicator.active {
+      background: rgba(0, 255, 127, 0.4);
+      border-color: rgba(0, 255, 127, 0.9);
+      box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
+    }
+    
+    .motion-indicator.calibrating {
+      background: rgba(255, 165, 0, 0.4);
+      border-color: rgba(255, 165, 0, 0.9);
+      animation: pulse-orange 1s infinite;
+    }
+    
+    @keyframes pulse-orange {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .motion-permission-prompt {
+      position: fixed;
+      bottom: 6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+      max-width: 280px;
+    }
+    
+    .motion-permission-prompt.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .motion-permission-prompt h4 {
+      color: #00ffff;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .motion-permission-prompt p {
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    
+    .motion-permission-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .motion-btn {
+      background: rgba(0, 255, 255, 0.2);
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      color: #00ffff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .motion-btn:hover {
+      background: rgba(0, 255, 255, 0.3);
+      border-color: rgba(0, 255, 255, 0.8);
+    }
+    
+    .motion-btn.decline {
+      background: rgba(255, 107, 107, 0.2);
+      border-color: rgba(255, 107, 107, 0.5);
+      color: #ff6b6b;
+    }
+    
+    .motion-btn.decline:hover {
+      background: rgba(255, 107, 107, 0.3);
+      border-color: rgba(255, 107, 107, 0.8);
+    }
   </style>
 </head>
 <body>
@@ -97,14 +219,26 @@
   <div class="swipe-indicator left" id="swipeIndicatorLeft">← Previous</div>
   <div class="swipe-indicator right" id="swipeIndicatorRight">Next →</div>
   
+  <!-- Motion Control UI -->
+  <div class="motion-indicator" id="motionIndicator" title="Motion Control">📱</div>
+  
+  <div class="motion-permission-prompt" id="motionPermissionPrompt">
+    <h4>Enhanced Experience</h4>
+    <p>Enable motion control to rotate the hypercube by tilting your device</p>
+    <div class="motion-permission-buttons">
+      <button class="motion-btn" id="enableMotionBtn">Enable</button>
+      <button class="motion-btn decline" id="declineMotionBtn">No thanks</button>
+    </div>
+  </div>
+  
   <!-- Tutorial Container Placeholder - will be loaded dynamically -->
   <div id="tutorialContainer"></div>
   
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
-  <!-- Tesseract Shader Module -->
-  <script src="shaderTesseract.js"></script>
+  <!-- Enhanced Tesseract Shader Module with Motion Control -->
+  <script src="enhancedShaderTesseract.js"></script>
 
   <script>
     // Tutorial Section Configuration
@@ -534,6 +668,350 @@
     let mobileSwipeGestures = null;
 
     // ==========================================
+    // MOBILE MOTION CONTROL SYSTEM
+    // ==========================================
+    
+    class MobileMotionControl {
+      constructor(tesseractShader) {
+        this.tesseractShader = tesseractShader;
+        this.isActive = false;
+        this.isSupported = false;
+        this.isPermissionGranted = false;
+        this.isCalibrated = false;
+        
+        // Motion data state
+        this.motionData = {
+          alpha: 0,    // Z-axis (yaw)
+          beta: 0,     // X-axis (pitch)  
+          gamma: 0,    // Y-axis (roll)
+          calibration: { alpha: 0, beta: 0, gamma: 0 }
+        };
+        
+        // Processing configuration
+        this.config = {
+          sensitivity: 0.02,     // Rotation sensitivity multiplier
+          deadzone: 2,           // Ignore movements below this threshold (degrees)
+          maxVelocity: 3,        // Maximum rotation speed
+          smoothingFactor: 0.85, // Low-pass filter strength (0-1)
+          gravityBias: 0.3       // Subtle downward rotation influence
+        };
+        
+        // Smoothed values for applying to shader
+        this.smoothedRotation = { x: 0, y: 0, w: 0 };
+        this.lastRotation = { x: 0, y: 0, w: 0 };
+        
+        // UI elements
+        this.indicator = document.getElementById('motionIndicator');
+        this.permissionPrompt = document.getElementById('motionPermissionPrompt');
+        
+        this.init();
+      }
+      
+      async init() {
+        if (!isMobile) return;
+        
+        console.log('🎯 Initializing mobile motion control');
+        
+        // Feature detection
+        this.isSupported = 'DeviceOrientationEvent' in window;
+        
+        if (!this.isSupported) {
+          console.log('❌ Device orientation not supported');
+          return;
+        }
+        
+        // Show motion indicator
+        if (this.indicator) {
+          this.indicator.style.display = 'flex';
+          this.indicator.addEventListener('click', this.toggleMotionControl.bind(this));
+        }
+        
+        // Check if permission is needed (iOS 13+)
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          console.log('📱 iOS device detected - permission required');
+          this.showPermissionPrompt();
+        } else {
+          // Android or older iOS - no permission needed
+          console.log('📱 Android/older iOS - no permission required');
+          this.isPermissionGranted = true;
+          this.startMotionDetection();
+          
+          // Auto-enable motion control on Android
+          this.isActive = true;
+          if (this.tesseractShader) {
+            this.tesseractShader.enableMotionControl();
+          }
+          
+          // Auto-calibrate after 2 seconds
+          setTimeout(() => {
+            this.calibrateMotion();
+          }, 2000);
+        }
+      }
+      
+      showPermissionPrompt() {
+        if (!this.permissionPrompt) return;
+        
+        // Auto-show prompt after 3 seconds on hero page
+        setTimeout(() => {
+          if (currentSection === 0 && !this.isActive) {
+            this.permissionPrompt.classList.add('show');
+          }
+        }, 3000);
+        
+        // Setup button handlers
+        const enableBtn = document.getElementById('enableMotionBtn');
+        const declineBtn = document.getElementById('declineMotionBtn');
+        
+        if (enableBtn) {
+          enableBtn.addEventListener('click', this.requestPermission.bind(this));
+        }
+        
+        if (declineBtn) {
+          declineBtn.addEventListener('click', this.declinePermission.bind(this));
+        }
+      }
+      
+      async requestPermission() {
+        try {
+          const response = await DeviceOrientationEvent.requestPermission();
+          
+          if (response === 'granted') {
+            console.log('✅ Motion permission granted');
+            this.isPermissionGranted = true;
+            this.startMotionDetection();
+            this.hidePermissionPrompt();
+            this.showCalibrationPrompt();
+            
+            // Auto-enable motion control when permission is granted
+            this.isActive = true;
+            if (this.tesseractShader) {
+              this.tesseractShader.enableMotionControl();
+            }
+          } else {
+            console.log('❌ Motion permission denied');
+            this.handlePermissionDenied();
+          }
+        } catch (error) {
+          console.error('Motion permission request failed:', error);
+          this.handlePermissionDenied();
+        }
+      }
+      
+      declinePermission() {
+        console.log('👤 User declined motion control');
+        this.hidePermissionPrompt();
+        localStorage.setItem('motionControlDeclined', 'true');
+      }
+      
+      hidePermissionPrompt() {
+        if (this.permissionPrompt) {
+          this.permissionPrompt.classList.remove('show');
+        }
+      }
+      
+      handlePermissionDenied() {
+        this.hidePermissionPrompt();
+        this.showFallbackMessage();
+      }
+      
+      showFallbackMessage() {
+        // Brief notification that touch controls are being used
+        console.log('📱 Using touch controls as fallback');
+      }
+      
+      startMotionDetection() {
+        if (!this.isPermissionGranted) return;
+        
+        console.log('🎯 Starting motion detection');
+        window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
+        
+        // Update indicator to show it's available
+        if (this.indicator) {
+          this.indicator.style.opacity = '0.7';
+        }
+      }
+      
+      showCalibrationPrompt() {
+        if (!this.indicator) return;
+        
+        this.indicator.classList.add('calibrating');
+        this.indicator.title = 'Tap to calibrate motion control';
+        
+        // Auto-calibrate after 2 seconds
+        setTimeout(() => {
+          this.calibrateMotion();
+        }, 2000);
+      }
+      
+      calibrateMotion() {
+        // Set current orientation as neutral position
+        this.motionData.calibration = {
+          alpha: this.motionData.alpha,
+          beta: this.motionData.beta,
+          gamma: this.motionData.gamma
+        };
+        
+        this.isCalibrated = true;
+        
+        if (this.indicator) {
+          this.indicator.classList.remove('calibrating');
+          this.indicator.classList.add('active'); // Show as active after calibration
+          this.indicator.title = 'Motion control enabled - tap to toggle';
+        }
+        
+        console.log('🎯 Motion control calibrated');
+      }
+      
+      toggleMotionControl() {
+        if (!this.isSupported || !this.isPermissionGranted) {
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            this.showPermissionPrompt();
+          }
+          return;
+        }
+        
+        this.isActive = !this.isActive;
+        
+        // Enable/disable motion control in shader
+        if (this.tesseractShader) {
+          if (this.isActive) {
+            this.tesseractShader.enableMotionControl();
+          } else {
+            this.tesseractShader.disableMotionControl();
+          }
+        }
+        
+        if (this.indicator) {
+          if (this.isActive) {
+            this.indicator.classList.add('active');
+            this.indicator.title = 'Motion control active';
+          } else {
+            this.indicator.classList.remove('active');
+            this.indicator.title = 'Motion control paused';
+          }
+        }
+        
+        console.log(`🎯 Motion control ${this.isActive ? 'enabled' : 'disabled'}`);
+      }
+      
+      handleDeviceOrientation(event) {
+        // Only process motion data on hero section
+        if (currentSection !== 0 || !this.isActive || !this.isCalibrated) {
+          return;
+        }
+        
+        // Update raw motion data
+        this.motionData.alpha = event.alpha || 0;  // Z-axis (compass heading)
+        this.motionData.beta = event.beta || 0;    // X-axis (front-to-back tilt)
+        this.motionData.gamma = event.gamma || 0;  // Y-axis (left-to-right tilt)
+        
+        // Calculate relative motion from calibrated position
+        const deltaAlpha = this.normalizeAngle(this.motionData.alpha - this.motionData.calibration.alpha);
+        const deltaBeta = this.motionData.beta - this.motionData.calibration.beta;
+        const deltaGamma = this.motionData.gamma - this.motionData.calibration.gamma;
+        
+        // Apply deadzone
+        const processedAlpha = Math.abs(deltaAlpha) > this.config.deadzone ? deltaAlpha : 0;
+        const processedBeta = Math.abs(deltaBeta) > this.config.deadzone ? deltaBeta : 0;
+        const processedGamma = Math.abs(deltaGamma) > this.config.deadzone ? deltaGamma : 0;
+        
+        // Map device orientation to hypercube rotation
+        // Device tilt X (pitch/beta) → hypercube RX rotation
+        // Device tilt Y (roll/gamma) → hypercube RY rotation  
+        // Device tilt Z (yaw/alpha) → hypercube RW rotation (4D axis)
+        const targetRotation = {
+          x: processedBeta * this.config.sensitivity,
+          y: processedGamma * this.config.sensitivity,
+          w: processedAlpha * this.config.sensitivity
+        };
+        
+        // Apply velocity limits
+        targetRotation.x = this.clamp(targetRotation.x, -this.config.maxVelocity, this.config.maxVelocity);
+        targetRotation.y = this.clamp(targetRotation.y, -this.config.maxVelocity, this.config.maxVelocity);
+        targetRotation.w = this.clamp(targetRotation.w, -this.config.maxVelocity, this.config.maxVelocity);
+        
+        // Apply smoothing (low-pass filter)
+        this.smoothedRotation.x = this.lerp(this.smoothedRotation.x, targetRotation.x, 1 - this.config.smoothingFactor);
+        this.smoothedRotation.y = this.lerp(this.smoothedRotation.y, targetRotation.y, 1 - this.config.smoothingFactor);
+        this.smoothedRotation.w = this.lerp(this.smoothedRotation.w, targetRotation.w, 1 - this.config.smoothingFactor);
+        
+        // Apply gravity bias (subtle downward rotation based on device orientation)
+        const gravityInfluence = Math.sin(deltaBeta * Math.PI / 180) * this.config.gravityBias;
+        this.smoothedRotation.x += gravityInfluence * 0.01;
+        
+        // Send to shader
+        this.applyMotionToShader();
+      }
+      
+      applyMotionToShader() {
+        if (!this.tesseractShader || !this.tesseractShader.updateMotionInput) return;
+        
+        // Send motion input to shader using proper API
+        this.tesseractShader.updateMotionInput({
+          x: this.smoothedRotation.x * 0.002,  // Scale for shader consumption
+          y: this.smoothedRotation.y * 0.002,
+          w: this.smoothedRotation.w * 0.001   // 4D rotation is more sensitive
+        });
+      }
+      
+      // Utility functions
+      normalizeAngle(angle) {
+        while (angle > 180) angle -= 360;
+        while (angle < -180) angle += 360;
+        return angle;
+      }
+      
+      clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+      
+      lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+      
+      // Disable motion control when entering tutorial
+      disable() {
+        this.isActive = false;
+        
+        // Disable motion control in shader
+        if (this.tesseractShader) {
+          this.tesseractShader.disableMotionControl();
+        }
+        
+        if (this.indicator) {
+          this.indicator.classList.remove('active');
+          this.indicator.style.opacity = '0.4';
+        }
+      }
+      
+      // Re-enable motion control when returning to hero
+      enable() {
+        if (this.isSupported && this.isPermissionGranted && currentSection === 0) {
+          if (this.indicator) {
+            this.indicator.style.opacity = '0.7';
+          }
+          
+          // Don't auto-enable motion in shader - let user toggle it
+          // The shader state should persist from user's last choice
+        }
+      }
+      
+      destroy() {
+        if (!isMobile) return;
+        
+        window.removeEventListener('deviceorientation', this.handleDeviceOrientation);
+        
+        if (this.indicator) {
+          this.indicator.removeEventListener('click', this.toggleMotionControl);
+        }
+      }
+    }
+    
+    // Initialize motion control
+    let mobileMotionControl = null;
+
+    // ==========================================
     // EXISTING TUTORIAL FUNCTIONALITY
     // ==========================================
 
@@ -912,9 +1390,14 @@
           mobileBtn.style.pointerEvents = 'auto';
         }
         
+        // Enable motion control on hero section
+        if (mobileMotionControl && isMobile) {
+          mobileMotionControl.enable();
+        }
+        
         tutorialOpen = false;
       } else {
-        // Tutorial section - hide mobile button
+        // Tutorial section - hide mobile button and disable motion control
         if (tutorialContainer) {
           tutorialContainer.classList.add('active');
         }
@@ -927,6 +1410,11 @@
           mobileBtn.style.opacity = '0';
           mobileBtn.style.visibility = 'hidden';
           mobileBtn.style.pointerEvents = 'none';
+        }
+        
+        // Disable motion control in tutorial sections
+        if (mobileMotionControl && isMobile) {
+          mobileMotionControl.disable();
         }
         
         tutorialOpen = true;
@@ -1399,6 +1887,12 @@
           console.log('📱 Mobile swipe gestures initialized');
         }
         
+        // Initialize mobile motion control
+        if (isMobile) {
+          mobileMotionControl = new MobileMotionControl(tesseractShader);
+          console.log('📱 Mobile motion control initialized');
+        }
+        
         // Setup wheel event for tutorial navigation
         document.addEventListener('wheel', onWheel, { passive: false });
       } catch (error) {
@@ -1428,6 +1922,9 @@
     window.addEventListener('beforeunload', () => {
       if (mobileSwipeGestures) {
         mobileSwipeGestures.destroy();
+      }
+      if (mobileMotionControl) {
+        mobileMotionControl.destroy();
       }
       if (tesseractShader) {
         tesseractShader.destroy();
