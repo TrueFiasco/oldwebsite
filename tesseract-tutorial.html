@@ -335,8 +335,8 @@
           return;
         }
         
-        // Prevent default to avoid interference with scrolling during gesture
-        event.preventDefault();
+        // DON'T prevent default here - let normal scrolling work
+        // We'll only prevent default later if we detect a clear horizontal swipe
         
         this.touchData = {
           startX: touch.clientX,
@@ -358,17 +358,21 @@
         this.touchData.currentY = touch.clientY;
         
         const deltaX = this.touchData.currentX - this.touchData.startX;
-        const deltaY = Math.abs(this.touchData.currentY - this.touchData.startY);
+        const deltaY = this.touchData.currentY - this.touchData.startY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
         
-        // Show visual feedback during swipe
-        if (Math.abs(deltaX) > 20) {
-          this.showSwipePreview(deltaX);
-        }
-        
-        // Prevent scrolling if this looks like a horizontal swipe
-        if (Math.abs(deltaX) > Math.abs(this.touchData.currentY - this.touchData.startY)) {
+        // Only prevent default if this is clearly a horizontal swipe gesture
+        // Must meet stricter criteria to override normal scrolling
+        if (absDeltaX > 30 && absDeltaX > absDeltaY * 2 && absDeltaY < this.config.maxVerticalDrift) {
           event.preventDefault();
+          
+          // Show visual feedback during confirmed horizontal swipe
+          if (absDeltaX > 20) {
+            this.showSwipePreview(deltaX);
+          }
         }
+        // Otherwise, let normal vertical scrolling work
       }
       
       handleTouchEnd(event) {
