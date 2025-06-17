@@ -989,24 +989,31 @@ p {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: auto !important;
+    /* FIXED: Stable height that doesn't cause jumping */
+    height: 250px !important; /* Fixed height prevents jumping */
     max-height: 40vh;
     background: rgb(25, 27, 31);
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     z-index: 1;
-    /* Fix jumping by stabilizing the container */
-    min-height: 150px; /* Minimum height to prevent collapse */
+    /* Ensure container stays stable during transitions */
+    transition: none !important;
   }
 
-  .image-transition-container {
-    position: relative;
+ .tutorial-image {
+    position: absolute !important; /* BACK TO ABSOLUTE - SAME AS DESKTOP */
+    top: 0 !important;
+    left: 0 !important;
     width: 100%;
-    height: auto !important;
-    overflow: hidden;
+    height: 100%;
+    object-fit: contain; /* Scale to fit within container */
+    opacity: 0;
+    /* IDENTICAL TRANSITIONS TO DESKTOP */
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1;
-    /* Stabilize transitions */
-    min-height: inherit;
+    display: block;
+    /* Allow transforms - SAME AS DESKTOP */
+    transform-origin: center center;
   }
 
   .tutorial-image {
@@ -1032,16 +1039,15 @@ p {
     transform: none !important;
   }
 
-
-/* === TUTORIAL SECTION ADJUSTMENTS === */
+  /* === TUTORIAL SECTION ADJUSTMENTS === */
   .tutorial-section {
     padding: 0.25rem 1rem 1rem 1rem;
     min-height: calc(100vh - 80px); /* Account for taller header */
-    padding-bottom: 1rem !important;
   }
   
   .tutorial-section.has-background-image {
-    padding-bottom: 1rem !important;
+    /* FIXED: Consistent padding that accounts for stable image height */
+    padding-bottom: 270px !important; /* 250px container + 20px margin */
   }
 
   .section-layout {
@@ -1049,10 +1055,18 @@ p {
     gap: 1.5rem;
     margin-bottom: 1rem;
     margin-top: 0.125rem;
+    /* Remove variable bottom margin - let padding-bottom handle it */
     padding-bottom: 1rem;
-    /* Ensure content doesn't overlap with image area */
-    margin-bottom: 180px; /* Space for image container */
   }
+
+  /* Ensure scrollable content area doesn't conflict with image */
+  .tutorial-section {
+    /* Create stable scrolling area */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
 
   .section-left,
   .section-right {
@@ -1154,8 +1168,20 @@ p {
 
 /* === EXTRA SMALL MOBILE STYLES === */
 @media (max-width: 480px) {
+  /* CRITICAL: Image container sizing */
+  .static-image-container {
+    height: 200px !important; /* Smaller fixed height for small screens */
+    max-height: 35vh;
+  }
+
+  /* CRITICAL: Section padding for image space */
+  .tutorial-section.has-background-image {
+    padding-bottom: 220px !important; /* 200px container + 20px margin */
+  }
+
+  /* OPTIONAL: Header sizing adjustments (keep for better UX) */
   .tutorial-title {
-    font-size: clamp(0.9rem, 4.5vw, 1.2rem) !important; /* Adjusted for 2-line layout */
+    font-size: clamp(0.9rem, 4.5vw, 1.2rem) !important;
   }
 
   .nav-btn {
@@ -1174,38 +1200,5 @@ p {
     height: 30px !important;
     min-width: 30px !important;
   }
-
-  .static-image-container {
-    max-height: 35vh;
-    min-height: 120px; /* Smaller minimum for small screens */
-  }
-
-  .tutorial-image {
-    max-height: 35vh;
-  }
-
-  .tutorial-section {
-    padding: 0.2rem 0.75rem 0.75rem 0.75rem;
-    min-height: calc(100vh - 90px); /* Account for slightly taller header on small screens */
-  }
-  
-  .section-layout {
-    margin-bottom: 150px; /* Adjust for smaller image area */
-  }
-  
-  .mobile-parameters {
-    margin: 1rem 0;
-    padding: 0.75rem;
-  }
-  
-  .widget-container {
-    margin: 0.25rem 0;
-    min-height: 150px;
-  }
-  
-  .mobile-start-btn {
-    font-size: 1rem;
-    padding: 0.8rem 1.5rem;
-  }
 }
-}
+
