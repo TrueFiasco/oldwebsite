@@ -397,6 +397,47 @@ p {
   opacity: 1;
 }
 
+/* === MOBILE START BUTTON STYLES === */
+.mobile-tutorial-button {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: none; /* Hidden by default, shown only on mobile hero section */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-start-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid rgba(0, 255, 255, 0.5);
+  color: #00ffff;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+  pointer-events: auto;
+  position: relative;
+}
+
+.mobile-start-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.mobile-start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.3);
+}
+
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
   /* FIXED: Show mobile button on mobile, remove pointer cursor */
@@ -404,8 +445,13 @@ p {
     cursor: default; /* Remove pointer cursor on mobile */
   }
   
-  .mobile-start-container {
-    display: block !important; /* Show mobile button */
+  .mobile-tutorial-button {
+    display: block !important; /* Show mobile button on mobile */
+  }
+  .tutorial-container.active ~ .hero-section .mobile-tutorial-button {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
   
   .tutorial-section {
@@ -535,9 +581,10 @@ p {
 /* === DESKTOP SPECIFIC STYLES === */
 @media (min-width: 769px) {
   /* FIXED: Hide mobile button on desktop */
-  .mobile-start-container {
+  .mobile-tutorial-button {
     display: none !important;
   }
+}
   
   .section-left {
     flex: 2 1 66.666%;
