@@ -51,350 +51,8 @@ body {
   position: relative;
   overflow: hidden;
   flex: 1;
-  display: flex;
   flex-direction: column;
   max-width: 100%;
-}
-
-.content-widget:hover {
-  border-color: #777;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.widget-header {
-  background: #3a3a3a;
-  padding: 0.5rem;
-  border-top: 1px solid #555;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 32px;
-  order: 2;
-}
-
-.widget-title {
-  font-size: 0.9rem;
-  color: #ddd;
-  font-weight: normal;
-  margin: 0;
-  padding-left: 0.5rem;
-  flex: 1;
-}
-
-.widget-content {
-  flex: 1;
-  overflow: hidden;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.8rem;
-  line-height: 1.2;
-  background: #2a2a2a;
-  color: #ddd;
-  position: relative;
-  order: 1;
-}
-
-/* === TSV TABLE STYLING === */
-.tsv-table {
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  background: #2a2a2a;
-}
-
-.tsv-table th,
-.tsv-table td {
-  border: 1px solid #555;
-  padding: 2px 6px;
-  text-align: left;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  min-width: 40px;
-  max-width: 60px;
-  overflow: hidden;
-}
-
-.tsv-table th {
-  background: #3a3a3a;
-  color: #fff;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.tsv-table td {
-  background: #2a2a2a;
-  color: #ddd;
-}
-
-.tsv-table tr:nth-child(even) td {
-  background: #2e2e2e;
-}
-
-.tsv-table tr:hover td {
-  background: #353535;
-}
-
-/* === CODE CONTENT STYLING === */
-.code-content {
-  padding: 1rem;
-  height: 100%;
-  overflow: hidden;
-  white-space: pre;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.75rem;
-  line-height: 1.3;
-  color: #ddd;
-}
-
-/* === LOADING STATES === */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #888;
-  font-style: italic;
-}
-
-.error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #ff6b6b;
-  font-style: italic;
-}
-
-/* === FULLSCREEN MODALS === */
-.widget-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #1a1a1a;
-  z-index: 4000;
-  display: none;
-  flex-direction: column;
-}
-
-.widget-fullscreen.active {
-  display: flex;
-  animation: fadeInScale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.widget-fullscreen-header {
-  background: #2a2a2a;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #555;
-  min-height: 60px;
-  gap: 1rem;
-}
-
-.widget-fullscreen-header h3 {
-  color: #ddd;
-  font-size: 1.2rem;
-  margin: 0;
-  font-weight: normal;
-  flex: 1;
-}
-
-.widget-fullscreen-buttons {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.widget-fullscreen-content {
-  flex: 1;
-  overflow: auto;
-  padding: 0;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  line-height: 1.4;
-  color: #ddd;
-  font-size: 0.9rem;
-  background: #2a2a2a;
-  min-height: 0;
-}
-
-.widget-fullscreen-content .tsv-table {
-  font-size: 0.85rem;
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.widget-fullscreen-content .tsv-table th,
-.widget-fullscreen-content .tsv-table td {
-  padding: 4px 8px;
-  min-width: 60px;
-  border: 1px solid #555;
-}
-
-.widget-fullscreen-content .tsv-table th {
-  position: sticky;
-  top: 0;
-  background: #3a3a3a;
-  z-index: 10;
-}
-
-.widget-fullscreen-content .code-content {
-  padding: 2rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  height: auto !important;
-  overflow: visible !important;
-  white-space: pre-wrap;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 6px;
-}
-
-.widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
-  background: #666;
-}
-
-/* === PROGRESS INDICATOR === */
-.progress-bar {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  z-index: 1600;
-}
-
-.progress-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #333;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.progress-dot.active {
-  background: #00ffff;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-}
-
-/* === TYPOGRAPHY === */
-.tutorial-section h1,
-.tutorial-section h2, 
-.tutorial-section h3,
-.tutorial-section h4,
-.tutorial-section h5,
-.tutorial-section h6 {
-  display: none !important;
-}
-
-p { 
-  line-height: 1.6; 
-  margin-bottom: 1rem; 
-}
-
-.highlight {
-  background: rgba(255, 255, 0, 0.2);
-  padding: 0.2rem 0.4rem;
-  border-radius: 3px;
-}
-
-.tip {
-  background: #2c3e50;
-  border-left: 4px solid #3498db;
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 0 5px 5px 0;
-  display: inline-block;
-  max-width: fit-content;
-}
-
-/* === SPECIAL SECTION IMAGES === */
-.trail-image, .blur-image {
-  width: 100%;
-  max-width: none;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  z-index: 25;
-  position: relative;
-}
-
-/* === GITHUB DOWNLOAD BUTTON === */
-.github-download-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  background: linear-gradient(45deg, #24292e, #586069);
-  border: none;
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  font-weight: bold;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  margin: 1.5rem 0;
-  text-decoration: none;
-  width: fit-content;
-}
-
-.github-download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
-  background: linear-gradient(45deg, #2f363d, #6a737d);
-}
-
-.github-logo {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-
-/* === COPY NOTIFICATION === */
-.copy-notification {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 255, 255, 0.9);
-  color: #000;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  font-weight: bold;
-  z-index: 5000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.copy-notification.show {
-  opacity: 1;
 }
 
 .hero-section:hover {
@@ -741,7 +399,7 @@ p {
   z-index: 1;
 }
 
-/* === HOTSPOT SYSTEM === */
+/* === HOTSPOT SYSTEM - DESKTOP ONLY === */
 .hotspot {
   position: absolute;
   width: 30px;
@@ -755,6 +413,7 @@ p {
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 50;
   pointer-events: auto;
+  display: block;
 }
 
 .hotspot:hover, .hotspot.sticky {
@@ -768,7 +427,7 @@ p {
   50% { transform: scale(1.2); opacity: 0.7; }
 }
 
-/* === PARAMETER DIALOG === */
+/* === PARAMETER DIALOG - DESKTOP === */
 .parameter-dialog {
   position: fixed;
   background: #1a1a2e;
@@ -823,6 +482,12 @@ p {
 
 .mobile-parameters:last-child {
   margin-bottom: 3rem;
+}
+
+.mobile-parameters h4 {
+  color: #00ffff;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 /* === WIDGET SYSTEM === */
@@ -898,6 +563,347 @@ p {
   overflow: hidden;
 }
 
+.content-widget:hover {
+  border-color: #777;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.widget-header {
+  background: #3a3a3a;
+  padding: 0.5rem;
+  border-top: 1px solid #555;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  order: 2;
+}
+
+.widget-title {
+  font-size: 0.9rem;
+  color: #ddd;
+  font-weight: normal;
+  margin: 0;
+  padding-left: 0.5rem;
+  flex: 1;
+}
+
+.widget-content {
+  flex: 1;
+  overflow: hidden;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  background: #2a2a2a;
+  color: #ddd;
+  position: relative;
+  order: 1;
+}
+
+/* === TSV TABLE STYLING === */
+.tsv-table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  background: #2a2a2a;
+}
+
+.tsv-table th,
+.tsv-table td {
+  border: 1px solid #555;
+  padding: 2px 6px;
+  text-align: left;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  min-width: 40px;
+  max-width: 60px;
+  overflow: hidden;
+}
+
+.tsv-table th {
+  background: #3a3a3a;
+  color: #fff;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tsv-table td {
+  background: #2a2a2a;
+  color: #ddd;
+}
+
+.tsv-table tr:nth-child(even) td {
+  background: #2e2e2e;
+}
+
+.tsv-table tr:hover td {
+  background: #353535;
+}
+
+/* === CODE CONTENT STYLING === */
+.code-content {
+  padding: 1rem;
+  height: 100%;
+  overflow: hidden;
+  white-space: pre;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #ddd;
+}
+
+/* === LOADING STATES === */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+  font-style: italic;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #ff6b6b;
+  font-style: italic;
+}
+
+/* === FULLSCREEN MODALS === */
+.widget-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  z-index: 4000;
+  display: none;
+  flex-direction: column;
+}
+
+.widget-fullscreen.active {
+  display: flex;
+  animation: fadeInScale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.widget-fullscreen-header {
+  background: #2a2a2a;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #555;
+  min-height: 60px;
+  gap: 1rem;
+}
+
+.widget-fullscreen-header h3 {
+  color: #ddd;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: normal;
+  flex: 1;
+}
+
+.widget-fullscreen-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.widget-fullscreen-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.4;
+  color: #ddd;
+  font-size: 0.9rem;
+  background: #2a2a2a;
+  min-height: 0;
+}
+
+.widget-fullscreen-content .tsv-table {
+  font-size: 0.85rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.widget-fullscreen-content .tsv-table th,
+.widget-fullscreen-content .tsv-table td {
+  padding: 4px 8px;
+  min-width: 60px;
+  border: 1px solid #555;
+}
+
+.widget-fullscreen-content .tsv-table th {
+  position: sticky;
+  top: 0;
+  background: #3a3a3a;
+  z-index: 10;
+}
+
+.widget-fullscreen-content .code-content {
+  padding: 2rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  height: auto !important;
+  overflow: visible !important;
+  white-space: pre-wrap;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 6px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* === PROGRESS INDICATOR === */
+.progress-bar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1600;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.progress-dot.active {
+  background: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+/* === TYPOGRAPHY === */
+.tutorial-section h1,
+.tutorial-section h2, 
+.tutorial-section h3,
+.tutorial-section h4,
+.tutorial-section h5,
+.tutorial-section h6 {
+  display: none !important;
+}
+
+p { 
+  line-height: 1.6; 
+  margin-bottom: 1rem; 
+}
+
+.highlight {
+  background: rgba(255, 255, 0, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.tip {
+  background: #2c3e50;
+  border-left: 4px solid #3498db;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 5px 5px 0;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+/* === SPECIAL SECTION IMAGES === */
+.trail-image, .blur-image {
+  width: 100%;
+  max-width: none;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  z-index: 25;
+  position: relative;
+}
+
+/* === GITHUB DOWNLOAD BUTTON === */
+.github-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: linear-gradient(45deg, #24292e, #586069);
+  border: none;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin: 1.5rem 0;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.github-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
+  background: linear-gradient(45deg, #2f363d, #6a737d);
+}
+
+.github-logo {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* === COPY NOTIFICATION === */
+.copy-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 255, 255, 0.9);
+  color: #000;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 5000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.copy-notification.show {
+  opacity: 1;
+}
+
 /* === CONTENT OVERFLOW PROTECTION === */
 .section-left,
 .section-right,
@@ -906,7 +912,6 @@ p {
   word-wrap: break-word;
 }
 
-/* === MOBILE RESPONSIVE STYLES === */
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
   /* === HERO SECTION MOBILE === */
@@ -983,70 +988,53 @@ p {
     font-size: 1.1rem !important;
   }
 
-/* === FIXED IMAGE CONTAINER - NO JUMPING === */
+  /* === FIXED IMAGE CONTAINER - NO JUMPING === */
   .static-image-container {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    /* FIXED: Stable height that doesn't cause jumping */
     height: 250px !important; /* Fixed height prevents jumping */
     max-height: 40vh;
     background: rgb(25, 27, 31);
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     z-index: 1;
-    /* Ensure container stays stable during transitions */
     transition: none !important;
   }
 
- .tutorial-image {
-    position: absolute !important; /* BACK TO ABSOLUTE - SAME AS DESKTOP */
+  .image-transition-container {
+    position: relative;
+    width: 100%;
+    height: 100%; /* Fill the stable container */
+    overflow: hidden;
+    z-index: 1;
+    transition: none !important;
+  }
+
+  .tutorial-image {
+    position: absolute !important; /* SAME AS DESKTOP */
     top: 0 !important;
     left: 0 !important;
     width: 100%;
     height: 100%;
     object-fit: contain; /* Scale to fit within container */
     opacity: 0;
-    /* IDENTICAL TRANSITIONS TO DESKTOP */
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1;
     display: block;
-    /* Allow transforms - SAME AS DESKTOP */
     transform-origin: center center;
-  }
-
-  .tutorial-image {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: 100%;
-    height: auto !important;
-    max-height: 40vh;
-    object-fit: contain;
-    opacity: 0;
-    /* Simplified transition - remove transforms that cause jumping */
-    transition: opacity 0.6s ease !important;
-    z-index: 1;
-    display: block;
-    /* Prevent layout shifts during transitions */
-    transform: none !important;
-  }
-
-  /* When image is active/visible - no transform animations */
-  .tutorial-image[style*="opacity: 1"] {
-    opacity: 1 !important;
-    transform: none !important;
   }
 
   /* === TUTORIAL SECTION ADJUSTMENTS === */
   .tutorial-section {
     padding: 0.25rem 1rem 1rem 1rem;
     min-height: calc(100vh - 80px); /* Account for taller header */
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
   .tutorial-section.has-background-image {
-    /* FIXED: Consistent padding that accounts for stable image height */
     padding-bottom: 270px !important; /* 250px container + 20px margin */
   }
 
@@ -1055,18 +1043,8 @@ p {
     gap: 1.5rem;
     margin-bottom: 1rem;
     margin-top: 0.125rem;
-    /* Remove variable bottom margin - let padding-bottom handle it */
     padding-bottom: 1rem;
   }
-
-  /* Ensure scrollable content area doesn't conflict with image */
-  .tutorial-section {
-    /* Create stable scrolling area */
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
 
   .section-left,
   .section-right {
@@ -1075,10 +1053,17 @@ p {
     padding-top: 0;
   }
 
+  /* MOBILE: Hide hotspots completely */
   .hotspot {
     display: none !important;
   }
 
+  /* MOBILE: Hide parameter dialog */
+  .parameter-dialog {
+    display: none !important;
+  }
+
+  /* MOBILE: Show parameter images in content */
   .mobile-parameters {
     display: block;
     margin: 1.5rem 0;
@@ -1140,9 +1125,30 @@ p {
 
 /* === DESKTOP SPECIFIC STYLES === */
 @media (min-width: 769px) {
-  /* Hide mobile button on desktop */
+  /* DESKTOP: Hide mobile button */
   .mobile-tutorial-button {
     display: none !important;
+  }
+
+  /* DESKTOP: Hide mobile parameter images */
+  .mobile-parameters {
+    display: none !important;
+  }
+
+  /* DESKTOP: Ensure hotspots are visible and functional */
+  .hotspot {
+    display: block !important;
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  /* DESKTOP: Ensure parameter dialog works */
+  .parameter-dialog {
+    display: none; /* Hidden by default, shown on hover/click */
+  }
+
+  .parameter-dialog.active {
+    display: block !important;
   }
   
   .section-left {
@@ -1168,18 +1174,15 @@ p {
 
 /* === EXTRA SMALL MOBILE STYLES === */
 @media (max-width: 480px) {
-  /* CRITICAL: Image container sizing */
   .static-image-container {
     height: 200px !important; /* Smaller fixed height for small screens */
     max-height: 35vh;
   }
 
-  /* CRITICAL: Section padding for image space */
   .tutorial-section.has-background-image {
     padding-bottom: 220px !important; /* 200px container + 20px margin */
   }
 
-  /* OPTIONAL: Header sizing adjustments (keep for better UX) */
   .tutorial-title {
     font-size: clamp(0.9rem, 4.5vw, 1.2rem) !important;
   }
@@ -1201,4 +1204,3 @@ p {
     min-width: 30px !important;
   }
 }
-
