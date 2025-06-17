@@ -153,6 +153,23 @@
     .control-button.wide {
       flex: 2;
     }
+    
+    /* Motion control override button styling */
+    #motion-control-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      color: white;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    
+    #motion-control-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #4ecdc4;
+    }
 
     .mobile-only {
       display: none;
@@ -452,6 +469,12 @@
         <input type="range" id="filter-strength" value="0.1" min="0.01" max="1" step="0.01" style="width: 80px;" title="Parameter change smoothing">
       </div>
       
+      <!-- Motion Control Override (for users who previously declined) -->
+      <div class="control-group mobile-only" id="motion-control-group">
+        <label for="motion-control-toggle">Motion Control:</label>
+        <button class="control-button" id="motion-control-toggle" style="width: 80px; padding: 0.2rem 0.5rem; font-size: 0.75rem;">Enable</button>
+      </div>
+      
       <div class="button-group">
         <!-- Reset Button -->
         <button class="control-button wide" id="reset-rotation">Reset Rotation</button>
@@ -488,6 +511,7 @@
         <p class="mobile-only">• Tap button below to start tutorial</p>
         <p class="mobile-only">• Tilt device to rotate hypercube</p>
         <p class="mobile-only">• Touch and drag for manual control</p>
+        <p class="mobile-only">• Use "Motion Control" above to enable device tilt</p>
       </div>
     </div>
     
@@ -531,6 +555,52 @@
   <script src="shaderTesseract.js"></script>
 
   <script>
+    // ==========================================
+    // CONTROL PANEL BUTTON EXPLANATIONS
+    // ==========================================
+    
+    /*
+    BUTTON EFFECTS EXPLAINED:
+    
+    🔄 RESET ROTATION: 
+    - Immediately snaps the hypercube back to center/neutral position
+    - Clears all rotation angles (rx=0, ry=0, rw=0)
+    - Shows green "Reset ✓" feedback
+    
+    🛑 STOP RX/RY/RW (Desktop): 
+    - RX = X-axis rotation (mouse up/down movement)
+    - RY = Y-axis rotation (mouse left/right movement)  
+    - RW = 4D-axis rotation (mouse wheel/scroll)
+    - Toggles between "Stop" and "Enable" for each axis
+    - When STOPPED: that axis won't rotate anymore
+    - When ENABLED: that axis responds to input again
+    
+    📱 MOBILE CONTROLS:
+    - Stop Motion = Disable/enable device tilt rotation
+    - Stop Touch = Disable/enable touch drag rotation
+    - Fix X-Axis = Invert X rotation direction for mobile devices
+    
+    🎛️ FILTER SLIDER:
+    - Controls how smoothly parameter changes are applied
+    - 0.01 = Very smooth/slow changes
+    - 1.0 = Instant changes
+    - Affects FOV, 4D Scale, and Camera Z adjustments
+    
+    🔒 MOTION CONTROL PERSISTENCE:
+    - Consent stored in localStorage permanently
+    - Once granted, auto-enables on page refresh
+    - Works across different pages on same domain
+    - No repeated permission prompts
+    
+    🔄 MOTION CONTROL OVERRIDE:
+    - If user previously declined, they can re-enable via settings panel
+    - "Motion Control: Enable" button appears in mobile settings
+    - Button shows current state: Enable/Active/Paused
+    - Allows users to change their mind without page refresh
+    - Re-requests permission and updates stored consent
+    */
+    
+    // ==========================================
     // Tutorial Section Configuration
     const sectionConfig = {
       1: { 
@@ -701,6 +771,11 @@
         this.setupRotationControls();
         this.setupMobileControls();
         this.startFilterLoop();
+        
+        // Initialize motion control button state after brief delay
+        if (this.isMobile) {
+          setTimeout(() => this.updateMotionControlButton(), 500);
+        }
       }
       
       setupToggle() {
@@ -737,17 +812,137 @@
             this.filterState[param].strength = strength;
           });
         });
+        
+        // Motion Control Override Toggle (allows re-enabling after decline)
+        this.setupMotionControlOverride();
+      }
+      
+      setupMotionControlOverride() {
+        const motionToggle = document.getElementById('motion-control-toggle');
+        const motionGroup = document.getElementById('motion-control-group');
+        
+        if (!motionToggle || !this.isMobile) return;
+        
+        // Check if motion control is available
+        const hasDeviceOrientation = 'DeviceOrientationEvent' in window;
+        if (!hasDeviceOrientation) {
+          motionGroup.style.display = 'none';
+          return;
+        }
+        
+        // Update button state based on current motion control status
+        this.updateMotionControlButton();
+        
+        motionToggle.addEventListener('click', () => {
+          const storedConsent = localStorage.getItem('motionControlConsent');
+          
+          if (storedConsent === 'granted') {
+            // Toggle motion control on/off
+            if (window.mobileMotionControl) {
+              window.mobileMotionControl.toggleMotionControl();
+              setTimeout(() => this.updateMotionControlButton(), 100);
+            }
+          } else {
+            // Re-request permission (even if previously declined)
+            this.requestMotionPermission();
+          }
+        });
+      }
+      
+      updateMotionControlButton() {
+        const motionToggle = document.getElementById('motion-control-toggle');
+        if (!motionToggle) return;
+        
+        const storedConsent = localStorage.getItem('motionControlConsent');
+        const isActive = window.mobileMotionControl?.isActive;
+        
+        if (storedConsent === 'granted') {
+          if (isActive) {
+            motionToggle.textContent = 'Active';
+            motionToggle.style.background = 'rgba(0, 255, 0, 0.3)';
+            motionToggle.style.borderColor = 'rgba(0, 255, 0, 0.5)';
+            motionToggle.title = 'Motion control is active - click to pause';
+          } else {
+            motionToggle.textContent = 'Paused';
+            motionToggle.style.background = 'rgba(255, 165, 0, 0.3)';
+            motionToggle.style.borderColor = 'rgba(255, 165, 0, 0.5)';
+            motionToggle.title = 'Motion control is paused - click to resume';
+          }
+        } else {
+          motionToggle.textContent = 'Enable';
+          motionToggle.style.background = '';
+          motionToggle.style.borderColor = '';
+          motionToggle.title = 'Click to enable device motion control';
+        }
+      }
+      
+      async requestMotionPermission() {
+        console.log('🔄 User clicked Motion Control override - re-requesting permission');
+        console.log('🔄 This allows users to enable motion control even after initially declining');
+        
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          try {
+            const response = await DeviceOrientationEvent.requestPermission();
+            
+            if (response === 'granted') {
+              console.log('✅ Motion permission granted via settings panel');
+              console.log('💾 Updating stored consent to "granted"');
+              localStorage.setItem('motionControlConsent', 'granted');
+              
+              // Initialize motion control if not already done
+              if (window.mobileMotionControl) {
+                window.mobileMotionControl.isPermissionGranted = true;
+                window.mobileMotionControl.startMotionDetection();
+                window.mobileMotionControl.autoEnableMotionControl();
+              }
+              
+              this.updateMotionControlButton();
+              console.log('🎯 Motion control now active via settings override');
+            } else {
+              console.log('❌ Motion permission denied again via settings panel');
+              localStorage.setItem('motionControlConsent', 'denied');
+              this.updateMotionControlButton();
+            }
+          } catch (error) {
+            console.error('Motion permission request failed:', error);
+          }
+        } else {
+          // Android or older iOS - no permission needed
+          console.log('📱 Android/older iOS - enabling motion control directly via settings');
+          localStorage.setItem('motionControlConsent', 'granted');
+          
+          if (window.mobileMotionControl) {
+            window.mobileMotionControl.isPermissionGranted = true;
+            window.mobileMotionControl.startMotionDetection();
+            window.mobileMotionControl.autoEnableMotionControl();
+          }
+          
+          this.updateMotionControlButton();
+          console.log('🎯 Motion control enabled via settings panel');
+        }
+      }
       }
       
       setupRotationControls() {
-        // Reset Rotation
+        // Reset Rotation - with visual feedback
         document.getElementById('reset-rotation').addEventListener('click', () => {
           if (this.shader && typeof this.shader.resetRotation === 'function') {
             this.shader.resetRotation();
+            console.log('🔄 Rotation reset to center position');
+            
+            // Visual feedback
+            const button = document.getElementById('reset-rotation');
+            const originalText = button.textContent;
+            button.textContent = 'Reset ✓';
+            button.style.background = 'rgba(0, 255, 0, 0.3)';
+            setTimeout(() => {
+              button.textContent = originalText;
+              button.style.background = '';
+            }, 1000);
           }
         });
         
-        // Desktop Controls (3 axis) - using existing shader API
+        // Desktop Controls (3 axis) - using existing shader API with better feedback
         ['rx', 'ry', 'rw'].forEach(axis => {
           const button = document.getElementById(`stop-${axis}`);
           if (button) {
@@ -755,6 +950,10 @@
               if (this.shader && typeof this.shader.toggleVelocity === 'function') {
                 const enabled = this.shader.toggleVelocity(axis);
                 this.updateButtonState(button, enabled, axis.toUpperCase());
+                
+                // Console feedback to show what's happening
+                const axisNames = { rx: 'X-axis', ry: 'Y-axis', rw: '4D-axis' };
+                console.log(`🎮 ${axisNames[axis]} rotation ${enabled ? 'ENABLED' : 'STOPPED'}`);
               }
             });
           }
@@ -764,7 +963,7 @@
       setupMobileControls() {
         if (!this.isMobile) return;
         
-        // Mobile RX, RY, RW controls
+        // Mobile RX, RY, RW controls with better feedback
         ['rx-mobile', 'ry-mobile', 'rw-mobile'].forEach(axisId => {
           const button = document.getElementById(`stop-${axisId}`);
           if (button) {
@@ -773,12 +972,16 @@
               if (this.shader && typeof this.shader.toggleVelocity === 'function') {
                 const enabled = this.shader.toggleVelocity(axis);
                 this.updateButtonState(button, enabled, axis.toUpperCase());
+                
+                // Console feedback
+                const axisNames = { rx: 'X-axis', ry: 'Y-axis', rw: '4D-axis' };
+                console.log(`📱 ${axisNames[axis]} rotation ${enabled ? 'ENABLED' : 'STOPPED'}`);
               }
             });
           }
         });
         
-        // Motion Control Toggle
+        // Motion Control Toggle with clear feedback
         const motionButton = document.getElementById('stop-motion');
         if (motionButton) {
           motionButton.addEventListener('click', () => {
@@ -788,10 +991,12 @@
               if (this.rotationEnabled.motion) {
                 if (typeof this.shader.enableMotionControl === 'function') {
                   this.shader.enableMotionControl();
+                  console.log('📱 Device motion control ENABLED');
                 }
               } else {
                 if (typeof this.shader.disableMotionControl === 'function') {
                   this.shader.disableMotionControl();
+                  console.log('📱 Device motion control STOPPED');
                 }
               }
             }
@@ -800,32 +1005,32 @@
           });
         }
         
-        // Touch Control Toggle
+        // Touch Control Toggle with feedback
         const touchButton = document.getElementById('stop-touch');
         if (touchButton) {
           touchButton.addEventListener('click', () => {
             this.rotationEnabled.touch = !this.rotationEnabled.touch;
             this.updateButtonState(touchButton, this.rotationEnabled.touch, 'Touch');
             
-            console.log(`Touch control ${this.rotationEnabled.touch ? 'enabled' : 'disabled'}`);
+            console.log(`📱 Touch control ${this.rotationEnabled.touch ? 'ENABLED' : 'STOPPED'}`);
           });
         }
         
-        // X-Axis Inversion Fix
+        // X-Axis Inversion Fix with clear feedback
         const invertButton = document.getElementById('invert-x');
         if (invertButton) {
           invertButton.addEventListener('click', () => {
             this.rotationEnabled.invertX = !this.rotationEnabled.invertX;
             
             if (this.rotationEnabled.invertX) {
-              invertButton.textContent = 'X-Axis Fixed';
+              invertButton.textContent = 'X-Axis Fixed ✓';
               invertButton.classList.add('disabled');
+              console.log('📱 X-axis rotation INVERTED (fixed for mobile)');
             } else {
               invertButton.textContent = 'Fix X-Axis';
               invertButton.classList.remove('disabled');
+              console.log('📱 X-axis rotation NORMAL');
             }
-            
-            console.log(`X-axis ${this.rotationEnabled.invertX ? 'inverted' : 'normal'}`);
           });
         }
       }
@@ -1178,38 +1383,65 @@
           return;
         }
         
+        // Check for stored consent
+        const storedConsent = localStorage.getItem('motionControlConsent');
+        const hasStoredConsent = storedConsent === 'granted';
+        
         if (this.indicator) {
           this.indicator.style.display = 'flex';
           this.indicator.addEventListener('click', this.toggleMotionControl.bind(this));
         }
         
-        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-          console.log('📱 iOS device detected - permission required');
-          this.showPermissionPrompt();
-        } else {
-          console.log('📱 Android/older iOS - no permission required');
+        if (hasStoredConsent) {
+          console.log('✅ Found stored motion consent - auto-enabling');
           this.isPermissionGranted = true;
           this.startMotionDetection();
-          
-          this.isActive = true;
-          if (this.tesseractShader && typeof this.tesseractShader.enableMotionControl === 'function') {
-            this.tesseractShader.enableMotionControl();
-          }
-          
-          setTimeout(() => {
-            this.calibrateMotion();
-          }, 2000);
+          this.autoEnableMotionControl();
+          return;
         }
+        
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          console.log('📱 iOS device detected - showing permission prompt');
+          this.showPermissionPrompt();
+        } else {
+          console.log('📱 Android/older iOS - auto-enabling with stored consent');
+          this.isPermissionGranted = true;
+          this.startMotionDetection();
+          this.autoEnableMotionControl();
+          // Store consent for future visits
+          localStorage.setItem('motionControlConsent', 'granted');
+        }
+      }
+      
+      autoEnableMotionControl() {
+        // Auto-enable motion control and calibrate
+        this.isActive = true;
+        if (this.tesseractShader && typeof this.tesseractShader.enableMotionControl === 'function') {
+          this.tesseractShader.enableMotionControl();
+        }
+        
+        // Auto-calibrate after brief delay
+        setTimeout(() => {
+          this.calibrateMotion();
+        }, 1500);
+        
+        console.log('🎯 Motion control auto-enabled from stored consent (no double-check)');
+        console.log('📱 Device tilt will control hypercube rotation');
       }
       
       showPermissionPrompt() {
         if (!this.permissionPrompt) return;
         
+        // Only show prompt for new users (no stored consent)
+        const storedConsent = localStorage.getItem('motionControlConsent');
+        if (storedConsent) return; // Don't show if already answered
+        
+        // Show prompt after brief delay, only for first-time visitors
         setTimeout(() => {
           if (currentSection === 0 && !this.isActive) {
             this.permissionPrompt.classList.add('show');
           }
-        }, 3000);
+        }, 2000); // Reduced delay since it's only for new users
         
         const enableBtn = document.getElementById('enableMotionBtn');
         const declineBtn = document.getElementById('declineMotionBtn');
@@ -1228,18 +1460,20 @@
           const response = await DeviceOrientationEvent.requestPermission();
           
           if (response === 'granted') {
-            console.log('✅ Motion permission granted');
+            console.log('✅ Motion permission granted - storing consent');
             this.isPermissionGranted = true;
+            
+            // Store consent permanently
+            localStorage.setItem('motionControlConsent', 'granted');
+            
             this.startMotionDetection();
             this.hidePermissionPrompt();
-            this.showCalibrationPrompt();
             
-            this.isActive = true;
-            if (this.tesseractShader && typeof this.tesseractShader.enableMotionControl === 'function') {
-              this.tesseractShader.enableMotionControl();
-            }
+            // Auto-enable motion control (no double-check)
+            this.autoEnableMotionControl();
           } else {
             console.log('❌ Motion permission denied');
+            localStorage.setItem('motionControlConsent', 'denied');
             this.handlePermissionDenied();
           }
         } catch (error) {
@@ -1250,8 +1484,8 @@
       
       declinePermission() {
         console.log('👤 User declined motion control');
+        localStorage.setItem('motionControlConsent', 'declined');
         this.hidePermissionPrompt();
-        localStorage.setItem('motionControlDeclined', 'true');
       }
       
       hidePermissionPrompt() {
@@ -1280,17 +1514,6 @@
         }
       }
       
-      showCalibrationPrompt() {
-        if (!this.indicator) return;
-        
-        this.indicator.classList.add('calibrating');
-        this.indicator.title = 'Tap to calibrate motion control';
-        
-        setTimeout(() => {
-          this.calibrateMotion();
-        }, 2000);
-      }
-      
       calibrateMotion() {
         this.motionData.calibration = {
           alpha: this.motionData.alpha,
@@ -1305,22 +1528,28 @@
           this.indicator.classList.add('active');
           this.indicator.title = 'Motion control active - tap to toggle';
           
-          this.indicator.style.transform = 'scale(1.3)';
+          // Brief visual feedback
+          this.indicator.style.transform = 'scale(1.2)';
           setTimeout(() => {
             this.indicator.style.transform = 'scale(1)';
-          }, 300);
+          }, 400);
         }
         
-        console.log('🎯 Motion control calibrated and active');
+        console.log('🎯 Motion control calibrated and ready');
       }
       
       toggleMotionControl() {
-        if (!this.isSupported || !this.isPermissionGranted) {
+        // If no stored consent, show permission prompt
+        const storedConsent = localStorage.getItem('motionControlConsent');
+        if (!storedConsent || storedConsent === 'denied') {
           if (typeof DeviceOrientationEvent.requestPermission === 'function') {
             this.showPermissionPrompt();
           }
           return;
         }
+        
+        // Toggle if we have permission
+        if (!this.isSupported || !this.isPermissionGranted) return;
         
         this.isActive = !this.isActive;
         
@@ -1328,25 +1557,28 @@
           if (typeof this.tesseractShader.enableMotionControl === 'function') {
             if (this.isActive) {
               this.tesseractShader.enableMotionControl();
+              console.log('🎯 Motion control manually ENABLED');
             } else {
               this.tesseractShader.disableMotionControl();
+              console.log('🎯 Motion control manually DISABLED');
             }
-          } else {
-            console.warn('Enhanced motion control methods not available - using basic fallback');
           }
         }
         
         if (this.indicator) {
           if (this.isActive) {
             this.indicator.classList.add('active');
-            this.indicator.title = 'Motion control active';
+            this.indicator.title = 'Motion control active - tap to pause';
           } else {
             this.indicator.classList.remove('active');
-            this.indicator.title = 'Motion control paused';
+            this.indicator.title = 'Motion control paused - tap to resume';
           }
         }
         
-        console.log(`🎯 Motion control ${this.isActive ? 'enabled' : 'disabled'}`);
+        // Update control panel button if it exists
+        if (window.enhancedControlPanel && typeof window.enhancedControlPanel.updateMotionControlButton === 'function') {
+          setTimeout(() => window.enhancedControlPanel.updateMotionControlButton(), 100);
+        }
       }
       
       handleDeviceOrientation(event) {
@@ -1474,6 +1706,9 @@
     
     // Initialize motion control
     let mobileMotionControl = null;
+    
+    // Make motion control globally accessible for control panel integration
+    window.mobileMotionControl = null;
 
     // ==========================================
     // EXISTING TUTORIAL FUNCTIONALITY
@@ -2346,6 +2581,7 @@
         
         // Initialize Enhanced Control Panel
         enhancedControlPanel = new EnhancedControlPanel(tesseractShader);
+        window.enhancedControlPanel = enhancedControlPanel; // Make globally accessible
         console.log('✅ Enhanced Control Panel initialized');
         
         // Test desktop click functionality
@@ -2369,6 +2605,7 @@
           
           try {
             mobileMotionControl = new MobileMotionControl(tesseractShader);
+            window.mobileMotionControl = mobileMotionControl; // Make globally accessible
             console.log('✅ Mobile motion control initialized');
           } catch (error) {
             console.warn('⚠️ Mobile motion control failed to initialize:', error);
