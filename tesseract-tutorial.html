@@ -195,8 +195,6 @@
 
     // Tutorial State
     let currentSection = 0;
-    let previousSection = 0;
-    const totalSections = 15; // Hero + 14 tutorial sections
     let tutorialOpen = false;
     let cleanupTimeout = null;
     let stickyHotspots = new Set(); // Track sticky hotspots
@@ -361,7 +359,6 @@
     function transitionToSection(newSection) {
       if (newSection === currentSection) return;
       
-      previousSection = currentSection;
       currentSection = newSection;
       
       // Update section title in header
@@ -372,7 +369,7 @@
       
       // Handle image transitions in static container
       if (currentSection > 0 && currentSection <= 14) {
-        transitionStaticImage(currentSection, previousSection);
+        transitionStaticImage(currentSection);
       }
     }
 
@@ -387,7 +384,7 @@
     let currentTransition = null;
     let transitionCounter = 0;
 
-    function transitionStaticImage(newSection, oldSection) {
+    function transitionStaticImage(newSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
     
@@ -894,7 +891,7 @@
       
       let tsvText = '';
       
-      // Add header row (dynamically loaded)
+      // Add header row
       const headerCells = table.getElementsByTagName('thead')[0]?.getElementsByTagName('th');
       if (headerCells) {
         const headers = [];
@@ -918,7 +915,6 @@
       }
       
       navigator.clipboard.writeText(tsvText).then(() => {
-        console.log('TSV data copied to clipboard');
         showCopyNotification();
       }).catch(err => {
         console.error('Failed to copy TSV data: ', err);
@@ -926,7 +922,6 @@
     }
 
     function copyRotationGLSLToClipboard() {
-      // Check if fullscreen is active, if so copy from fullscreen content
       const fullscreenModal = document.getElementById('rotationGLSLFullscreen');
       let codeContent;
       
@@ -940,7 +935,6 @@
         const text = codeContent.textContent;
         
         navigator.clipboard.writeText(text).then(() => {
-          console.log('Rotation GLSL code copied to clipboard');
           showCopyNotification();
         }).catch(err => {
           console.error('Failed to copy rotation GLSL code: ', err);
@@ -949,7 +943,6 @@
     }
 
     function copyPerspectiveGLSLToClipboard() {
-      // Check if fullscreen is active, if so copy from fullscreen content
       const fullscreenModal = document.getElementById('perspectiveGLSLFullscreen');
       let codeContent;
       
@@ -963,7 +956,6 @@
         const text = codeContent.textContent;
         
         navigator.clipboard.writeText(text).then(() => {
-          console.log('Perspective GLSL code copied to clipboard');
           showCopyNotification();
         }).catch(err => {
           console.error('Failed to copy perspective GLSL code: ', err);
@@ -972,7 +964,6 @@
     }
 
     function copyLineDistanceGLSLToClipboard() {
-      // Check if fullscreen is active, if so copy from fullscreen content
       const fullscreenModal = document.getElementById('lineDistanceGLSLFullscreen');
       let codeContent;
       
@@ -986,7 +977,6 @@
         const text = codeContent.textContent;
         
         navigator.clipboard.writeText(text).then(() => {
-          console.log('Line Distance GLSL code copied to clipboard');
           showCopyNotification();
         }).catch(err => {
           console.error('Failed to copy line distance GLSL code: ', err);
@@ -994,20 +984,17 @@
       }
     }
 
-    // Updated wheel event handling to allow scrolling in fullscreen modals
     function onWheel(event) {
       // Check if any fullscreen modal is open
       const anyModalOpen = document.querySelector('.widget-fullscreen.active');
       
       // If a modal is open, allow normal scrolling within the modal content
       if (anyModalOpen) {
-        // Don't prevent default - allow normal scrolling
         return;
       }
     
       // If tutorial is open but no modal, handle section navigation
       if (tutorialOpen) {
-        // Only prevent default if we're actually handling the event
         event.preventDefault();
         const delta = event.deltaY;
         
@@ -1018,15 +1005,11 @@
         }
         return;
       }
-        
-        // If on hero page, the shader will handle wheel events for the hypercube
+      
+      // If on hero page, the shader will handle wheel events for the hypercube
     }
 
-    // SIMPLIFIED mobile button setup - no complex event handling
     function setupMobileButton() {
-      console.log('🔧 Setting up mobile button...');
-      console.log('📱 Device detected as:', isMobile ? 'MOBILE' : 'DESKTOP');
-      
       const mobileBtn = document.getElementById('mobileTutorialBtn');
       const startBtn = document.getElementById('mobileStartBtn');
       
@@ -1042,24 +1025,18 @@
           startBtn.style.pointerEvents = 'auto';
           startBtn.style.zIndex = '2000';
           
-          // Simple click handler - no complex touch event management
+          // Simple click handler
           startBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🚀 Mobile button clicked - starting tutorial!');
             openTutorial();
           });
-          
-          console.log('✅ Mobile button setup complete');
-        } else {
-          console.error('❌ Mobile button elements not found');
         }
       } else {
         // Hide button on desktop
         if (mobileBtn) {
           mobileBtn.style.display = 'none';
         }
-        console.log('🖥️ Desktop mode - mobile button hidden');
       }
     }
 
@@ -1076,17 +1053,15 @@
         
         await tesseractShader.init();
         
-        loadDynamicContent(); // Load TSV and code snippets
+        loadDynamicContent();
         initProgressBar();
         updateSectionTitle();
-        setupMobileButton(); // Simplified mobile button setup
+        setupMobileButton();
         
-        // Setup wheel event for tutorial navigation with passive: false
+        // Setup wheel event for tutorial navigation
         document.addEventListener('wheel', onWheel, { passive: false });
-        
-        console.log('✅ Tutorial application initialized successfully');
       } catch (error) {
-        console.error('❌ Failed to initialize tutorial application:', error);
+        console.error('Failed to initialize tutorial application:', error);
       }
     }
 
