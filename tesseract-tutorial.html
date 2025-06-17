@@ -5,6 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tesseract Tutorial - Interactive TouchDesigner Guide</title>
   <link rel="stylesheet" href="layoutTesseract.css" />
+  <style>
+    /* Enhanced mobile swipe feedback styles */
+    .tutorial-section {
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .tutorial-section.swiping {
+      transition: none;
+    }
+    
+    .swipe-indicator {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 255, 255, 0.8);
+      color: #000;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      z-index: 3000;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+    
+    .swipe-indicator.left {
+      left: 2rem;
+    }
+    
+    .swipe-indicator.right {
+      right: 2rem;
+    }
+    
+    .swipe-indicator.show {
+      opacity: 1;
+    }
+    
+    .swipe-indicator.boundary {
+      background: rgba(255, 107, 107, 0.8);
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <!-- Hero Section -->
@@ -43,12 +86,16 @@
     </div>
   </div>
   
-  <!-- Mobile-only tutorial button - simplified and outside hero section -->
+  <!-- Mobile-only tutorial button -->
   <div class="mobile-tutorial-button" id="mobileTutorialBtn" style="z-index: 1000;">
     <button class="mobile-start-btn" id="mobileStartBtn">
       Start Tutorial
     </button>
   </div>
+  
+  <!-- Swipe Indicators -->
+  <div class="swipe-indicator left" id="swipeIndicatorLeft">← Previous</div>
+  <div class="swipe-indicator right" id="swipeIndicatorRight">Next →</div>
   
   <!-- Tutorial Container Placeholder - will be loaded dynamically -->
   <div id="tutorialContainer"></div>
@@ -197,10 +244,294 @@
     let currentSection = 0;
     let tutorialOpen = false;
     let cleanupTimeout = null;
-    let stickyHotspots = new Set(); // Track sticky hotspots
+    let stickyHotspots = new Set();
 
-    // Mobile detection
+    // Mobile detection - CRITICAL: Use user agent, not screen width
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // ==========================================
+    // MOBILE SWIPE GESTURE SYSTEM
+    // ==========================================
+    
+    class MobileSwipeGestures {
+      constructor() {
+        this.isActive = false;
+        this.touchData = {
+          startX: 0,
+          startY: 0,
+          startTime: 0,
+          currentX: 0,
+          currentY: 0,
+          isTracking: false
+        };
+        
+        this.config = {
+          minDistance: 50,      // Minimum horizontal swipe distance
+          maxVerticalDrift: 30, // Maximum vertical movement allowed
+          minVelocity: 0.3,     // Minimum swipe velocity (px/ms)
+          minDuration: 50,      // Minimum touch duration (ms)
+          maxDuration: 800,     // Maximum touch duration (ms)
+          debounceTime: 300     // Minimum time between swipes (ms)
+        };
+        
+        this.lastSwipeTime = 0;
+        this.isTransitioning = false;
+        
+        this.init();
+      }
+      
+      init() {
+        if (!isMobile) return;
+        
+        console.log('🎯 Initializing mobile swipe gestures');
+        
+        // Attach event listeners only to mobile devices
+        document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+      }
+      
+      shouldIgnoreTouch(touch) {
+        // Don't process swipes when not in tutorial sections
+        if (!tutorialOpen || currentSection < 1 || currentSection > 14) {
+          return true;
+        }
+        
+        // Don't process swipes when modals are open
+        if (document.querySelector('.widget-fullscreen.active')) {
+          return true;
+        }
+        
+        // Don't process swipes when parameter dialog is open
+        if (document.querySelector('.parameter-dialog.active')) {
+          return true;
+        }
+        
+        // Don't process swipes in button areas
+        const buttonAreas = [
+          '.tutorial-nav',
+          '.progress-bar',
+          '.nav-btn',
+          '.widget-btn',
+          '.close-btn',
+          '.hero-settings-toggle',
+          '.hero-controls-panel'
+        ];
+        
+        for (const selector of buttonAreas) {
+          const element = document.elementFromPoint(touch.clientX, touch.clientY);
+          if (element && element.closest(selector)) {
+            return true;
+          }
+        }
+        
+        return false;
+      }
+      
+      handleTouchStart(event) {
+        const touch = event.touches[0];
+        
+        if (this.shouldIgnoreTouch(touch)) {
+          return;
+        }
+        
+        // Prevent default to avoid interference with scrolling during gesture
+        event.preventDefault();
+        
+        this.touchData = {
+          startX: touch.clientX,
+          startY: touch.clientY,
+          startTime: Date.now(),
+          currentX: touch.clientX,
+          currentY: touch.clientY,
+          isTracking: true
+        };
+        
+        console.log('📱 Swipe tracking started');
+      }
+      
+      handleTouchMove(event) {
+        if (!this.touchData.isTracking) return;
+        
+        const touch = event.touches[0];
+        this.touchData.currentX = touch.clientX;
+        this.touchData.currentY = touch.clientY;
+        
+        const deltaX = this.touchData.currentX - this.touchData.startX;
+        const deltaY = Math.abs(this.touchData.currentY - this.touchData.startY);
+        
+        // Show visual feedback during swipe
+        if (Math.abs(deltaX) > 20) {
+          this.showSwipePreview(deltaX);
+        }
+        
+        // Prevent scrolling if this looks like a horizontal swipe
+        if (Math.abs(deltaX) > Math.abs(this.touchData.currentY - this.touchData.startY)) {
+          event.preventDefault();
+        }
+      }
+      
+      handleTouchEnd(event) {
+        if (!this.touchData.isTracking) return;
+        
+        const touch = event.changedTouches[0];
+        const endTime = Date.now();
+        const duration = endTime - this.touchData.startTime;
+        
+        const deltaX = touch.clientX - this.touchData.startX;
+        const deltaY = Math.abs(touch.clientY - this.touchData.startY);
+        const distance = Math.abs(deltaX);
+        const velocity = distance / duration;
+        
+        this.hideSwipePreview();
+        
+        // Validate gesture
+        const isValidGesture = this.validateGesture(deltaX, deltaY, distance, velocity, duration);
+        
+        if (isValidGesture) {
+          this.processSwipe(deltaX);
+        }
+        
+        // Reset tracking
+        this.touchData.isTracking = false;
+        
+        console.log(`📱 Swipe ended: deltaX=${deltaX}, deltaY=${deltaY}, velocity=${velocity.toFixed(2)}, valid=${isValidGesture}`);
+      }
+      
+      validateGesture(deltaX, deltaY, distance, velocity, duration) {
+        // Check debounce time
+        if (Date.now() - this.lastSwipeTime < this.config.debounceTime) {
+          console.log('❌ Swipe ignored: too soon after last swipe');
+          return false;
+        }
+        
+        // Check if currently transitioning
+        if (this.isTransitioning) {
+          console.log('❌ Swipe ignored: transition in progress');
+          return false;
+        }
+        
+        // Check minimum distance
+        if (distance < this.config.minDistance) {
+          console.log(`❌ Swipe ignored: distance ${distance} < ${this.config.minDistance}`);
+          return false;
+        }
+        
+        // Check vertical drift
+        if (deltaY > this.config.maxVerticalDrift) {
+          console.log(`❌ Swipe ignored: vertical drift ${deltaY} > ${this.config.maxVerticalDrift}`);
+          return false;
+        }
+        
+        // Check velocity
+        if (velocity < this.config.minVelocity) {
+          console.log(`❌ Swipe ignored: velocity ${velocity.toFixed(2)} < ${this.config.minVelocity}`);
+          return false;
+        }
+        
+        // Check duration bounds
+        if (duration < this.config.minDuration || duration > this.config.maxDuration) {
+          console.log(`❌ Swipe ignored: duration ${duration} outside bounds [${this.config.minDuration}, ${this.config.maxDuration}]`);
+          return false;
+        }
+        
+        return true;
+      }
+      
+      processSwipe(deltaX) {
+        const direction = deltaX > 0 ? 'right' : 'left';
+        let targetSection;
+        let canSwipe = false;
+        
+        if (direction === 'right') {
+          // Swipe right = previous section
+          targetSection = currentSection - 1;
+          canSwipe = currentSection > 1;
+        } else {
+          // Swipe left = next section
+          targetSection = currentSection + 1;
+          canSwipe = currentSection < 14;
+        }
+        
+        console.log(`📱 Processing ${direction} swipe: ${currentSection} → ${targetSection}, canSwipe: ${canSwipe}`);
+        
+        if (canSwipe) {
+          this.executeSwipeNavigation(targetSection);
+        } else {
+          this.showBoundaryFeedback(direction);
+        }
+      }
+      
+      executeSwipeNavigation(targetSection) {
+        this.isTransitioning = true;
+        this.lastSwipeTime = Date.now();
+        
+        // Show success feedback
+        this.showSwipeSuccess(targetSection > currentSection ? 'left' : 'right');
+        
+        // Execute navigation
+        transitionToSection(targetSection);
+        
+        // Reset transition flag after animation completes
+        setTimeout(() => {
+          this.isTransitioning = false;
+        }, 800);
+      }
+      
+      showSwipePreview(deltaX) {
+        // Could add subtle visual preview here if desired
+        // For now, just the indicator feedback
+      }
+      
+      hideSwipePreview() {
+        // Reset any preview states
+      }
+      
+      showSwipeSuccess(direction) {
+        const indicator = document.getElementById(`swipeIndicator${direction === 'left' ? 'Left' : 'Right'}`);
+        if (indicator) {
+          indicator.classList.remove('boundary');
+          indicator.classList.add('show');
+          setTimeout(() => {
+            indicator.classList.remove('show');
+          }, 600);
+        }
+      }
+      
+      showBoundaryFeedback(direction) {
+        const indicatorId = direction === 'right' ? 'swipeIndicatorLeft' : 'swipeIndicatorRight';
+        const indicator = document.getElementById(indicatorId);
+        
+        if (indicator) {
+          indicator.classList.add('boundary');
+          indicator.textContent = direction === 'right' ? 'Start of tutorial' : 'End of tutorial';
+          indicator.classList.add('show');
+          
+          setTimeout(() => {
+            indicator.classList.remove('show');
+            setTimeout(() => {
+              indicator.classList.remove('boundary');
+              indicator.textContent = direction === 'right' ? '← Previous' : 'Next →';
+            }, 200);
+          }, 1000);
+        }
+      }
+      
+      destroy() {
+        if (!isMobile) return;
+        
+        document.removeEventListener('touchstart', this.handleTouchStart);
+        document.removeEventListener('touchmove', this.handleTouchMove);
+        document.removeEventListener('touchend', this.handleTouchEnd);
+      }
+    }
+    
+    // Initialize swipe gestures
+    let mobileSwipeGestures = null;
+
+    // ==========================================
+    // EXISTING TUTORIAL FUNCTIONALITY
+    // ==========================================
 
     // Data loading state
     let dataLoaded = {
@@ -1058,6 +1389,12 @@
         updateSectionTitle();
         setupMobileButton();
         
+        // Initialize mobile swipe gestures
+        if (isMobile) {
+          mobileSwipeGestures = new MobileSwipeGestures();
+          console.log('📱 Mobile swipe gestures initialized');
+        }
+        
         // Setup wheel event for tutorial navigation
         document.addEventListener('wheel', onWheel, { passive: false });
       } catch (error) {
@@ -1080,6 +1417,16 @@
         closePerspectiveGLSLFullscreen();
         closeLineDistanceGLSLFullscreen();
         hideParameterDialog();
+      }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (mobileSwipeGestures) {
+        mobileSwipeGestures.destroy();
+      }
+      if (tesseractShader) {
+        tesseractShader.destroy();
       }
     });
   </script>
