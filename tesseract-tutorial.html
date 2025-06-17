@@ -382,6 +382,12 @@
       } else {
         section.classList.remove('has-background-image');
       }
+    
+      // Mobile-specific adjustments
+      if (isMobile) {
+        // Ensure consistent spacing on mobile regardless of image
+        section.style.paddingBottom = '1rem';
+      }
     }
 
     function transitionStaticImage(newSection, oldSection) {
@@ -454,6 +460,7 @@
         }, 850);
       }, 10);
     }
+
 
     function updateHotspots(hotspots) {
       const hotspotContainer = document.getElementById('hotspotContainer');
