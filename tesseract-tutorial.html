@@ -965,58 +965,58 @@
     }
 
     // Updated wheel event handling to allow scrolling in fullscreen modals
-    function onWheel(event) {
-      // Check if any fullscreen modal is open
-      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
+  function onWheel(event) {
+    // Check if any fullscreen modal is open
+    const anyModalOpen = document.querySelector('.widget-fullscreen.active');
+    
+    // If a modal is open, allow normal scrolling within the modal content
+    if (anyModalOpen) {
+      // Don't prevent default - allow normal scrolling
+      return;
+    }
+  
+    // If tutorial is open but no modal, handle section navigation
+    if (tutorialOpen) {
+      // Only prevent default if we're actually handling the event
+      event.preventDefault();
+      const delta = event.deltaY;
       
-      // If a modal is open, allow normal scrolling within the modal content
-      if (anyModalOpen) {
-        // Don't prevent default - allow normal scrolling
-        return;
+      if (delta > 0) {
+        goToNextSection();
+      } else {
+        goToPrevSection();
       }
-
-      // If tutorial is open but no modal, handle section navigation
-      if (tutorialOpen) {
-        event.preventDefault();
-        const delta = event.deltaY;
-        
-        if (delta > 0) {
-          goToNextSection();
-        } else {
-          goToPrevSection();
-        }
-        return;
-      }
+      return;
+    }
       
       // If on hero page, the shader will handle wheel events for the hypercube
     }
 
-    async function init() {
-      try {
-        // Load tutorial content first
-        await loadTutorialContent();
-        
-        // Initialize Tesseract shader
-        tesseractShader = new TesseractShader('hypercube-canvas', {
-          onTutorialOpen: openTutorial,
-          getTutorialState: () => tutorialOpen
-        });
-        
-        await tesseractShader.init();
-        
-        loadDynamicContent(); // Load TSV and code snippets
-        initProgressBar();
-        updateSectionTitle();
-        
-        // Setup wheel event for tutorial navigation
-        document.addEventListener('wheel', onWheel);
-        
-        console.log('Tutorial application initialized successfully');
-      } catch (error) {
-        console.error('Failed to initialize tutorial application:', error);
-      }
+   async function init() {
+    try {
+      // Load tutorial content first
+      await loadTutorialContent();
+      
+      // Initialize Tesseract shader
+      tesseractShader = new TesseractShader('hypercube-canvas', {
+        onTutorialOpen: openTutorial,
+        getTutorialState: () => tutorialOpen
+      });
+      
+      await tesseractShader.init();
+      
+      loadDynamicContent(); // Load TSV and code snippets
+      initProgressBar();
+      updateSectionTitle();
+      
+      // Setup wheel event for tutorial navigation with passive: false
+      document.addEventListener('wheel', onWheel, { passive: false });
+      
+      console.log('Tutorial application initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize tutorial application:', error);
     }
-    
+  }
     // Ensure button works on mobile only, click anywhere works on desktop
     function setupHeroInteraction() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
