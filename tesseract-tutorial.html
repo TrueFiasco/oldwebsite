@@ -383,6 +383,10 @@
       }
     }
 
+    // Track current transition to prevent conflicts
+    let currentTransition = null;
+    let transitionCounter = 0;
+
     function transitionStaticImage(newSection, oldSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
@@ -392,12 +396,22 @@
     
       // Update section padding
       updateSectionPadding(newSection);
-    
+      
+      // Cancel any previous transition
+      if (currentTransition) {
+        currentTransition.cancelled = true;
+      }
+      
+      // Clear any existing cleanup timeout
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
       }
 
+      // Create new transition with unique ID
+      const transitionId = ++transitionCounter;
+      currentTransition = { id: transitionId, cancelled: false };
+      
       const existingImages = imageContainer.querySelectorAll('.tutorial-image');
       const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
       
@@ -405,8 +419,9 @@
       newImage.className = 'tutorial-image';
       newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
       newImage.src = config.image;
+      newImage.dataset.transitionId = transitionId;
 
-      // FIXED: USE IDENTICAL LOGIC FOR BOTH MOBILE AND DESKTOP
+      // Set initial position and state
       if (config.offset.x === 0 && config.offset.y === 0) {
         // Fade in place - no sliding
         newImage.style.transform = 'translate(0, 0)';
@@ -421,31 +436,42 @@
         newImage.style.zIndex = '10';
       }
 
+      // Lower z-index of current image
       if (currentImage) {
         currentImage.style.zIndex = '5';
       }
 
       imageContainer.appendChild(newImage);
       
-      // CRITICAL: Wait for image to load before transitioning
-      newImage.onload = function() {
-        // Force container to match loaded image height
-        if (isMobile) {
-          const imageHeight = newImage.offsetHeight;
-          imageContainer.style.height = `${imageHeight}px`;
+      // Handle image loading and transition
+      function executeTransition() {
+        // Check if this transition was cancelled
+        if (currentTransition.cancelled || currentTransition.id !== transitionId) {
+          newImage.remove();
+          return;
         }
         
         updateHotspots(config.hotspots);
 
+        // Start transition after brief delay for smooth animation
         setTimeout(() => {
-          // IDENTICAL TRANSITION LOGIC FOR BOTH MOBILE AND DESKTOP
+          // Double-check transition is still valid
+          if (currentTransition.cancelled || currentTransition.id !== transitionId) {
+            newImage.remove();
+            return;
+          }
+
+          // Animate new image to final position
           newImage.style.opacity = '1';
           newImage.style.transform = 'translate(0, 0)';
 
-          if (currentImage) {
+          // Animate current image out
+          if (currentImage && currentImage.parentNode === imageContainer) {
             if (config.offset.x === 0 && config.offset.y === 0) {
+              // Fade out in place
               currentImage.style.opacity = '0';
             } else {
+              // Slide out to opposite offset
               const exitX = -config.offset.x * 100;
               const exitY = -config.offset.y * 100;
               currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
@@ -453,27 +479,39 @@
             }
           }
 
+          // Schedule cleanup after transition completes
           cleanupTimeout = setTimeout(() => {
-            const allImages = imageContainer.querySelectorAll('.tutorial-image');
-            allImages.forEach(img => {
-              if (img !== newImage && img.parentNode === imageContainer) {
-                imageContainer.removeChild(img);
+            // Only cleanup if this transition is still current
+            if (currentTransition.id === transitionId) {
+              const allImages = imageContainer.querySelectorAll('.tutorial-image');
+              allImages.forEach(img => {
+                if (img !== newImage && img.parentNode === imageContainer) {
+                  imageContainer.removeChild(img);
+                }
+              });
+              
+              // Clear current transition
+              if (currentTransition.id === transitionId) {
+                currentTransition = null;
               }
-            });
-            
-            // Reset container height after cleanup on mobile
-            if (isMobile) {
-              imageContainer.style.height = 'auto';
             }
-            
             cleanupTimeout = null;
-          }, 850);
+          }, 850); // Match CSS transition duration
         }, 10);
-      };
+      }
       
-      // If image is already cached, trigger onload immediately
+      // Wait for image to load before transitioning
       if (newImage.complete) {
-        newImage.onload();
+        executeTransition();
+      } else {
+        newImage.onload = executeTransition;
+        newImage.onerror = () => {
+          console.error('Failed to load image:', config.image);
+          if (currentTransition.id === transitionId) {
+            newImage.remove();
+            currentTransition = null;
+          }
+        };
       }
     }
 
