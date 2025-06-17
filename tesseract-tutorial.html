@@ -43,9 +43,9 @@
     </div>
   </div>
   
-  <!-- Mobile-only tutorial button - moved outside hero section to prevent z-index conflicts -->
-  <div class="mobile-tutorial-button" id="mobileTutorialBtn">
-    <button class="mobile-start-btn" onclick="openTutorial()">
+  <!-- Mobile-only tutorial button - simplified and outside hero section -->
+  <div class="mobile-tutorial-button" id="mobileTutorialBtn" style="z-index: 1000;">
+    <button class="mobile-start-btn" id="mobileStartBtn">
       Start Tutorial
     </button>
   </div>
@@ -342,6 +342,7 @@
           });
       });
     }
+
     function updateSectionPadding(sectionIndex) {
       const section = document.querySelector(`#tutorialScroller .tutorial-section:nth-child(${sectionIndex})`);
       if (!section) return;
@@ -380,13 +381,6 @@
       if (titleElement && currentSection >= 0 && currentSection < sectionTitles.length) {
         titleElement.textContent = sectionTitles[currentSection];
       }
-    
-
-    // Dynamic padding management
-      if (isMobile) {
-        // Ensure consistent spacing on mobile regardless of image
-        section.style.paddingBottom = '1rem';
-      }
     }
 
     function transitionStaticImage(newSection, oldSection) {
@@ -404,85 +398,84 @@
         cleanupTimeout = null;
       }
 
-  const existingImages = imageContainer.querySelectorAll('.tutorial-image');
-  const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
-  
-  const newImage = document.createElement('img');
-  newImage.className = 'tutorial-image';
-  newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
-  newImage.src = config.image;
+      const existingImages = imageContainer.querySelectorAll('.tutorial-image');
+      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
+      
+      const newImage = document.createElement('img');
+      newImage.className = 'tutorial-image';
+      newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
+      newImage.src = config.image;
 
-  // FIXED: USE IDENTICAL LOGIC FOR BOTH MOBILE AND DESKTOP
-  if (config.offset.x === 0 && config.offset.y === 0) {
-    // Fade in place - no sliding
-    newImage.style.transform = 'translate(0, 0)';
-    newImage.style.opacity = '0';
-    newImage.style.zIndex = '10';
-  } else {
-    // Slide in from offset position
-    const startX = config.offset.x * 100;
-    const startY = config.offset.y * 100;
-    newImage.style.transform = `translate(${startX}%, ${startY}%)`;
-    newImage.style.opacity = '0';
-    newImage.style.zIndex = '10';
-  }
-
-  if (currentImage) {
-    currentImage.style.zIndex = '5';
-  }
-
-  imageContainer.appendChild(newImage);
-  
-  // CRITICAL: Wait for image to load before transitioning
-  newImage.onload = function() {
-    // Force container to match loaded image height
-    if (isMobile) {
-      const imageHeight = newImage.offsetHeight;
-      imageContainer.style.height = `${imageHeight}px`;
-    }
-    
-    updateHotspots(config.hotspots);
-
-    setTimeout(() => {
-      // IDENTICAL TRANSITION LOGIC FOR BOTH MOBILE AND DESKTOP
-      newImage.style.opacity = '1';
-      newImage.style.transform = 'translate(0, 0)';
-
-      if (currentImage) {
-        if (config.offset.x === 0 && config.offset.y === 0) {
-          currentImage.style.opacity = '0';
-        } else {
-          const exitX = -config.offset.x * 100;
-          const exitY = -config.offset.y * 100;
-          currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
-          currentImage.style.opacity = '0';
-        }
+      // FIXED: USE IDENTICAL LOGIC FOR BOTH MOBILE AND DESKTOP
+      if (config.offset.x === 0 && config.offset.y === 0) {
+        // Fade in place - no sliding
+        newImage.style.transform = 'translate(0, 0)';
+        newImage.style.opacity = '0';
+        newImage.style.zIndex = '10';
+      } else {
+        // Slide in from offset position
+        const startX = config.offset.x * 100;
+        const startY = config.offset.y * 100;
+        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
+        newImage.style.opacity = '0';
+        newImage.style.zIndex = '10';
       }
 
-      cleanupTimeout = setTimeout(() => {
-        const allImages = imageContainer.querySelectorAll('.tutorial-image');
-        allImages.forEach(img => {
-          if (img !== newImage && img.parentNode === imageContainer) {
-            imageContainer.removeChild(img);
-          }
-        });
-        
-        // Reset container height after cleanup on mobile
+      if (currentImage) {
+        currentImage.style.zIndex = '5';
+      }
+
+      imageContainer.appendChild(newImage);
+      
+      // CRITICAL: Wait for image to load before transitioning
+      newImage.onload = function() {
+        // Force container to match loaded image height
         if (isMobile) {
-          imageContainer.style.height = 'auto';
+          const imageHeight = newImage.offsetHeight;
+          imageContainer.style.height = `${imageHeight}px`;
         }
         
-        cleanupTimeout = null;
-      }, 850);
-    }, 10);
-  };
-  
-  // If image is already cached, trigger onload immediately
-  if (newImage.complete) {
-    newImage.onload();
-  }
-}
+        updateHotspots(config.hotspots);
 
+        setTimeout(() => {
+          // IDENTICAL TRANSITION LOGIC FOR BOTH MOBILE AND DESKTOP
+          newImage.style.opacity = '1';
+          newImage.style.transform = 'translate(0, 0)';
+
+          if (currentImage) {
+            if (config.offset.x === 0 && config.offset.y === 0) {
+              currentImage.style.opacity = '0';
+            } else {
+              const exitX = -config.offset.x * 100;
+              const exitY = -config.offset.y * 100;
+              currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
+              currentImage.style.opacity = '0';
+            }
+          }
+
+          cleanupTimeout = setTimeout(() => {
+            const allImages = imageContainer.querySelectorAll('.tutorial-image');
+            allImages.forEach(img => {
+              if (img !== newImage && img.parentNode === imageContainer) {
+                imageContainer.removeChild(img);
+              }
+            });
+            
+            // Reset container height after cleanup on mobile
+            if (isMobile) {
+              imageContainer.style.height = 'auto';
+            }
+            
+            cleanupTimeout = null;
+          }, 850);
+        }, 10);
+      };
+      
+      // If image is already cached, trigger onload immediately
+      if (newImage.complete) {
+        newImage.onload();
+      }
+    }
 
     function updateHotspots(hotspots) {
       const hotspotContainer = document.getElementById('hotspotContainer');
@@ -564,7 +557,6 @@
           mobileBtn.style.opacity = '0';
           mobileBtn.style.visibility = 'hidden';
           mobileBtn.style.pointerEvents = 'none';
-          // Don't change display to maintain smooth transitions
         }
         
         tutorialOpen = true;
@@ -581,24 +573,24 @@
     }
 
     // Navigation functions
-      function openTutorial() {
-        console.log('openTutorial called'); // Debug log
-        if (cleanupTimeout) {
-          clearTimeout(cleanupTimeout);
-          cleanupTimeout = null;
-        }
-        
-        // Immediately hide mobile button when tutorial starts
-        const mobileBtn = document.getElementById('mobileTutorialBtn');
-        if (mobileBtn) {
-          mobileBtn.style.opacity = '0';
-          mobileBtn.style.visibility = 'hidden';
-          mobileBtn.style.pointerEvents = 'none';
-        }
-        
-        transitionToSection(1);
-        initProgressBar();
+    function openTutorial() {
+      console.log('🚀 openTutorial called - starting tutorial!');
+      if (cleanupTimeout) {
+        clearTimeout(cleanupTimeout);
+        cleanupTimeout = null;
       }
+      
+      // Immediately hide mobile button when tutorial starts
+      const mobileBtn = document.getElementById('mobileTutorialBtn');
+      if (mobileBtn) {
+        mobileBtn.style.opacity = '0';
+        mobileBtn.style.visibility = 'hidden';
+        mobileBtn.style.pointerEvents = 'none';
+      }
+      
+      transitionToSection(1);
+      initProgressBar();
+    }
 
     function closeTutorial() {
       if (cleanupTimeout) {
@@ -965,142 +957,106 @@
     }
 
     // Updated wheel event handling to allow scrolling in fullscreen modals
-  function onWheel(event) {
-    // Check if any fullscreen modal is open
-    const anyModalOpen = document.querySelector('.widget-fullscreen.active');
-    
-    // If a modal is open, allow normal scrolling within the modal content
-    if (anyModalOpen) {
-      // Don't prevent default - allow normal scrolling
-      return;
-    }
-  
-    // If tutorial is open but no modal, handle section navigation
-    if (tutorialOpen) {
-      // Only prevent default if we're actually handling the event
-      event.preventDefault();
-      const delta = event.deltaY;
+    function onWheel(event) {
+      // Check if any fullscreen modal is open
+      const anyModalOpen = document.querySelector('.widget-fullscreen.active');
       
-      if (delta > 0) {
-        goToNextSection();
-      } else {
-        goToPrevSection();
+      // If a modal is open, allow normal scrolling within the modal content
+      if (anyModalOpen) {
+        // Don't prevent default - allow normal scrolling
+        return;
       }
-      return;
-    }
-      
-      // If on hero page, the shader will handle wheel events for the hypercube
+    
+      // If tutorial is open but no modal, handle section navigation
+      if (tutorialOpen) {
+        // Only prevent default if we're actually handling the event
+        event.preventDefault();
+        const delta = event.deltaY;
+        
+        if (delta > 0) {
+          goToNextSection();
+        } else {
+          goToPrevSection();
+        }
+        return;
+      }
+        
+        // If on hero page, the shader will handle wheel events for the hypercube
     }
 
-   async function init() {
-    try {
-      // Load tutorial content first
-      await loadTutorialContent();
-      
-      // Initialize Tesseract shader
-      tesseractShader = new TesseractShader('hypercube-canvas', {
-        onTutorialOpen: openTutorial,
-        getTutorialState: () => tutorialOpen
-      });
-      
-      await tesseractShader.init();
-      
-      loadDynamicContent(); // Load TSV and code snippets
-      initProgressBar();
-      updateSectionTitle();
-      
-      // Setup wheel event for tutorial navigation with passive: false
-      document.addEventListener('wheel', onWheel, { passive: false });
-      
-      console.log('Tutorial application initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize tutorial application:', error);
-    }
-  }
-    // Ensure button works on mobile only, click anywhere works on desktop
-    function setupHeroInteraction() {
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      console.log('Device detection:', isMobile ? 'MOBILE' : 'DESKTOP');
+    // SIMPLIFIED mobile button setup - no complex event handling
+    function setupMobileButton() {
+      console.log('🔧 Setting up mobile button...');
+      console.log('📱 Device detected as:', isMobile ? 'MOBILE' : 'DESKTOP');
       
       const mobileBtn = document.getElementById('mobileTutorialBtn');
+      const startBtn = document.getElementById('mobileStartBtn');
       
       if (isMobile) {
-        // MOBILE: Show button and setup interaction
-        if (mobileBtn) {
-          // Initial state - visible on hero section only
+        if (mobileBtn && startBtn) {
+          // Show button on mobile
           mobileBtn.style.display = 'block';
           mobileBtn.style.visibility = 'visible';
           mobileBtn.style.opacity = '1';
           mobileBtn.style.pointerEvents = 'auto';
           
-          console.log('Mobile button container forced visible');
+          // Ensure button is clickable
+          startBtn.style.pointerEvents = 'auto';
+          startBtn.style.zIndex = '2000';
           
-          const btn = mobileBtn.querySelector('.mobile-start-btn');
-          console.log('Mobile button element found:', !!btn);
+          // Simple click handler - no complex touch event management
+          startBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🚀 Mobile button clicked - starting tutorial!');
+            openTutorial();
+          });
           
-          if (btn) {
-            // Make button fully interactive
-            btn.style.pointerEvents = 'auto';
-            btn.style.zIndex = '1000000';
-            
-            // Clear any existing event listeners
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            
-            // Add all event types for maximum compatibility
-            newBtn.addEventListener('click', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('✅ Mobile button CLICKED - Opening tutorial!');
-              openTutorial();
-            }, { passive: false });
-            
-            newBtn.addEventListener('touchstart', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('📱 Mobile button TOUCH START');
-              newBtn.style.background = 'rgba(0, 255, 255, 0.4)';
-            }, { passive: false });
-            
-            newBtn.addEventListener('touchend', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('✅ Mobile button TOUCH END - Opening tutorial!');
-              newBtn.style.background = 'rgba(0, 255, 255, 0.15)';
-              openTutorial();
-            }, { passive: false });
-            
-            console.log('✅ Mobile button events attached successfully');
-          } else {
-            console.error('❌ Mobile button element (.mobile-start-btn) not found');
-          }
+          console.log('✅ Mobile button setup complete');
         } else {
-          console.error('❌ Mobile button container (#mobileTutorialBtn) not found');
+          console.error('❌ Mobile button elements not found');
         }
       } else {
-        // DESKTOP: Completely hide button
+        // Hide button on desktop
         if (mobileBtn) {
           mobileBtn.style.display = 'none';
-          mobileBtn.style.visibility = 'hidden';
-          mobileBtn.style.opacity = '0';
-          mobileBtn.style.pointerEvents = 'none';
-          console.log('🖥️ Desktop - Mobile button completely hidden');
         }
-        
-        console.log('🖥️ Desktop click anywhere enabled via shader');
+        console.log('🖥️ Desktop mode - mobile button hidden');
       }
     }
 
+    async function init() {
+      try {
+        // Load tutorial content first
+        await loadTutorialContent();
+        
+        // Initialize Tesseract shader
+        tesseractShader = new TesseractShader('hypercube-canvas', {
+          onTutorialOpen: openTutorial,
+          getTutorialState: () => tutorialOpen
+        });
+        
+        await tesseractShader.init();
+        
+        loadDynamicContent(); // Load TSV and code snippets
+        initProgressBar();
+        updateSectionTitle();
+        setupMobileButton(); // Simplified mobile button setup
+        
+        // Setup wheel event for tutorial navigation with passive: false
+        document.addEventListener('wheel', onWheel, { passive: false });
+        
+        console.log('✅ Tutorial application initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize tutorial application:', error);
+      }
+    }
 
-    
+    // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        init();
-        setupHeroInteraction();
-      });
+      document.addEventListener('DOMContentLoaded', init);
     } else {
       init();
-      setupHeroInteraction();
     }
 
     // Close modals with escape key
