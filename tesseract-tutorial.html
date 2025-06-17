@@ -237,8 +237,8 @@
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
-  <!-- Enhanced Tesseract Shader Module with Motion Control -->
-  <script src="enhancedShaderTesseract.js"></script>
+  <!-- Tesseract Shader Module -->
+  <script src="shaderTesseract.js"></script>
 
   <script>
     // Tutorial Section Configuration
@@ -738,7 +738,7 @@
           
           // Auto-enable motion control on Android
           this.isActive = true;
-          if (this.tesseractShader) {
+          if (this.tesseractShader && typeof this.tesseractShader.enableMotionControl === 'function') {
             this.tesseractShader.enableMotionControl();
           }
           
@@ -785,7 +785,7 @@
             
             // Auto-enable motion control when permission is granted
             this.isActive = true;
-            if (this.tesseractShader) {
+            if (this.tesseractShader && typeof this.tesseractShader.enableMotionControl === 'function') {
               this.tesseractShader.enableMotionControl();
             }
           } else {
@@ -873,12 +873,16 @@
         
         this.isActive = !this.isActive;
         
-        // Enable/disable motion control in shader
+        // Enable/disable motion control in shader (with fallback)
         if (this.tesseractShader) {
-          if (this.isActive) {
-            this.tesseractShader.enableMotionControl();
+          if (typeof this.tesseractShader.enableMotionControl === 'function') {
+            if (this.isActive) {
+              this.tesseractShader.enableMotionControl();
+            } else {
+              this.tesseractShader.disableMotionControl();
+            }
           } else {
-            this.tesseractShader.disableMotionControl();
+            console.warn('Enhanced motion control methods not available - using basic fallback');
           }
         }
         
@@ -945,14 +949,29 @@
       }
       
       applyMotionToShader() {
-        if (!this.tesseractShader || !this.tesseractShader.updateMotionInput) return;
+        if (!this.tesseractShader) return;
         
-        // Send motion input to shader using proper API
-        this.tesseractShader.updateMotionInput({
-          x: this.smoothedRotation.x * 0.002,  // Scale for shader consumption
-          y: this.smoothedRotation.y * 0.002,
-          w: this.smoothedRotation.w * 0.001   // 4D rotation is more sensitive
-        });
+        // Check if enhanced motion methods are available
+        if (typeof this.tesseractShader.updateMotionInput === 'function') {
+          // Enhanced shader - use proper API
+          this.tesseractShader.updateMotionInput({
+            x: this.smoothedRotation.x * 0.002,  // Scale for shader consumption
+            y: this.smoothedRotation.y * 0.002,
+            w: this.smoothedRotation.w * 0.001   // 4D rotation is more sensitive
+          });
+        } else {
+          // Fallback for basic shader - direct property access
+          console.warn('Using fallback motion control - enhanced shader not detected');
+          
+          if (this.tesseractShader.slowVelocity) {
+            this.tesseractShader.slowVelocity.x = this.smoothedRotation.x * 0.1;
+            this.tesseractShader.slowVelocity.y = this.smoothedRotation.y * 0.1;
+          }
+          
+          if (this.tesseractShader.wheelVelocity !== undefined) {
+            this.tesseractShader.wheelVelocity += this.smoothedRotation.w * 0.05;
+          }
+        }
       }
       
       // Utility functions
@@ -974,8 +993,8 @@
       disable() {
         this.isActive = false;
         
-        // Disable motion control in shader
-        if (this.tesseractShader) {
+        // Disable motion control in shader (with fallback)
+        if (this.tesseractShader && typeof this.tesseractShader.disableMotionControl === 'function') {
           this.tesseractShader.disableMotionControl();
         }
         
@@ -1028,35 +1047,64 @@
 
     // Load tutorial content from external file
     function loadTutorialContent() {
+      console.log('📄 Loading tutorial content...');
+      
       return fetch('contentTesseract.html')
         .then(response => {
+          console.log('📄 Content fetch response:', response.status, response.ok);
           if (!response.ok) {
             throw new Error(`Failed to load tutorial content: ${response.status}`);
           }
           return response.text();
         })
         .then(html => {
+          console.log('📄 Content loaded, length:', html.length);
           document.getElementById('tutorialContainer').outerHTML = html;
-          console.log('Tutorial content loaded successfully');
+          console.log('✅ Tutorial content loaded successfully');
         })
         .catch(error => {
-          console.error('Error loading tutorial content:', error);
+          console.error('❌ Error loading tutorial content:', error);
           // Fallback: create a basic tutorial container
-          document.getElementById('tutorialContainer').innerHTML = `
+          const fallbackHTML = `
             <div class="tutorial-container" id="tutorialContainer">
               <div class="tutorial-header">
-                <div class="tutorial-title">Tutorial Loading Error</div>
+                <div class="tutorial-title" id="currentSectionTitle">Tutorial Loading Error</div>
                 <div class="tutorial-nav">
+                  <button class="nav-btn" onclick="goToPrevSection()">←</button>
+                  <button class="nav-btn" onclick="goToNextSection()">→</button>
                   <button class="nav-btn close-btn" onclick="closeTutorial()">×</button>
                 </div>
               </div>
               <div class="tutorial-content">
-                <div style="padding: 2rem; text-align: center;">
-                  <p>Failed to load tutorial content. Please refresh the page and try again.</p>
+                <div class="tutorial-scroller" id="tutorialScroller">
+                  <div class="tutorial-section">
+                    <div style="padding: 2rem; text-align: center;">
+                      <p>Tutorial content could not be loaded. Using basic fallback.</p>
+                      <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #00ffff; color: #000; border: none; border-radius: 5px; cursor: pointer;">
+                        Reload Page
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="static-image-container" id="staticImageContainer">
+                  <div class="image-transition-container" id="imageTransitionContainer"></div>
+                  <div id="hotspotContainer"></div>
                 </div>
               </div>
             </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar" id="progressBar" style="display: none;"></div>
+            
+            <!-- Parameter Dialog -->
+            <div class="parameter-dialog" id="parameterDialog">
+              <h3 id="parameterTitle">Parameters</h3>
+              <div id="parameterContent">No parameters available</div>
+            </div>
           `;
+          
+          document.getElementById('tutorialContainer').outerHTML = fallbackHTML;
+          console.log('⚠️ Using fallback tutorial content');
         });
     }
 
@@ -1433,21 +1481,28 @@
     // Navigation functions
     function openTutorial() {
       console.log('🚀 openTutorial called - starting tutorial!');
-      if (cleanupTimeout) {
-        clearTimeout(cleanupTimeout);
-        cleanupTimeout = null;
-      }
       
-      // Immediately hide mobile button when tutorial starts
-      const mobileBtn = document.getElementById('mobileTutorialBtn');
-      if (mobileBtn) {
-        mobileBtn.style.opacity = '0';
-        mobileBtn.style.visibility = 'hidden';
-        mobileBtn.style.pointerEvents = 'none';
+      try {
+        if (cleanupTimeout) {
+          clearTimeout(cleanupTimeout);
+          cleanupTimeout = null;
+        }
+        
+        // Immediately hide mobile button when tutorial starts
+        const mobileBtn = document.getElementById('mobileTutorialBtn');
+        if (mobileBtn) {
+          mobileBtn.style.opacity = '0';
+          mobileBtn.style.visibility = 'hidden';
+          mobileBtn.style.pointerEvents = 'none';
+        }
+        
+        transitionToSection(1);
+        initProgressBar();
+        
+        console.log('✅ Tutorial opened successfully');
+      } catch (error) {
+        console.error('❌ Error opening tutorial:', error);
       }
-      
-      transitionToSection(1);
-      initProgressBar();
     }
 
     function closeTutorial() {
@@ -1491,6 +1546,12 @@
       // Open GitHub repository in new tab
       window.open('https://github.com/TrueFiasco/TouchDesigner-Tesseract-Tutorial', '_blank');
     }
+    
+    // Make key functions available globally for debugging and external access
+    window.openTutorial = openTutorial;
+    window.closeTutorial = closeTutorial;
+    window.goToNextSection = goToNextSection;
+    window.goToPrevSection = goToPrevSection;
 
     function initProgressBar() {
       const progressBar = document.getElementById('progressBar');
@@ -1833,8 +1894,12 @@
     }
 
     function setupMobileButton() {
+      console.log('📱 Setting up mobile button, isMobile:', isMobile);
+      
       const mobileBtn = document.getElementById('mobileTutorialBtn');
       const startBtn = document.getElementById('mobileStartBtn');
+      
+      console.log('Mobile button elements found:', { mobileBtn: !!mobileBtn, startBtn: !!startBtn });
       
       if (isMobile) {
         if (mobileBtn && startBtn) {
@@ -1850,23 +1915,44 @@
           
           // Simple click handler
           startBtn.addEventListener('click', function(e) {
+            console.log('📱 Mobile start button clicked');
             e.preventDefault();
             e.stopPropagation();
             openTutorial();
           });
+          
+          console.log('✅ Mobile button setup complete');
+        } else {
+          console.warn('⚠️ Mobile button elements not found');
         }
       } else {
         // Hide button on desktop
         if (mobileBtn) {
           mobileBtn.style.display = 'none';
         }
+        console.log('🖥️ Desktop mode - mobile button hidden');
       }
     }
 
     async function init() {
       try {
+        console.log('🚀 Starting tutorial initialization...');
+        
         // Load tutorial content first
         await loadTutorialContent();
+        console.log('✅ Tutorial content loaded');
+        
+        // Check if Three.js loaded
+        if (typeof THREE === 'undefined') {
+          throw new Error('Three.js not loaded');
+        }
+        console.log('✅ Three.js available');
+        
+        // Check if TesseractShader is available
+        if (typeof TesseractShader === 'undefined') {
+          throw new Error('TesseractShader not loaded');
+        }
+        console.log('✅ TesseractShader available');
         
         // Initialize Tesseract shader
         tesseractShader = new TesseractShader('hypercube-canvas', {
@@ -1875,28 +1961,53 @@
         });
         
         await tesseractShader.init();
+        console.log('✅ TesseractShader initialized');
         
         loadDynamicContent();
         initProgressBar();
         updateSectionTitle();
         setupMobileButton();
         
-        // Initialize mobile swipe gestures
+        // Initialize mobile features (with error handling)
         if (isMobile) {
-          mobileSwipeGestures = new MobileSwipeGestures();
-          console.log('📱 Mobile swipe gestures initialized');
-        }
-        
-        // Initialize mobile motion control
-        if (isMobile) {
-          mobileMotionControl = new MobileMotionControl(tesseractShader);
-          console.log('📱 Mobile motion control initialized');
+          try {
+            mobileSwipeGestures = new MobileSwipeGestures();
+            console.log('✅ Mobile swipe gestures initialized');
+          } catch (error) {
+            console.warn('⚠️ Mobile swipe gestures failed to initialize:', error);
+          }
+          
+          try {
+            mobileMotionControl = new MobileMotionControl(tesseractShader);
+            console.log('✅ Mobile motion control initialized');
+          } catch (error) {
+            console.warn('⚠️ Mobile motion control failed to initialize:', error);
+          }
         }
         
         // Setup wheel event for tutorial navigation
         document.addEventListener('wheel', onWheel, { passive: false });
+        
+        console.log('🎉 Tutorial initialization complete!');
       } catch (error) {
-        console.error('Failed to initialize tutorial application:', error);
+        console.error('❌ Failed to initialize tutorial application:', error);
+        
+        // Basic fallback UI
+        const heroSection = document.getElementById('heroSection');
+        if (heroSection) {
+          heroSection.innerHTML += `
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: rgba(255, 0, 0, 0.8); color: white; padding: 2rem; border-radius: 10px;
+                        text-align: center; z-index: 9999;">
+              <h2>Loading Error</h2>
+              <p>Failed to initialize tutorial: ${error.message}</p>
+              <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; 
+                      background: white; color: black; border: none; border-radius: 5px; cursor: pointer;">
+                Reload Page
+              </button>
+            </div>
+          `;
+        }
       }
     }
 
