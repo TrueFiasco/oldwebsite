@@ -370,20 +370,6 @@
     }
 
     // Dynamic padding management
-    function updateSectionPadding(sectionIndex) {
-      const section = document.querySelector(`#tutorialScroller .tutorial-section:nth-child(${sectionIndex})`);
-      if (!section) return;
-      
-      const config = sectionConfig[sectionIndex];
-      const hasBackgroundImage = config && config.image;
-      
-      if (hasBackgroundImage) {
-        section.classList.add('has-background-image');
-      } else {
-        section.classList.remove('has-background-image');
-      }
-    
-      // Mobile-specific adjustments
       if (isMobile) {
         // Ensure consistent spacing on mobile regardless of image
         section.style.paddingBottom = '1rem';
@@ -393,73 +379,96 @@
     function transitionStaticImage(newSection, oldSection) {
       const config = sectionConfig[newSection];
       if (!config) return;
-
+    
       const imageContainer = document.getElementById('staticImageContainer');
       if (!imageContainer) return;
-
+    
       // Update section padding
       updateSectionPadding(newSection);
-
+    
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
       }
 
-      const existingImages = imageContainer.querySelectorAll('.tutorial-image');
-      const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
-      
-      const newImage = document.createElement('img');
-      newImage.className = 'tutorial-image';
-      newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
-      newImage.src = config.image;
+  const existingImages = imageContainer.querySelectorAll('.tutorial-image');
+  const currentImage = existingImages.length > 0 ? existingImages[existingImages.length - 1] : null;
+  
+  const newImage = document.createElement('img');
+  newImage.className = 'tutorial-image';
+  newImage.style.aspectRatio = config.aspectRatio.replace(':', '/');
+  newImage.src = config.image;
 
-      if (config.offset.x === 0 && config.offset.y === 0) {
-        newImage.style.transform = 'translate(0, 0)';
-        newImage.style.opacity = '0';
-        newImage.style.zIndex = '10';
-      } else {
-        const startX = config.offset.x * 100;
-        const startY = config.offset.y * 100;
-        newImage.style.transform = `translate(${startX}%, ${startY}%)`;
-        newImage.style.opacity = '0';
-        newImage.style.zIndex = '10';
-      }
+  // FIXED: USE IDENTICAL LOGIC FOR BOTH MOBILE AND DESKTOP
+  if (config.offset.x === 0 && config.offset.y === 0) {
+    // Fade in place - no sliding
+    newImage.style.transform = 'translate(0, 0)';
+    newImage.style.opacity = '0';
+    newImage.style.zIndex = '10';
+  } else {
+    // Slide in from offset position
+    const startX = config.offset.x * 100;
+    const startY = config.offset.y * 100;
+    newImage.style.transform = `translate(${startX}%, ${startY}%)`;
+    newImage.style.opacity = '0';
+    newImage.style.zIndex = '10';
+  }
+
+  if (currentImage) {
+    currentImage.style.zIndex = '5';
+  }
+
+  imageContainer.appendChild(newImage);
+  
+  // CRITICAL: Wait for image to load before transitioning
+  newImage.onload = function() {
+    // Force container to match loaded image height
+    if (isMobile) {
+      const imageHeight = newImage.offsetHeight;
+      imageContainer.style.height = `${imageHeight}px`;
+    }
+    
+    updateHotspots(config.hotspots);
+
+    setTimeout(() => {
+      // IDENTICAL TRANSITION LOGIC FOR BOTH MOBILE AND DESKTOP
+      newImage.style.opacity = '1';
+      newImage.style.transform = 'translate(0, 0)';
 
       if (currentImage) {
-        currentImage.style.zIndex = '5';
+        if (config.offset.x === 0 && config.offset.y === 0) {
+          currentImage.style.opacity = '0';
+        } else {
+          const exitX = -config.offset.x * 100;
+          const exitY = -config.offset.y * 100;
+          currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
+          currentImage.style.opacity = '0';
+        }
       }
 
-      imageContainer.appendChild(newImage);
-      newImage.offsetHeight;
-
-      updateHotspots(config.hotspots);
-
-      setTimeout(() => {
-        newImage.style.opacity = '1';
-        newImage.style.transform = 'translate(0, 0)';
-
-        if (currentImage) {
-          if (config.offset.x === 0 && config.offset.y === 0) {
-            currentImage.style.opacity = '0';
-          } else {
-            const exitX = -config.offset.x * 100;
-            const exitY = -config.offset.y * 100;
-            currentImage.style.transform = `translate(${exitX}%, ${exitY}%)`;
-            currentImage.style.opacity = '0';
+      cleanupTimeout = setTimeout(() => {
+        const allImages = imageContainer.querySelectorAll('.tutorial-image');
+        allImages.forEach(img => {
+          if (img !== newImage && img.parentNode === imageContainer) {
+            imageContainer.removeChild(img);
           }
+        });
+        
+        // Reset container height after cleanup on mobile
+        if (isMobile) {
+          imageContainer.style.height = 'auto';
         }
-
-        cleanupTimeout = setTimeout(() => {
-          const allImages = imageContainer.querySelectorAll('.tutorial-image');
-          allImages.forEach(img => {
-            if (img !== newImage && img.parentNode === imageContainer) {
-              imageContainer.removeChild(img);
-            }
-          });
-          cleanupTimeout = null;
-        }, 850);
-      }, 10);
-    }
+        
+        cleanupTimeout = null;
+      }, 850);
+    }, 10);
+  };
+  
+  // If image is already cached, trigger onload immediately
+  if (newImage.complete) {
+    newImage.onload();
+  }
+}
 
 
     function updateHotspots(hotspots) {
