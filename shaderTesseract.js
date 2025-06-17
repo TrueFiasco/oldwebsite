@@ -1,5 +1,6 @@
 /**
  * TesseractShader - 4D Hypercube WebGL Visualization
+ * Enhanced with mobile motion control support
  * Handles all Three.js/WebGL rendering for the hero section
  */
 class TesseractShader {
@@ -28,6 +29,11 @@ class TesseractShader {
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Motion control state
+    this.rotationSource = 'mouse'; // 'mouse' or 'motion'
+    this.motionInput = { x: 0, y: 0, w: 0 }; // Motion control input
+    this.motionEnabled = false;
     
     // Animation state
     this.animationId = null;
@@ -314,6 +320,62 @@ class TesseractShader {
     });
   }
 
+  // ==========================================
+  // MOTION CONTROL INTEGRATION
+  // ==========================================
+
+  /**
+   * Set rotation input source
+   * @param {string} source - 'mouse' or 'motion'
+   */
+  setRotationSource(source) {
+    this.rotationSource = source;
+    console.log(`🎯 Rotation source set to: ${source}`);
+  }
+
+  /**
+   * Enable motion control
+   */
+  enableMotionControl() {
+    this.motionEnabled = true;
+    this.setRotationSource('motion');
+    console.log('🎯 Motion control enabled in shader');
+  }
+
+  /**
+   * Disable motion control
+   */
+  disableMotionControl() {
+    this.motionEnabled = false;
+    this.setRotationSource('mouse');
+    // Reset motion input
+    this.motionInput = { x: 0, y: 0, w: 0 };
+    console.log('🎯 Motion control disabled in shader');
+  }
+
+  /**
+   * Update motion input from external motion controller
+   * @param {Object} input - {x, y, w} motion values
+   */
+  updateMotionInput(input) {
+    if (!this.motionEnabled) return;
+    
+    this.motionInput.x = input.x || 0;
+    this.motionInput.y = input.y || 0;
+    this.motionInput.w = input.w || 0;
+  }
+
+  /**
+   * Check if motion control is active
+   */
+  isMotionControlActive() {
+    return this.motionEnabled && this.rotationSource === 'motion';
+  }
+
+  // ==========================================
+  // EVENT LISTENERS & CONTROLS
+  // ==========================================
+
   /**
    * Setup event listeners for interaction
    */
@@ -399,8 +461,12 @@ class TesseractShader {
     });
   }
 
+  // ==========================================
+  // ANIMATION LOOP
+  // ==========================================
+
   /**
-   * Animation loop
+   * Animation loop with motion control integration
    */
   animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
@@ -409,10 +475,42 @@ class TesseractShader {
     
     this.uniforms.u_time.value += 0.016;
     
+    // Apply rotation based on input source
+    if (this.isMotionControlActive()) {
+      // Motion control mode - apply motion input
+      this.applyMotionRotation();
+    } else {
+      // Mouse/touch control mode - apply traditional rotation
+      this.applyMouseRotation();
+    }
+    
+    // Update shader uniforms
     this.uniforms.u_rotation.value.x = this.angles.rx;
     this.uniforms.u_rotation.value.y = this.angles.ry;
     this.uniforms.u_rotation.value.z = this.angles.rw;
     
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  /**
+   * Apply motion control rotation
+   */
+  applyMotionRotation() {
+    // Direct application of motion input
+    this.angles.rx += this.motionInput.x;
+    this.angles.ry += this.motionInput.y;
+    this.angles.rw += this.motionInput.w;
+    
+    // Apply some damping to motion input for smooth motion
+    this.motionInput.x *= 0.85;
+    this.motionInput.y *= 0.85;
+    this.motionInput.w *= 0.90;
+  }
+
+  /**
+   * Apply traditional mouse/touch rotation
+   */
+  applyMouseRotation() {
     this.angles.rx += this.velocity.x + this.slowVelocity.x;
     this.angles.ry += this.velocity.y + this.slowVelocity.y;
     this.angles.rw += this.wheelVelocity;
@@ -432,8 +530,6 @@ class TesseractShader {
       this.slowVelocity.x = (this.slowVelocity.x / slowSpeed) * this.maxSlowVelocity;
       this.slowVelocity.y = (this.slowVelocity.y / slowSpeed) * this.maxSlowVelocity;
     }
-    
-    this.renderer.render(this.scene, this.camera);
   }
 
   /**
@@ -456,10 +552,15 @@ class TesseractShader {
     }
   }
 
-  // Event Handlers
+  // ==========================================
+  // EVENT HANDLERS
+  // ==========================================
 
   onMouseMove(event) {
     if (this.getTutorialState()) return;
+    
+    // Skip mouse input if motion control is active
+    if (this.isMotionControlActive()) return;
     
     const newMousePos = {
       x: event.clientX / window.innerWidth,
@@ -485,6 +586,9 @@ class TesseractShader {
       return; // Don't interfere with button interaction
     }
     
+    // Skip touch input if motion control is active
+    if (this.isMotionControlActive()) return;
+    
     event.preventDefault();
     const touch = event.touches[0];
     this.touchStartX = touch.clientX;
@@ -497,6 +601,9 @@ class TesseractShader {
     if (this.isTouchOnButton(event)) {
       return; // Don't interfere with button interaction
     }
+    
+    // Skip touch input if motion control is active
+    if (this.isMotionControlActive()) return;
     
     event.preventDefault();
     if (!this.getTutorialState()) {
@@ -514,6 +621,9 @@ class TesseractShader {
     if (this.isTouchOnButton(event)) {
       return; // Don't interfere with button interaction
     }
+    
+    // Skip touch input if motion control is active
+    if (this.isMotionControlActive()) return;
     
     event.preventDefault();
     console.log('Touch end for hypercube rotation');
@@ -579,6 +689,9 @@ class TesseractShader {
     // Only handle wheel events when on hero page (not in tutorial)
     if (this.getTutorialState()) return;
     
+    // Skip wheel input if motion control is active
+    if (this.isMotionControlActive()) return;
+    
     const wheelDelta = event.deltaY > 0 ? 0.5 : -0.5;
     this.wheelVelocity += wheelDelta * 0.07;
   }
@@ -636,7 +749,9 @@ class TesseractShader {
         x: this.angles.rx,
         y: this.angles.ry,
         w: this.angles.rw
-      }
+      },
+      rotationSource: this.rotationSource,
+      motionEnabled: this.motionEnabled
     };
   }
 
