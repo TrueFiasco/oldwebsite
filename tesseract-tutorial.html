@@ -501,22 +501,43 @@
       const scroller = document.getElementById('tutorialScroller');
       const tutorialContainer = document.getElementById('tutorialContainer');
       const progressBar = document.getElementById('progressBar');
+      const mobileBtn = document.getElementById('mobileTutorialBtn');
       
       if (currentSection === 0) {
+        // Hero section - show mobile button on mobile devices
         if (tutorialContainer) {
           tutorialContainer.classList.remove('active');
         }
         if (progressBar) {
           progressBar.style.display = 'none';
         }
+        
+        // Show mobile button only on mobile devices when on hero section
+        if (mobileBtn && isMobile) {
+          mobileBtn.style.display = 'block';
+          mobileBtn.style.opacity = '1';
+          mobileBtn.style.visibility = 'visible';
+          mobileBtn.style.pointerEvents = 'auto';
+        }
+        
         tutorialOpen = false;
       } else {
+        // Tutorial section - hide mobile button
         if (tutorialContainer) {
           tutorialContainer.classList.add('active');
         }
         if (progressBar) {
           progressBar.style.display = 'flex';
         }
+        
+        // Hide mobile button when tutorial is active
+        if (mobileBtn) {
+          mobileBtn.style.opacity = '0';
+          mobileBtn.style.visibility = 'hidden';
+          mobileBtn.style.pointerEvents = 'none';
+          // Don't change display to maintain smooth transitions
+        }
+        
         tutorialOpen = true;
         if (scroller) {
           const offset = (currentSection - 1) * -100;
@@ -531,21 +552,39 @@
     }
 
     // Navigation functions
-    function openTutorial() {
-      console.log('openTutorial called'); // Debug log
-      if (cleanupTimeout) {
-        clearTimeout(cleanupTimeout);
-        cleanupTimeout = null;
+      function openTutorial() {
+        console.log('openTutorial called'); // Debug log
+        if (cleanupTimeout) {
+          clearTimeout(cleanupTimeout);
+          cleanupTimeout = null;
+        }
+        
+        // Immediately hide mobile button when tutorial starts
+        const mobileBtn = document.getElementById('mobileTutorialBtn');
+        if (mobileBtn) {
+          mobileBtn.style.opacity = '0';
+          mobileBtn.style.visibility = 'hidden';
+          mobileBtn.style.pointerEvents = 'none';
+        }
+        
+        transitionToSection(1);
+        initProgressBar();
       }
-      transitionToSection(1);
-      initProgressBar();
-    }
 
     function closeTutorial() {
       if (cleanupTimeout) {
         clearTimeout(cleanupTimeout);
         cleanupTimeout = null;
       }
+      
+      // Show mobile button again when returning to hero (mobile only)
+      const mobileBtn = document.getElementById('mobileTutorialBtn');
+      if (mobileBtn && isMobile) {
+        mobileBtn.style.opacity = '1';
+        mobileBtn.style.visibility = 'visible';
+        mobileBtn.style.pointerEvents = 'auto';
+      }
+      
       transitionToSection(0);
     }
 
@@ -959,7 +998,7 @@
       if (isMobile) {
         // MOBILE: Show button and setup interaction
         if (mobileBtn) {
-          // Force show the button
+          // Initial state - visible on hero section only
           mobileBtn.style.display = 'block';
           mobileBtn.style.visibility = 'visible';
           mobileBtn.style.opacity = '1';
@@ -1002,14 +1041,6 @@
               openTutorial();
             }, { passive: false });
             
-            // Add visual feedback after setup
-            setTimeout(() => {
-              newBtn.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
-              setTimeout(() => {
-                newBtn.style.boxShadow = '0 6px 25px rgba(0, 255, 255, 0.3)';
-              }, 2000);
-            }, 500);
-            
             console.log('✅ Mobile button events attached successfully');
           } else {
             console.error('❌ Mobile button element (.mobile-start-btn) not found');
@@ -1030,6 +1061,8 @@
         console.log('🖥️ Desktop click anywhere enabled via shader');
       }
     }
+
+
     
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
