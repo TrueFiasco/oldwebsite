@@ -46,7 +46,7 @@ body {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  cursor: pointer; /* FIXED: Desktop gets pointer cursor for click-anywhere */
+  cursor: pointer; /* Desktop gets pointer cursor for click-anywhere */
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
@@ -397,256 +397,9 @@ p {
   opacity: 1;
 }
 
-/* === MOBILE START BUTTON STYLES === */
-.mobile-tutorial-button {
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 15;
-  display: none; /* Hidden by default, shown only on mobile hero section */
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.mobile-start-btn {
-  background: rgba(0, 255, 255, 0.1);
-  border: 2px solid rgba(0, 255, 255, 0.5);
-  color: #00ffff;
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  font-size: 1.2rem;
-  font-family: 'Orbitron', 'Arial', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-  pointer-events: auto;
-  position: relative;
-}
-
-.mobile-start-btn:hover {
-  background: rgba(0, 255, 255, 0.2);
-  border-color: rgba(0, 255, 255, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
-  color: #ffffff;
-}
-
-.mobile-start-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.3);
-}
-
-/* === MOBILE RESPONSIVE STYLES === */
-@media (max-width: 768px) {
-  /* FIXED: Show mobile button on mobile, remove pointer cursor */
-  .hero-section {
-    cursor: default; /* Remove pointer cursor on mobile */
-  }
-  
-  .mobile-tutorial-button {
-    display: block !important; /* Show mobile button on mobile */
-  }
-  .tutorial-container.active ~ .hero-section .mobile-tutorial-button {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-  
-  .tutorial-section {
-    padding: 0.25rem 1rem 1rem 1rem;
-    min-height: calc(100vh - 60px);
-  }
-  
-  .tutorial-section.has-background-image {
-    padding-bottom: 500px;
-  }
-
-  .section-layout {
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    margin-top: 0.125rem;
-  }
-
-  .section-left,
-  .section-right {
-    flex: 1;
-    width: 100%;
-    padding-top: 0;
-  }
-
-  .static-image-container {
-    height: 250px;
-  }
-
-  .mobile-parameters {
-    display: block;
-    margin: 1.5rem 0;
-    padding: 1rem;
-  }
-
-  .hotspot {
-    display: none !important;
-  }
-
-  .tutorial-nav {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .nav-btn {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .tutorial-header {
-    flex-direction: column;
-    align-items: stretch;
-    min-height: auto;
-    gap: 1rem;
-    padding: 1rem 1rem;
-  }
-
-  .tutorial-title {
-    max-width: 100%;
-    text-align: center;
-    font-size: clamp(1rem, 5vw, 1.8rem);
-    margin-right: 0;
-    margin-bottom: 0;
-    line-height: 1.2;
-  }
-
-  .tutorial-nav {
-    justify-content: space-around;
-    width: 100%;
-    gap: 0.5rem;
-  }
-
-  .widget-container {
-    height: auto;
-    max-height: 30vh;
-    min-height: 200px;
-    margin: 0.5rem 0;
-  }
-
-  .widget-buttons {
-    margin-right: 0.25rem;
-  }
-
-  .tsv-table th,
-  .tsv-table td {
-    font-size: 0.65rem;
-    padding: 1px 3px;
-    min-width: 30px;
-    max-width: 40px;
-  }
-
-  .code-content {
-    font-size: 0.65rem;
-    padding: 0.5rem;
-  }
-
-  .widget-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.9rem;
-  }
-
-  .widget-btn-fullscreen::before {
-    font-size: 11px;
-  }
-
-  .widget-btn-copy::before {
-    font-size: 9px;
-  }
-
-  .widget-btn-github::before {
-    font-size: 11px;
-  }
-
-  .widget-title {
-    font-size: 0.8rem;
-  }
-
-  .section-left > *:last-child,
-  .section-right > *:last-child,
-  .section-full > *:last-child {
-    margin-bottom: 2rem;
-  }
-}
-
-/* === DESKTOP SPECIFIC STYLES === */
-@media (min-width: 769px) {
-  /* FIXED: Hide mobile button on desktop */
-  .mobile-tutorial-button {
-    display: none !important;
-  }
-}
-  
-  .section-left {
-    flex: 2 1 66.666%;
-    max-width: 66.666%;
-  }
-
-  .section-right {
-    flex: 1 1 33.333%;
-    max-width: 33.333%;
-  }
-
-  .widget-container {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .content-widget {
-    width: 100%;
-    max-width: 100%;
-  }
-}
-
-/* === EXTRA SMALL MOBILE STYLES === */
-@media (max-width: 480px) {
-  .tutorial-section {
-    padding: 0.2rem 0.75rem 0.75rem 0.75rem;
-  }
-  
-  .tutorial-section.has-background-image {
-    padding-bottom: 450px;
-  }
-  
-  .mobile-parameters {
-    margin: 1rem 0;
-    padding: 0.75rem;
-  }
-  
-  .widget-container {
-    margin: 0.25rem 0;
-    min-height: 150px;
-  }
-  
-  .mobile-start-btn {
-    font-size: 1rem;
-    padding: 0.8rem 1.5rem;
-  }
-}
-
-/* === CONTENT OVERFLOW PROTECTION === */
-.section-left,
-.section-right,
-.section-full {
-  overflow: visible;
-  word-wrap: break-word;
-};
-}
-
 .hero-section:hover {
   transform: scale(1.02);
 }
-
-/* REMOVED: All .hero-content, .hero-title, .hero-subtitle styles since they're rendered by shader now */
 
 .hypercube-canvas {
   position: absolute;
@@ -658,13 +411,14 @@ p {
 }
 
 /* === MOBILE START BUTTON STYLES === */
-.mobile-start-container {
+.mobile-tutorial-button {
   position: absolute;
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
-  display: none; /* Hidden by default, shown only on mobile */
+  display: none; /* Hidden by default, shown only on mobile hero section */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .mobile-start-btn {
@@ -1141,4 +895,303 @@ p {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden
+  overflow: hidden;
+}
+
+/* === CONTENT OVERFLOW PROTECTION === */
+.section-left,
+.section-right,
+.section-full {
+  overflow: visible;
+  word-wrap: break-word;
+}
+
+/* === MOBILE RESPONSIVE STYLES === */
+@media (max-width: 768px) {
+  /* === HERO SECTION MOBILE === */
+  .hero-section {
+    cursor: default; /* Remove pointer cursor on mobile */
+  }
+  
+  .mobile-tutorial-button {
+    display: block !important; /* Show mobile button on mobile */
+  }
+
+  /* === HEADER LAYOUT FIXES === */
+  .tutorial-header {
+    flex-direction: row !important; /* Force horizontal layout */
+    align-items: center !important; /* Center vertically */
+    min-height: 60px;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    flex-wrap: nowrap; /* Prevent wrapping */
+  }
+
+  .tutorial-title {
+    /* Make title take minimal space and prevent wrapping */
+    flex: 0 1 auto !important; /* Don't grow, can shrink, auto width */
+    max-width: none !important;
+    text-align: left !important;
+    font-size: clamp(0.85rem, 4vw, 1.1rem) !important; /* Smaller, more responsive font */
+    margin-right: 0.5rem;
+    margin-bottom: 0;
+    line-height: 1.1;
+    white-space: nowrap !important; /* Prevent text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Show ... if text is too long */
+    hyphens: none !important; /* Disable hyphenation */
+    word-break: normal !important; /* Disable word breaking */
+    overflow-wrap: normal !important; /* Disable word wrapping */
+  }
+
+  .tutorial-nav {
+    /* Make nav buttons flexible and single line */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1 1 auto; /* Grow to fill remaining space */
+    width: auto !important;
+    gap: 0.25rem;
+    flex-wrap: nowrap !important; /* Prevent button wrapping */
+    min-width: 0; /* Allow shrinking */
+  }
+
+  .nav-btn {
+    /* Make buttons smaller and more compact */
+    font-size: 0.7rem !important;
+    padding: 0.35rem 0.6rem !important;
+    min-width: auto;
+    flex-shrink: 1; /* Allow buttons to shrink */
+    white-space: nowrap; /* Prevent text wrapping in buttons */
+  }
+
+  .nav-btn.circular {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    flex-shrink: 0; /* Don't shrink circular buttons */
+    padding: 0 !important;
+    font-size: 1rem !important;
+  }
+
+  .close-btn {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    flex-shrink: 0; /* Don't shrink close button */
+    font-size: 1rem !important;
+  }
+
+  /* === IMAGE CONTAINER FIXES === */
+  .static-image-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto !important; /* Remove fixed height */
+    max-height: 40vh; /* Limit maximum height */
+    background: rgb(25, 27, 31);
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .image-transition-container {
+    position: relative;
+    width: 100%;
+    height: auto !important; /* Remove fixed height */
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .tutorial-image {
+    position: relative !important; /* Change from absolute */
+    top: auto !important;
+    left: auto !important;
+    width: 100%;
+    height: auto !important; /* Let height be determined by aspect ratio */
+    max-height: 40vh; /* Limit image height */
+    object-fit: contain;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+    display: block;
+  }
+
+  /* When image is active/visible */
+  .tutorial-image[style*="opacity: 1"] {
+    opacity: 1 !important;
+  }
+
+  /* === TUTORIAL SECTION ADJUSTMENTS === */
+  .tutorial-section {
+    padding: 0.25rem 1rem 1rem 1rem;
+    min-height: calc(100vh - 60px);
+    padding-bottom: 1rem !important; /* Remove fixed padding */
+  }
+  
+  .tutorial-section.has-background-image {
+    padding-bottom: 1rem !important; /* Remove excessive padding */
+  }
+
+  .section-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1rem; /* Reduced from 1.5rem */
+    margin-top: 0.125rem;
+    padding-bottom: 1rem; /* Add some bottom padding */
+  }
+
+  .section-left,
+  .section-right {
+    flex: 1;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .hotspot {
+    display: none !important;
+  }
+
+  .mobile-parameters {
+    display: block;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+
+  .widget-container {
+    height: auto;
+    max-height: 30vh;
+    min-height: 200px;
+    margin: 0.5rem 0;
+  }
+
+  .widget-buttons {
+    margin-right: 0.25rem;
+  }
+
+  .tsv-table th,
+  .tsv-table td {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    min-width: 30px;
+    max-width: 40px;
+  }
+
+  .code-content {
+    font-size: 0.65rem;
+    padding: 0.5rem;
+  }
+
+  .widget-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+
+  .widget-btn-fullscreen::before {
+    font-size: 11px;
+  }
+
+  .widget-btn-copy::before {
+    font-size: 9px;
+  }
+
+  .widget-btn-github::before {
+    font-size: 11px;
+  }
+
+  .widget-title {
+    font-size: 0.8rem;
+  }
+
+  .section-left > *:last-child,
+  .section-right > *:last-child,
+  .section-full > *:last-child {
+    margin-bottom: 2rem;
+  }
+}
+
+/* === DESKTOP SPECIFIC STYLES === */
+@media (min-width: 769px) {
+  /* Hide mobile button on desktop */
+  .mobile-tutorial-button {
+    display: none !important;
+  }
+  
+  .section-left {
+    flex: 2 1 66.666%;
+    max-width: 66.666%;
+  }
+
+  .section-right {
+    flex: 1 1 33.333%;
+    max-width: 33.333%;
+  }
+
+  .widget-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .content-widget {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* === EXTRA SMALL MOBILE STYLES === */
+@media (max-width: 480px) {
+  .tutorial-title {
+    font-size: clamp(0.75rem, 3.5vw, 1rem) !important; /* Even smaller on very small screens */
+  }
+
+  .nav-btn {
+    font-size: 0.65rem !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  .nav-btn.circular {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+  }
+
+  .close-btn {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+  }
+
+  .static-image-container {
+    max-height: 35vh; /* Slightly smaller on very small screens */
+  }
+
+  .tutorial-image {
+    max-height: 35vh;
+  }
+
+  .tutorial-section {
+    padding: 0.2rem 0.75rem 0.75rem 0.75rem;
+  }
+  
+  .tutorial-section.has-background-image {
+    padding-bottom: 1rem !important;
+  }
+  
+  .mobile-parameters {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+  
+  .widget-container {
+    margin: 0.25rem 0;
+    min-height: 150px;
+  }
+  
+  .mobile-start-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+}
