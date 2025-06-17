@@ -88,6 +88,12 @@
       background: rgba(0, 255, 127, 0.4);
       border-color: rgba(0, 255, 127, 0.9);
       box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
+      animation: subtle-pulse 2s infinite ease-in-out;
+    }
+    
+    @keyframes subtle-pulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 127, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(0, 255, 127, 0.6); }
     }
     
     .motion-indicator.calibrating {
@@ -198,6 +204,10 @@
       <div class="control-group">
         <label for="hero-cameraz-control">Camera Z:</label>
         <input type="number" id="hero-cameraz-control" value="10" step="1" min="-100" max="50">
+      </div>
+      <div class="control-group" id="motionControlGroup" style="display: none;">
+        <label for="motion-sensitivity">Motion:</label>
+        <input type="range" id="motion-sensitivity" value="8" min="2" max="15" step="1" style="width: 80px;" title="Motion sensitivity">
       </div>
     </div>
     
@@ -689,11 +699,12 @@
         
         // Processing configuration
         this.config = {
-          sensitivity: 0.02,     // Rotation sensitivity multiplier
-          deadzone: 2,           // Ignore movements below this threshold (degrees)
-          maxVelocity: 3,        // Maximum rotation speed
-          smoothingFactor: 0.85, // Low-pass filter strength (0-1)
-          gravityBias: 0.3       // Subtle downward rotation influence
+          sensitivity: 0.008,     // Increased for more responsive feel
+          deadzone: 1,            // Reduced deadzone for immediate response
+          maxRotation: 2,         // Maximum rotation speed per frame
+          smoothingFactor: 0.15,  // Much less smoothing for immediate response
+          directMapping: true,    // Enable direct orientation mapping
+          gravityBias: 0.1        // Reduced gravity influence for cleaner motion
         };
         
         // Smoothed values for applying to shader
@@ -857,10 +868,16 @@
         if (this.indicator) {
           this.indicator.classList.remove('calibrating');
           this.indicator.classList.add('active'); // Show as active after calibration
-          this.indicator.title = 'Motion control enabled - tap to toggle';
+          this.indicator.title = 'Motion control active - tap to toggle';
+          
+          // Brief visual feedback that calibration is complete
+          this.indicator.style.transform = 'scale(1.3)';
+          setTimeout(() => {
+            this.indicator.style.transform = 'scale(1)';
+          }, 300);
         }
         
-        console.log('🎯 Motion control calibrated');
+        console.log('🎯 Motion control calibrated and active');
       }
       
       toggleMotionControl() {
@@ -920,29 +937,48 @@
         const processedBeta = Math.abs(deltaBeta) > this.config.deadzone ? deltaBeta : 0;
         const processedGamma = Math.abs(deltaGamma) > this.config.deadzone ? deltaGamma : 0;
         
-        // Map device orientation to hypercube rotation
-        // Device tilt X (pitch/beta) → hypercube RX rotation
-        // Device tilt Y (roll/gamma) → hypercube RY rotation  
-        // Device tilt Z (yaw/alpha) → hypercube RW rotation (4D axis)
-        const targetRotation = {
-          x: processedBeta * this.config.sensitivity,
-          y: processedGamma * this.config.sensitivity,
-          w: processedAlpha * this.config.sensitivity
-        };
+        if (this.config.directMapping) {
+          // DIRECT MAPPING MODE - Cube follows phone orientation directly
+          // This creates the illusion that the cube is "attached" to the phone
+          
+          // Map device orientation to target cube rotation
+          // Invert some axes to make it feel natural
+          const targetRotation = {
+            x: -processedBeta * this.config.sensitivity * 2,  // Pitch (forward/back tilt)
+            y: processedGamma * this.config.sensitivity * 2,   // Roll (left/right tilt) 
+            w: -processedAlpha * this.config.sensitivity * 1.5 // Yaw (compass rotation, 4D)
+          };
+          
+          // Apply rotation limits for comfort
+          targetRotation.x = this.clamp(targetRotation.x, -this.config.maxRotation, this.config.maxRotation);
+          targetRotation.y = this.clamp(targetRotation.y, -this.config.maxRotation, this.config.maxRotation);
+          targetRotation.w = this.clamp(targetRotation.w, -this.config.maxRotation, this.config.maxRotation);
+          
+          // Very light smoothing for immediate response but stability
+          this.smoothedRotation.x = this.lerp(this.smoothedRotation.x, targetRotation.x, 1 - this.config.smoothingFactor);
+          this.smoothedRotation.y = this.lerp(this.smoothedRotation.y, targetRotation.y, 1 - this.config.smoothingFactor);
+          this.smoothedRotation.w = this.lerp(this.smoothedRotation.w, targetRotation.w, 1 - this.config.smoothingFactor);
+          
+        } else {
+          // VELOCITY MODE - Traditional approach (fallback)
+          const targetRotation = {
+            x: processedBeta * this.config.sensitivity,
+            y: processedGamma * this.config.sensitivity,
+            w: processedAlpha * this.config.sensitivity
+          };
+          
+          targetRotation.x = this.clamp(targetRotation.x, -this.config.maxRotation, this.config.maxRotation);
+          targetRotation.y = this.clamp(targetRotation.y, -this.config.maxRotation, this.config.maxRotation);
+          targetRotation.w = this.clamp(targetRotation.w, -this.config.maxRotation, this.config.maxRotation);
+          
+          this.smoothedRotation.x = this.lerp(this.smoothedRotation.x, targetRotation.x, 1 - this.config.smoothingFactor);
+          this.smoothedRotation.y = this.lerp(this.smoothedRotation.y, targetRotation.y, 1 - this.config.smoothingFactor);
+          this.smoothedRotation.w = this.lerp(this.smoothedRotation.w, targetRotation.w, 1 - this.config.smoothingFactor);
+        }
         
-        // Apply velocity limits
-        targetRotation.x = this.clamp(targetRotation.x, -this.config.maxVelocity, this.config.maxVelocity);
-        targetRotation.y = this.clamp(targetRotation.y, -this.config.maxVelocity, this.config.maxVelocity);
-        targetRotation.w = this.clamp(targetRotation.w, -this.config.maxVelocity, this.config.maxVelocity);
-        
-        // Apply smoothing (low-pass filter)
-        this.smoothedRotation.x = this.lerp(this.smoothedRotation.x, targetRotation.x, 1 - this.config.smoothingFactor);
-        this.smoothedRotation.y = this.lerp(this.smoothedRotation.y, targetRotation.y, 1 - this.config.smoothingFactor);
-        this.smoothedRotation.w = this.lerp(this.smoothedRotation.w, targetRotation.w, 1 - this.config.smoothingFactor);
-        
-        // Apply gravity bias (subtle downward rotation based on device orientation)
+        // Apply subtle gravity bias for natural feel
         const gravityInfluence = Math.sin(deltaBeta * Math.PI / 180) * this.config.gravityBias;
-        this.smoothedRotation.x += gravityInfluence * 0.01;
+        this.smoothedRotation.x += gravityInfluence * 0.005; // Much smaller influence
         
         // Send to shader
         this.applyMotionToShader();
@@ -953,23 +989,24 @@
         
         // Check if enhanced motion methods are available
         if (typeof this.tesseractShader.updateMotionInput === 'function') {
-          // Enhanced shader - use proper API
+          // Enhanced shader - use proper API with more responsive scaling
           this.tesseractShader.updateMotionInput({
-            x: this.smoothedRotation.x * 0.002,  // Scale for shader consumption
-            y: this.smoothedRotation.y * 0.002,
-            w: this.smoothedRotation.w * 0.001   // 4D rotation is more sensitive
+            x: this.smoothedRotation.x * 0.015,  // Increased for more responsive feel
+            y: this.smoothedRotation.y * 0.015,  // More direct mapping
+            w: this.smoothedRotation.w * 0.01    // 4D rotation still slightly more subtle
           });
         } else {
-          // Fallback for basic shader - direct property access
+          // Fallback for basic shader - direct property access with increased responsiveness
           console.warn('Using fallback motion control - enhanced shader not detected');
           
           if (this.tesseractShader.slowVelocity) {
-            this.tesseractShader.slowVelocity.x = this.smoothedRotation.x * 0.1;
-            this.tesseractShader.slowVelocity.y = this.smoothedRotation.y * 0.1;
+            // Apply motion more directly with higher multipliers for responsiveness
+            this.tesseractShader.slowVelocity.x = this.smoothedRotation.x * 0.3;
+            this.tesseractShader.slowVelocity.y = this.smoothedRotation.y * 0.3;
           }
           
           if (this.tesseractShader.wheelVelocity !== undefined) {
-            this.tesseractShader.wheelVelocity += this.smoothedRotation.w * 0.05;
+            this.tesseractShader.wheelVelocity += this.smoothedRotation.w * 0.15;
           }
         }
       }
@@ -1962,6 +1999,11 @@
         
         await tesseractShader.init();
         console.log('✅ TesseractShader initialized');
+        
+        // Test desktop click functionality
+        if (!isMobile) {
+          console.log('🖥️ Desktop mode - click anywhere on hero section to start tutorial');
+        }
         
         loadDynamicContent();
         initProgressBar();
