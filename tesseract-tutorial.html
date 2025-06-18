@@ -142,7 +142,53 @@
     // ==========================================
     // TUTORIAL CONFIGURATION & STATE
     // ==========================================
+    // Create proper mapping for parameter images
+    const parameterImageMap = {
+      'select1-detailed': 'select1.png',
+      'math3-params': 'math3.png',
+      'filter1-params': 'filter1.png',
+      'math1-params': 'math1.png',
+      'speed2-params': 'speed2.png',
+      'math2-params': 'math2.png',
+      'speed3-params': 'speed3.png',
+      'mousein1-wheel': 'mousein1.png',
+      'select2-params': 'select2.png',
+      'filter4-params': 'filter4.png',
+      'filter3-params': 'filter3.png',
+      'filter2-params': 'filter2.png',
+      'vert_rotation': 'vert_rotation.png',
+      'vert_perspective': 'vert_perspective.png',
+      'transform1': 'transform1.png',
+      'reorder1': 'reorder1.png',
+      'line_mindist': 'line_mindist.png'
+    };
     
+    // Create proper titles for parameters
+    const parameterTitleMap = {
+      'select1-detailed': 'Select1 CHOP Parameters',
+      'math3-params': 'Math3 CHOP Parameters',
+      'filter1-params': 'Filter1 CHOP Parameters',
+      'math1-params': 'Math1 CHOP Parameters',
+      'speed2-params': 'Speed2 CHOP Parameters',
+      'math2-params': 'Math2 CHOP Parameters',
+      'speed3-params': 'Speed3 CHOP Parameters',
+      'mousein1-wheel': 'MouseIn1 CHOP Parameters',
+      'select2-params': 'Select2 CHOP Parameters',
+      'filter4-params': 'Filter4 CHOP Parameters',
+      'filter3-params': 'Filter3 CHOP Parameters',
+      'filter2-params': 'Filter2 CHOP Parameters',
+      'vert_rotation': 'Vertex Rotation GLSL',
+      'vert_perspective': 'Vertex Perspective GLSL',
+      'transform1': 'Transform1 TOP Parameters',
+      'reorder1': 'Reorder1 TOP Parameters',
+      'line_mindist': 'Line Min Distance Parameters'
+    };
+    
+    // State for dialog management
+    let currentHotspotDialog = null;
+    let dialogTimeout = null;
+    let isDialogHovered = false;
+        
     // Tutorial Section Configuration
     const sectionConfig = {
       1: { 
@@ -728,62 +774,207 @@
         hotspot.dataset.type = hotspotConfig.type;
         hotspot.dataset.index = index;
         
-        // Add click handler for hotspots
+        // Add click handler for sticky behavior
         hotspot.addEventListener('click', (e) => {
           e.stopPropagation();
-          showParameterDialog(hotspotConfig.type, e.clientX, e.clientY);
+          const rect = hotspot.getBoundingClientRect();
+          toggleStickyDialog(hotspotConfig.type, hotspot, rect.right + 10, rect.top);
         });
         
-        // Add hover handlers
+        // Add hover handlers with improved logic
         hotspot.addEventListener('mouseenter', (e) => {
           if (!stickyHotspots.has(hotspot)) {
-            showParameterDialog(hotspotConfig.type, e.clientX, e.clientY);
+            const rect = hotspot.getBoundingClientRect();
+            showParameterDialog(hotspotConfig.type, rect.right + 10, rect.top, hotspot);
           }
         });
         
         hotspot.addEventListener('mouseleave', (e) => {
           if (!stickyHotspots.has(hotspot)) {
-            hideParameterDialog();
+            // Add a small delay to prevent flashing
+            scheduleHideDialog(hotspot);
           }
         });
         
         hotspotContainer.appendChild(hotspot);
       });
     }
-
-    function showParameterDialog(type, x, y) {
+    
+    function showParameterDialog(type, x, y, sourceHotspot = null) {
+      // Clear any pending hide
+      if (dialogTimeout) {
+        clearTimeout(dialogTimeout);
+        dialogTimeout = null;
+      }
+    
       const dialog = document.getElementById('parameterDialog');
       if (!dialog) return;
       
-      // Simple mapping: type -> filename
-      const imagePath = `Tesseract%20Tutorial%20Pictures/Parameters/${type}.png`;
-      const title = type; // Just use the filename as title
+      // Check if we have a mapping for this parameter type
+      const imageName = parameterImageMap[type];
+      if (!imageName) {
+        console.warn(`No image mapping found for parameter type: ${type}`);
+        return;
+      }
+      
+      // Construct correct image path (note lowercase 'parameters')
+      const imagePath = `Tesseract%20Tutorial%20Pictures/parameters/${imageName}`;
+      const title = parameterTitleMap[type] || type;
       
       // Update dialog content
-      const titleEl = dialog.querySelector('h3');
-      const imageEl = dialog.querySelector('img');
+      const titleEl = dialog.querySelector('#parameterTitle');
+      let imageEl = dialog.querySelector('img');
+      
+      // Create image element if it doesn't exist
+      if (!imageEl) {
+        imageEl = document.createElement('img');
+        const contentEl = dialog.querySelector('#parameterContent');
+        if (contentEl) {
+          contentEl.appendChild(imageEl);
+        }
+      }
       
       if (titleEl) titleEl.textContent = title;
       if (imageEl) {
         imageEl.src = imagePath;
         imageEl.style.display = 'block';
+        imageEl.style.width = '100%';
+        imageEl.style.maxWidth = '525px';
+        imageEl.style.borderRadius = '5px';
+        imageEl.style.marginTop = '0.5rem';
+        
+        // Add error handling for missing images
+        imageEl.onerror = () => {
+          console.error(`Failed to load parameter image: ${imagePath}`);
+          imageEl.style.display = 'none';
+          const contentEl = dialog.querySelector('#parameterContent');
+          if (contentEl) {
+            contentEl.innerHTML = `<p style="color: #ff6b6b; font-style: italic;">Image not available: ${imageName}</p>`;
+          }
+        };
+      }
+      
+      // Smart positioning to avoid overlap with hotspot
+      const dialogWidth = 320;
+      const dialogHeight = 250;
+      
+      // Position to the right of the hotspot, but adjust if it would go off-screen
+      let finalX = Math.min(x, window.innerWidth - dialogWidth - 20);
+      let finalY = Math.min(y, window.innerHeight - dialogHeight - 20);
+      
+      // If positioning to the right would overlap with source hotspot, try other positions
+      if (sourceHotspot) {
+        const hotspotRect = sourceHotspot.getBoundingClientRect();
+        
+        // If right position overlaps, try left
+        if (finalX < hotspotRect.right + 50) {
+          finalX = Math.max(20, hotspotRect.left - dialogWidth - 10);
+        }
+        
+        // If still overlapping or off-screen, position below
+        if (finalX < 20 || finalX + dialogWidth > window.innerWidth - 20) {
+          finalX = Math.min(hotspotRect.left, window.innerWidth - dialogWidth - 20);
+          finalY = Math.min(hotspotRect.bottom + 10, window.innerHeight - dialogHeight - 20);
+        }
       }
       
       // Position dialog
-      dialog.style.left = Math.min(x, window.innerWidth - 320) + 'px';
-      dialog.style.top = Math.min(y, window.innerHeight - 200) + 'px';
+      dialog.style.left = finalX + 'px';
+      dialog.style.top = finalY + 'px';
+      
+      // Add dialog hover handlers to prevent premature hiding
+      if (!dialog.hasAttribute('data-hover-setup')) {
+        dialog.addEventListener('mouseenter', () => {
+          isDialogHovered = true;
+          if (dialogTimeout) {
+            clearTimeout(dialogTimeout);
+            dialogTimeout = null;
+          }
+        });
+        
+        dialog.addEventListener('mouseleave', () => {
+          isDialogHovered = false;
+          if (currentHotspotDialog && !stickyHotspots.has(currentHotspotDialog)) {
+            scheduleHideDialog();
+          }
+        });
+        
+        dialog.setAttribute('data-hover-setup', 'true');
+      }
       
       // Show dialog
       dialog.classList.add('active');
+      currentHotspotDialog = sourceHotspot;
     }
-
+    
+    function scheduleHideDialog(sourceHotspot = null) {
+      // Clear any existing timeout
+      if (dialogTimeout) {
+        clearTimeout(dialogTimeout);
+      }
+      
+      // Only hide if not hovered and not sticky
+      dialogTimeout = setTimeout(() => {
+        if (!isDialogHovered && (!sourceHotspot || !stickyHotspots.has(sourceHotspot))) {
+          hideParameterDialog();
+        }
+        dialogTimeout = null;
+      }, 200); // Small delay to prevent flashing
+    }
+    
+    function toggleStickyDialog(type, hotspot, x, y) {
+      if (stickyHotspots.has(hotspot)) {
+        // Remove sticky state
+        stickyHotspots.delete(hotspot);
+        hotspot.classList.remove('sticky');
+        hideParameterDialog();
+      } else {
+        // Add sticky state
+        stickyHotspots.add(hotspot);
+        hotspot.classList.add('sticky');
+        showParameterDialog(type, x, y, hotspot);
+      }
+    }
+    
     function hideParameterDialog() {
       const dialog = document.getElementById('parameterDialog');
       if (dialog) {
         dialog.classList.remove('active');
       }
+      currentHotspotDialog = null;
+      
+      // Clear any pending timeouts
+      if (dialogTimeout) {
+        clearTimeout(dialogTimeout);
+        dialogTimeout = null;
+      }
     }
-
+    
+    // Enhanced click outside handler
+    document.addEventListener('click', (e) => {
+      const dialog = document.getElementById('parameterDialog');
+      const hotspotContainer = document.getElementById('hotspotContainer');
+      
+      // Check if click is outside hotspots and dialog
+      if (dialog && dialog.classList.contains('active') && 
+          !dialog.contains(e.target) && 
+          (!hotspotContainer || !hotspotContainer.contains(e.target))) {
+        
+        // Clear all sticky hotspots
+        stickyHotspots.clear();
+        document.querySelectorAll('.hotspot.sticky').forEach(h => {
+          h.classList.remove('sticky');
+        });
+        
+        hideParameterDialog();
+      }
+    });
+    
+    // Make sure these functions are globally accessible
+    window.showParameterDialog = showParameterDialog;
+    window.hideParameterDialog = hideParameterDialog;
+    window.updateHotspots = updateHotspots;
+        
     function onWheel(event) {
       const anyModalOpen = document.querySelector('.widget-fullscreen.active');
       
