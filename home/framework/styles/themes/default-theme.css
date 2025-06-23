@@ -1,0 +1,68 @@
+/* ===================================================================
+   DEFAULT THEME - TOUCHDESIGNER TUTORIALS
+   Clean, professional theme for general TouchDesigner tutorials
+   =================================================================== */
+
+:root {
+  /* Primary Colors - Professional palette */
+  --primary-color: #4ecdc4;         /* Teal - main interactive color */
+  --secondary-color: #45b7d1;       /* Blue - hover/accent color */
+  --accent-color: #f9ca24;          /* Yellow - selected/active color */
+  --error-color: #ff6b6b;           /* Red - errors and warnings */
+  --success-color: #6c5ce7;         /* Purple - success states */
+  --warning-color: #f0932b;         /* Orange - warnings */
+  
+  /* Backgrounds - Clean dark gradient */
+  --bg-primary: #0f0f0f;            /* Main background */
+  --bg-secondary: #1e1e1e;          /* Header background */
+  --bg-tertiary: #2d2d2d;           /* Widget background */
+  --bg-quaternary: #3d3d3d;         /* Widget header background */
+  
+  /* Hero Background - Professional gradient */
+  --hero-bg: linear-gradient(135deg, #1e1e1e, #2d2d2d, #3d3d3d);
+  
+  /* Text Colors */
+  --text-primary: #ffffff;          /* Main text */
+  --text-secondary: #e0e0e0;        /* Secondary text */
+  --text-muted: #888888;            /* Muted text */
+  
+  /* Borders & Shadows - Subtle theme */
+  --border-color: #444444;
+  --border-light: rgba(255, 255, 255, 0.2);
+  --border-glow: rgba(78, 205, 196, 0.5);
+  --shadow-primary: rgba(0, 0, 0, 0.8);
+  --shadow-glow: rgba(78, 205, 196, 0.6);
+  --shadow-secondary: rgba(69, 183, 209, 0.6);
+  --shadow-accent: rgba(249, 202, 36, 0.7);
+  
+  /* Widget Colors */
+  --widget-bg: #2d2d2d;
+  --widget-header-bg: #3d3d3d;
+  --widget-border: #555555;
+  --widget-button-bg: #444444;
+  --widget-button-hover: #555555;
+  
+  /* Interactive States */
+  --hover-bg: rgba(78, 205, 196, 0.1);
+  --active-bg: rgba(78, 205, 196, 0.15);
+  --selected-bg: rgba(249, 202, 36, 0.15);
+  
+  /* Hotspot Colors - Professional theme */
+  --hotspot-default: #4ecdc4;
+  --hotspot-hover: #45b7d1;
+  --hotspot-selected: #f9ca24;
+  --hotspot-glow-default: rgba(78, 205, 196, 0.6);
+  --hotspot-glow-hover: rgba(69, 183, 209, 0.7);
+  --hotspot-glow-selected: rgba(249, 202, 36, 0.7);
+  
+  /* Dialog Colors */
+  --dialog-bg: #1e1e1e;
+  --dialog-border: #444444;
+  --dialog-accent: #4ecdc4;
+  
+  /* Animation Curves - Smooth and professional */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-bounce: 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

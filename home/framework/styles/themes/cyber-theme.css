@@ -1,0 +1,68 @@
+/* ===================================================================
+   CYBER THEME - TOUCHDESIGNER TUTORIALS
+   Cyan/magenta/yellow color scheme for tech/cyber tutorials
+   =================================================================== */
+
+:root {
+  /* Primary Colors - Cyber palette */
+  --primary-color: #00ffff;      /* Cyan - main interactive color */
+  --secondary-color: #ff00ff;    /* Magenta - hover/accent color */
+  --accent-color: #ffff00;       /* Yellow - selected/active color */
+  --error-color: #ff6b6b;        /* Red - errors and warnings */
+  --success-color: #00ff80;      /* Green - success states */
+  --warning-color: #ffa500;      /* Orange - warnings */
+  
+  /* Backgrounds - Dark tech gradient */
+  --bg-primary: #0a0a0a;         /* Main background */
+  --bg-secondary: #1a1a2e;       /* Header background */
+  --bg-tertiary: #2a2a2a;        /* Widget background */
+  --bg-quaternary: #3a3a3a;      /* Widget header background */
+  
+  /* Hero Background - Cyber gradient */
+  --hero-bg: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  
+  /* Text Colors */
+  --text-primary: #ffffff;       /* Main text */
+  --text-secondary: #ddd;        /* Secondary text */
+  --text-muted: #888;           /* Muted text */
+  
+  /* Borders & Shadows - Cyan glow theme */
+  --border-color: #444;
+  --border-light: rgba(255, 255, 255, 0.3);
+  --border-glow: rgba(0, 255, 255, 0.5);
+  --shadow-primary: rgba(0, 0, 0, 0.8);
+  --shadow-glow: rgba(0, 255, 255, 0.7);
+  --shadow-secondary: rgba(255, 0, 255, 0.7);
+  --shadow-accent: rgba(255, 255, 0, 0.8);
+  
+  /* Widget Colors */
+  --widget-bg: #2a2a2a;
+  --widget-header-bg: #3a3a3a;
+  --widget-border: #555;
+  --widget-button-bg: #444;
+  --widget-button-hover: #555;
+  
+  /* Interactive States */
+  --hover-bg: rgba(0, 255, 255, 0.1);
+  --active-bg: rgba(0, 255, 255, 0.2);
+  --selected-bg: rgba(255, 255, 0, 0.2);
+  
+  /* Hotspot Colors - Cyber theme */
+  --hotspot-default: #00ffff;
+  --hotspot-hover: #ff00ff;
+  --hotspot-selected: #ffff00;
+  --hotspot-glow-default: rgba(0, 255, 255, 0.7);
+  --hotspot-glow-hover: rgba(255, 0, 255, 0.8);
+  --hotspot-glow-selected: rgba(255, 255, 0, 0.8);
+  
+  /* Dialog Colors */
+  --dialog-bg: #1a1a2e;
+  --dialog-border: #444;
+  --dialog-accent: #00ffff;
+  
+  /* Animation Curves - Cyber-smooth */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

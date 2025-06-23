@@ -1,0 +1,1346 @@
+/* ===================================================================
+   TUTORIAL FRAMEWORK - REUSABLE STYLES - FIXED MOBILE POSITIONING
+   Core layout and widget system for all TouchDesigner tutorials
+   =================================================================== */
+
+/* === FONT FACES === */
+@font-face {
+  font-family: 'Spy Agency';
+  src: url('../../fonts/spyagencycond.ttf') format('truetype');
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('../../fonts/Orbitron-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('../../fonts/Orbitron-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* === CSS CUSTOM PROPERTIES (Themeable) === */
+:root {
+  /* Colors - Override in theme files */
+  --primary-color: #00ffff;
+  --secondary-color: #ff00ff;
+  --accent-color: #ffff00;
+  --error-color: #ff6b6b;
+  --success-color: #00ff80;
+  --warning-color: #ffa500;
+  
+  /* Backgrounds */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #2a2a2a;
+  --bg-quaternary: #3a3a3a;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #ddd;
+  --text-muted: #888;
+  
+  /* Borders & Shadows */
+  --border-color: #444;
+  --border-light: rgba(255, 255, 255, 0.3);
+  --shadow-primary: rgba(0, 0, 0, 0.8);
+  --shadow-glow: rgba(0, 255, 255, 0.7);
+  
+  /* Widget Colors */
+  --widget-bg: #2a2a2a;
+  --widget-header-bg: #3a3a3a;
+  --widget-border: #555;
+  --widget-button-bg: #444;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Z-indexes */
+  --z-tutorial: 1000;
+  --z-header: 2000;
+  --z-modals: 4000;
+  --z-hotspots: 6000;
+  --z-dialogs: 9999;
+}
+
+/* === BASE STYLES & RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* === TUTORIAL CONTAINER & LAYOUT === */
+.tutorial-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  z-index: var(--z-tutorial);
+  transform: translateY(100%);
+  transition: transform var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+}
+
+.tutorial-container.active {
+  transform: translateY(0);
+}
+
+.tutorial-header {
+  background: var(--bg-secondary);
+  padding: var(--spacing-md) var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: var(--z-header);
+  min-height: 60px;
+  gap: var(--spacing-md);
+}
+
+.tutorial-title {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: var(--primary-color);
+  font-weight: bold;
+  flex: 1;
+  max-width: 65%;
+  line-height: 1.3;
+  margin-right: var(--spacing-md);
+  overflow-wrap: break-word;
+  hyphens: auto;
+  word-break: break-word;
+}
+
+.tutorial-nav {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background var(--transition-normal);
+  font-size: 0.9rem;
+}
+
+.nav-btn:hover {
+  background: var(--widget-button-bg);
+}
+
+.nav-btn.primary {
+  background: var(--primary-color);
+  color: var(--bg-primary);
+}
+
+.nav-btn.primary:hover {
+  opacity: 0.8;
+}
+
+.nav-btn.circular {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  min-width: 40px;
+  flex-shrink: 0;
+}
+
+.close-btn {
+  background: var(--error-color);
+  font-size: 1.2rem;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: 35px;
+  flex-shrink: 0;
+}
+
+/* === TUTORIAL CONTENT & SECTIONS === */
+.tutorial-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tutorial-scroller {
+  display: flex;
+  height: 100%;
+  transition: transform var(--transition-slow);
+  will-change: transform;
+}
+
+.tutorial-section {
+  min-width: 100vw;
+  min-height: calc(100vh - 60px);
+  padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, #191b1f 50%, #191b1f 100%);
+  z-index: 5;
+}
+
+.tutorial-section.has-background-image {
+  padding-bottom: 360px;
+}
+
+.section-layout {
+  display: flex;
+  gap: var(--spacing-xl);
+  flex: 1;
+  z-index: 20;
+  position: relative;
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-left {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  position: relative;
+  min-width: 0;
+}
+
+.section-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  position: relative;
+  min-width: 0;
+  padding-top: 0.05rem;
+}
+
+.section-full {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  z-index: 20;
+  position: relative;
+}
+
+.section-layout.triple {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.section-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  position: relative;
+  min-width: 0;
+}
+
+/* === STATIC IMAGE CONTAINER & TRANSITIONS === */
+.static-image-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  background: rgb(25, 27, 31);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.image-transition-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tutorial-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: all var(--transition-slow);
+  z-index: 1;
+}
+
+/* === CONTENT BLOCKS === */
+.content-block {
+  margin-bottom: var(--spacing-md);
+  z-index: 20;
+  position: relative;
+}
+
+.content-block.html-content,
+.content-block.markdown-content {
+  line-height: 1.6;
+}
+
+.content-block.image-content {
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+}
+
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.image-caption {
+  margin-top: var(--spacing-sm);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.error-block {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--error-color);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--error-color);
+}
+
+/* === WIDGET SYSTEM === */
+.widget-container {
+  display: flex;
+  align-items: stretch;
+  margin: var(--spacing-xs) 0 var(--spacing-xl) 0;
+  height: auto;
+  max-height: 40vh;
+  min-height: 300px;
+  width: 100%;
+  z-index: 25;
+  position: relative;
+}
+
+.widget-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-right: var(--spacing-sm);
+  align-self: flex-start;
+  padding-top: var(--spacing-xs);
+}
+
+.widget-btn {
+  background: var(--widget-button-bg);
+  border: 1px solid var(--widget-border);
+  color: var(--text-secondary);
+  padding: 0;
+  width: 27px;
+  height: 27px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.widget-btn:hover {
+  background: var(--widget-header-bg);
+  border-color: #777;
+}
+
+.widget-btn:active {
+  background: var(--bg-tertiary);
+}
+
+.widget-btn-fullscreen::before {
+  content: '⛶';
+  font-size: 15px;
+}
+
+.widget-btn-copy::before {
+  content: '📋';
+  font-size: 12px;
+}
+
+.widget-btn-download::before {
+  content: '⬇';
+  font-size: 15px;
+}
+
+.content-widget {
+  background: var(--widget-bg);
+  border-radius: 8px;
+  padding: 0;
+  border: 1px solid var(--widget-border);
+  box-shadow: 0 2px 10px var(--shadow-primary);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+}
+
+.content-widget:hover {
+  border-color: #777;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.widget-header {
+  background: var(--widget-header-bg);
+  padding: var(--spacing-sm);
+  border-top: 1px solid var(--widget-border);
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  order: 2;
+}
+
+.widget-title {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+  margin: 0;
+  padding-left: var(--spacing-sm);
+  flex: 1;
+}
+
+.widget-content {
+  flex: 1;
+  overflow: hidden;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  background: var(--widget-bg);
+  color: var(--text-secondary);
+  position: relative;
+  order: 1;
+}
+
+/* === TSV TABLE STYLING === */
+.tsv-table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  background: var(--widget-bg);
+}
+
+.tsv-table th,
+.tsv-table td {
+  border: 1px solid var(--widget-border);
+  padding: 2px 6px;
+  text-align: left;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  min-width: 40px;
+  max-width: 60px;
+  overflow: hidden;
+}
+
+.tsv-table th {
+  background: var(--widget-header-bg);
+  color: var(--text-primary);
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tsv-table td {
+  background: var(--widget-bg);
+  color: var(--text-secondary);
+}
+
+.tsv-table tr:nth-child(even) td {
+  background: #2e2e2e;
+}
+
+.tsv-table tr:hover td {
+  background: #353535;
+}
+
+/* === CODE CONTENT STYLING === */
+.code-content {
+  padding: var(--spacing-md);
+  height: 100%;
+  overflow: hidden;
+  white-space: pre;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--text-secondary);
+}
+
+/* === LOADING STATES === */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--error-color);
+  font-style: italic;
+}
+
+/* === FULLSCREEN MODALS === */
+.widget-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  z-index: var(--z-modals);
+  display: none;
+  flex-direction: column;
+}
+
+.widget-fullscreen.active {
+  display: flex;
+  animation: fadeInScale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.widget-fullscreen-header {
+  background: var(--widget-bg);
+  padding: var(--spacing-md) var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--widget-border);
+  min-height: 60px;
+  gap: var(--spacing-md);
+}
+
+.widget-fullscreen-header h3 {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: normal;
+  flex: 1;
+}
+
+.widget-fullscreen-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.widget-fullscreen-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  background: var(--widget-bg);
+  min-height: 0;
+}
+
+.widget-fullscreen-content .tsv-table {
+  font-size: 0.85rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.widget-fullscreen-content .tsv-table th,
+.widget-fullscreen-content .tsv-table td {
+  padding: 4px 8px;
+  min-width: 60px;
+  border: 1px solid var(--widget-border);
+}
+
+.widget-fullscreen-content .tsv-table th {
+  position: sticky;
+  top: 0;
+  background: var(--widget-header-bg);
+  z-index: 10;
+}
+
+.widget-fullscreen-content .code-content {
+  padding: var(--spacing-xl);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  height: auto !important;
+  overflow: visible !important;
+  white-space: pre-wrap;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb {
+  background: var(--widget-border);
+  border-radius: 6px;
+}
+
+.widget-fullscreen-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* === PROGRESS INDICATOR === */
+.progress-bar {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-sm);
+  z-index: 1600;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.progress-dot.active {
+  background: var(--primary-color);
+  box-shadow: 0 0 10px var(--shadow-glow);
+}
+
+/* === TYPOGRAPHY === */
+.tutorial-section h1,
+.tutorial-section h2, 
+.tutorial-section h3,
+.tutorial-section h4,
+.tutorial-section h5,
+.tutorial-section h6 {
+  display: none !important;
+}
+
+p { 
+  line-height: 1.6; 
+  margin-bottom: var(--spacing-md); 
+}
+
+.highlight {
+  background: rgba(255, 255, 0, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.tip {
+  background: #2c3e50;
+  border-left: 4px solid #3498db;
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border-radius: 0 5px 5px 0;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+/* === GITHUB DOWNLOAD BUTTON === */
+.github-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: linear-gradient(45deg, #24292e, #586069);
+  border: none;
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: all var(--transition-normal);
+  margin: var(--spacing-lg) 0;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.github-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(36, 41, 46, 0.4);
+  background: linear-gradient(45deg, #2f363d, #6a737d);
+}
+
+.github-logo {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* === COPY NOTIFICATION === */
+.copy-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 5000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.copy-notification.show {
+  opacity: 1;
+}
+
+/* === CONTENT OVERFLOW PROTECTION === */
+.section-left,
+.section-right,
+.section-full {
+  overflow: visible;
+  word-wrap: break-word;
+}
+
+/* === MOBILE SWIPE INDICATORS === */
+.swipe-indicator {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-color);
+  color: var(--bg-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  font-weight: bold;
+  z-index: 3000;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+.swipe-indicator.left {
+  left: var(--spacing-xl);
+}
+
+.swipe-indicator.right {
+  right: var(--spacing-xl);
+}
+
+.swipe-indicator.show {
+  opacity: 1;
+}
+
+.swipe-indicator.boundary {
+  background: var(--error-color);
+  color: var(--text-primary);
+}
+
+/* === MOBILE RESPONSIVE STYLES === */
+@media (max-width: 768px) {
+   
+  /* ===============================================================
+     FIXED: FRAMEWORK SETTINGS BUTTON POSITIONING (ULTRA HIGH PRIORITY)
+     This MUST take precedence over tutorial-specific CSS
+     =============================================================== */
+     
+  /* FRAMEWORK STANDARD: Settings button ALWAYS top-left on mobile */
+  body .settings-toggle,
+  html body .settings-toggle,
+  .hero-section .settings-toggle,
+  div .settings-toggle,
+  .settings-toggle {
+    /* FIXED: Force button to stay top-left on mobile (framework standard) */
+    top: 1rem !important;
+    left: 1rem !important;
+    right: auto !important;
+    
+    /* NUCLEAR Z-INDEX: Stay above everything */
+    z-index: 999999 !important;
+    
+    /* Enhanced mobile properties */
+    width: 56px !important;
+    height: 56px !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    
+    /* Force properties to override conflicts */
+    position: fixed !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  
+  /* FRAMEWORK STANDARD: Controls panel positioned below button */
+  body .controls-panel,
+  html body .controls-panel,
+  .hero-section .controls-panel,
+  div .controls-panel,
+  .controls-panel {
+    /* Position below the button */
+    top: 80px !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    
+    /* Framework z-index (below button, above backdrop) */
+    z-index: 2000 !important;
+    
+    /* Prevent mobile overflow */
+    max-height: calc(100vh - 120px) !important;
+    overflow-y: auto !important;
+  }
+   
+  /* === MOBILE HEADER - TWO LINES === */
+  .tutorial-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    min-height: auto;
+    gap: var(--spacing-sm);
+    padding: 0.75rem var(--spacing-md);
+    flex-wrap: nowrap;
+  }
+
+  .tutorial-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center;
+    width: 100% !important;
+    gap: var(--spacing-sm);
+    flex-wrap: nowrap !important;
+    order: 1;
+  }
+
+  .tutorial-title {
+    flex: none !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    font-size: clamp(1rem, 5vw, 1.4rem) !important;
+    margin: 0;
+    line-height: 1.2;
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: clip;
+    hyphens: none !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    order: 2;
+  }
+
+  .nav-btn {
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.8rem !important;
+    min-width: auto;
+    flex-shrink: 1;
+    white-space: nowrap;
+  }
+
+  .nav-btn.circular {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    flex-shrink: 0;
+    padding: 0 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .close-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    flex-shrink: 0;
+    font-size: 1.1rem !important;
+  }
+
+  /* === FIXED IMAGE CONTAINER === */
+  .static-image-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 250px !important;
+    max-height: 40vh;
+    background: rgb(25, 27, 31);
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    z-index: 1;
+    transition: none !important;
+  }
+
+  .image-transition-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    transition: none !important;
+  }
+
+  .tutorial-image {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: all var(--transition-slow) !important;
+    z-index: 1;
+    display: block;
+    transform-origin: center center;
+  }
+
+  /* === TUTORIAL SECTION ADJUSTMENTS === */
+  .tutorial-section {
+    padding: var(--spacing-xs) var(--spacing-md) var(--spacing-md) var(--spacing-md);
+    min-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .tutorial-section.has-background-image {
+    padding-bottom: 270px !important;
+  }
+
+  .section-layout {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    margin-top: 0.125rem;
+    padding-bottom: var(--spacing-md);
+  }
+
+  .section-left,
+  .section-right {
+    flex: 1;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .widget-container {
+    height: auto;
+    max-height: 30vh;
+    min-height: 200px;
+    margin: var(--spacing-sm) 0;
+  }
+
+  .widget-buttons {
+    margin-right: var(--spacing-xs);
+  }
+
+  .tsv-table th,
+  .tsv-table td {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    min-width: 30px;
+    max-width: 40px;
+  }
+
+  .code-content {
+    font-size: 0.65rem;
+    padding: var(--spacing-sm);
+  }
+
+  .widget-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+
+  .widget-btn-fullscreen::before {
+    font-size: 11px;
+  }
+
+  .widget-btn-copy::before {
+    font-size: 9px;
+  }
+
+  .widget-btn-download::before {
+    font-size: 11px;
+  }
+
+  .widget-title {
+    font-size: 0.8rem;
+  }
+
+  .section-left > *:last-child,
+  .section-right > *:last-child,
+  .section-full > *:last-child {
+    margin-bottom: var(--spacing-xl);
+  }
+}
+
+/* === DESKTOP SPECIFIC STYLES === */
+@media (min-width: 769px) {
+  .section-left {
+    flex: 2 1 66.666%;
+    max-width: 66.666%;
+  }
+
+  .section-right {
+    flex: 1 1 33.333%;
+    max-width: 33.333%;
+  }
+
+  .widget-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .content-widget {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* === DESKTOP: Settings button positioning === */
+  .settings-toggle {
+    top: 2rem !important;
+    left: 2rem !important;
+    right: auto !important;
+    z-index: 99999 !important;
+  }
+  
+  .controls-panel {
+    top: 2rem !important;
+    left: 2rem !important;
+    right: auto !important;
+    z-index: 2000 !important;
+  }
+}
+
+/* === EXTRA SMALL MOBILE STYLES === */
+@media (max-width: 480px) {
+  .static-image-container {
+    height: 200px !important;
+    max-height: 35vh;
+  }
+
+  .tutorial-section.has-background-image {
+    padding-bottom: 220px !important;
+  }
+
+  .tutorial-title {
+    font-size: clamp(0.9rem, 4.5vw, 1.2rem) !important;
+  }
+
+  .nav-btn {
+    font-size: 0.7rem !important;
+    padding: 0.35rem 0.7rem !important;
+  }
+
+  .nav-btn.circular {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+
+  .close-btn {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+  
+  /* === EXTRA SMALL: Force settings button positioning === */
+  body .settings-toggle,
+  html body .settings-toggle,
+  .hero-section .settings-toggle,
+  div .settings-toggle,
+  .settings-toggle {
+    width: 50px !important;
+    height: 50px !important;
+    top: 0.75rem !important;
+    left: 0.75rem !important;
+    right: auto !important;
+  }
+  
+  body .controls-panel,
+  html body .controls-panel,
+  .hero-section .controls-panel,
+  div .controls-panel,
+  .controls-panel {
+    top: 70px !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}
+/* ===================================================================
+   NUCLEAR MOBILE CSS FIX - ULTRA HIGH SPECIFICITY
+   This CSS MUST be added to override any conflicting styles
+   Copy this entire block and paste it at the END of tutorial-framework.css
+   =================================================================== */
+
+/* NUCLEAR MOBILE POSITIONING FIX - MAXIMUM SPECIFICITY */
+@media (max-width: 768px) {
+  /* ===============================================================
+     NUCLEAR OPTION: Every possible selector combination
+     This forces the settings button to top-left on mobile
+     =============================================================== */
+     
+  html body div.hero-section div.settings-toggle,
+  html body div.hero-section .settings-toggle,
+  html body .hero-section div.settings-toggle,
+  html body .hero-section .settings-toggle,
+  html body div.settings-toggle,
+  html body .settings-toggle,
+  body div.hero-section div.settings-toggle,
+  body div.hero-section .settings-toggle,
+  body .hero-section div.settings-toggle,
+  body .hero-section .settings-toggle,
+  body div.settings-toggle,
+  body .settings-toggle,
+  div.hero-section div.settings-toggle,
+  div.hero-section .settings-toggle,
+  .hero-section div.settings-toggle,
+  .hero-section .settings-toggle,
+  div.settings-toggle,
+  .settings-toggle,
+  #settings-toggle {
+    /* NUCLEAR POSITIONING: Force top-left on mobile */
+    top: 1rem !important;
+    left: 1rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    
+    /* NUCLEAR Z-INDEX: Above everything */
+    z-index: 999999 !important;
+    
+    /* NUCLEAR POSITIONING TYPE */
+    position: fixed !important;
+    
+    /* NUCLEAR DISPLAY */
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    
+    /* NUCLEAR SIZE FOR MOBILE */
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    max-width: 56px !important;
+    max-height: 56px !important;
+    
+    /* NUCLEAR TRANSFORM RESET */
+    transform: none !important;
+    translate: none !important;
+    
+    /* NUCLEAR BACKGROUND */
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 50% !important;
+    
+    /* NUCLEAR MARGIN/PADDING RESET */
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    /* NUCLEAR BOX MODEL */
+    box-sizing: border-box !important;
+  }
+  
+  /* ===============================================================
+     NUCLEAR CONTROLS PANEL POSITIONING
+     =============================================================== */
+     
+  html body div.hero-section div.controls-panel,
+  html body div.hero-section .controls-panel,
+  html body .hero-section div.controls-panel,
+  html body .hero-section .controls-panel,
+  html body div.controls-panel,
+  html body .controls-panel,
+  body div.hero-section div.controls-panel,
+  body div.hero-section .controls-panel,
+  body .hero-section div.controls-panel,
+  body .hero-section .controls-panel,
+  body div.controls-panel,
+  body .controls-panel,
+  div.hero-section div.controls-panel,
+  div.hero-section .controls-panel,
+  .hero-section div.controls-panel,
+  .hero-section .controls-panel,
+  div.controls-panel,
+  .controls-panel,
+  #controls-panel {
+    /* NUCLEAR PANEL POSITIONING: Below button */
+    top: 80px !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    bottom: auto !important;
+    
+    /* NUCLEAR PANEL Z-INDEX: Below button, above backdrop */
+    z-index: 2000 !important;
+    
+    /* NUCLEAR PANEL POSITIONING TYPE */
+    position: fixed !important;
+    
+    /* NUCLEAR PANEL SIZE */
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    max-height: calc(100vh - 120px) !important;
+    
+    /* NUCLEAR PANEL OVERFLOW */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    
+    /* NUCLEAR TRANSFORM RESET */
+    transform: none !important;
+    translate: none !important;
+    
+    /* NUCLEAR MARGIN RESET */
+    margin: 0 !important;
+  }
+}
+
+/* ===============================================================
+   EXTRA SMALL MOBILE (< 480px) - EVEN STRONGER
+   =============================================================== */
+@media (max-width: 480px) {
+  html body div.hero-section div.settings-toggle,
+  html body div.hero-section .settings-toggle,
+  html body .hero-section div.settings-toggle,
+  html body .hero-section .settings-toggle,
+  html body div.settings-toggle,
+  html body .settings-toggle,
+  body div.hero-section div.settings-toggle,
+  body div.hero-section .settings-toggle,
+  body .hero-section div.settings-toggle,
+  body .hero-section .settings-toggle,
+  body div.settings-toggle,
+  body .settings-toggle,
+  div.hero-section div.settings-toggle,
+  div.hero-section .settings-toggle,
+  .hero-section div.settings-toggle,
+  .hero-section .settings-toggle,
+  div.settings-toggle,
+  .settings-toggle,
+  #settings-toggle {
+    /* EXTRA SMALL: Even closer to corner */
+    top: 0.75rem !important;
+    left: 0.75rem !important;
+    right: auto !important;
+    
+    /* EXTRA SMALL: Slightly smaller */
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    max-width: 50px !important;
+    max-height: 50px !important;
+  }
+  
+  html body div.hero-section div.controls-panel,
+  html body div.hero-section .controls-panel,
+  html body .hero-section div.controls-panel,
+  html body .hero-section .controls-panel,
+  html body div.controls-panel,
+  html body .controls-panel,
+  body div.hero-section div.controls-panel,
+  body div.hero-section .controls-panel,
+  body .hero-section div.controls-panel,
+  body .hero-section .controls-panel,
+  body div.controls-panel,
+  body .controls-panel,
+  div.hero-section div.controls-panel,
+  div.hero-section .controls-panel,
+  .hero-section div.controls-panel,
+  .hero-section .controls-panel,
+  div.controls-panel,
+  .controls-panel,
+  #controls-panel {
+    /* EXTRA SMALL: Panel positioned below smaller button */
+    top: 70px !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}
+
+/* ===============================================================
+   DESKTOP FALLBACK - Ensure desktop still works
+   =============================================================== */
+@media (min-width: 769px) {
+  .settings-toggle,
+  #settings-toggle {
+    top: 2rem !important;
+    left: 2rem !important;
+    right: auto !important;
+    width: 50px !important;
+    height: 50px !important;
+    z-index: 99999 !important;
+  }
+  
+  .controls-panel,
+  #controls-panel {
+    top: 2rem !important;
+    left: 2rem !important;
+    right: auto !important;
+    z-index: 2000 !important;
+  }
+}

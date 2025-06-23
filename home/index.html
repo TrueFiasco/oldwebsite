@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRUE FIASCO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Spy Agency';
+            src: url('./fonts/spyagencycond.ttf') format('truetype');
+            font-weight: normal;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Orbitron';
+            src: url('./fonts/Orbitron-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Orbitron';
+            src: url('./fonts/Orbitron-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #hypercube-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            padding: 2rem;
+            opacity: 0; /* Hide original text since it's now rendered in shader */
+            pointer-events: none; /* Prevent interaction with hidden text */
+        }
+
+        .hero-title {
+            font-family: 'Spy Agency', 'Arial', sans-serif;
+            font-size: clamp(3.75rem, 12vw, 9rem);
+            font-weight: normal;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .hero-subtitle {
+            font-size: 2.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 75px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.65rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tutorials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tutorial-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .tutorial-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4ecdc4;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            margin: 1rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: #4ecdc4;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-nav {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 🆕 FRAMEWORK CONTROL PANEL STYLES */
+        .controls-panel {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            min-width: 280px;
+            display: none; /* Hidden by default - framework manages this */
+            pointer-events: auto;
+        }
+
+        .controls-panel h4 {
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .control-group {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group label {
+            color: #ffffff;
+            font-size: 0.85rem;
+            min-width: 80px;
+        }
+
+        .control-group input, .control-group select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: white;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.8rem;
+            width: 80px;
+            text-align: center;
+        }
+
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .button-group {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+
+        .control-button.wide {
+            width: 100%;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4ecdc4;
+            transform: translateY(-1px);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button.disabled {
+            background: rgba(255, 100, 100, 0.3);
+            border-color: rgba(255, 100, 100, 0.5);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .control-button.disabled:hover {
+            background: rgba(255, 100, 100, 0.4);
+            border-color: rgba(255, 100, 100, 0.7);
+        }
+
+        .settings-toggle {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 99999;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .settings-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: rotate(90deg);
+        }
+
+        .settings-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+        }
+
+        .info-section {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-section h4 {
+            color: #4ecdc4;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-section p {
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .tutorials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-nav {
+                position: relative;
+                top: auto;
+                right: auto;
+                justify-content: center;
+                margin: 2rem 0;
+            }
+
+            .settings-toggle {
+                top: 1rem;
+                left: 1rem;
+                width: 56px;
+                height: 56px;
+            }
+
+            .controls-panel {
+                top: 80px;
+                left: 1rem;
+                right: 1rem;
+                min-width: auto;
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+            }
+        }
+
+        /* Tutorial transition effect */
+        .tutorial-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .tutorial-transition.active {
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Framework mobile controls */
+        .mobile-only {
+            display: none;
+        }
+
+        .desktop-only {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-only {
+                display: block;
+            }
+            
+            .desktop-only {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="floating-nav">
+        <a href="#tutorials" class="nav-btn">Tutorials</a>
+        <a href="#contact" class="nav-btn">Contact</a>
+    </nav>
+
+    <!-- 🆕 FRAMEWORK: Settings toggle (managed automatically by framework) -->
+    <div class="settings-toggle" id="settings-toggle">
+        <svg viewBox="0 0 24 24">
+            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+        </svg>
+    </div>
+
+    <!-- 🆕 FRAMEWORK: Controls panel (content generated by framework) -->
+    <div class="controls-panel" id="controls-panel">
+        <!-- Content will be generated by ControlPanelRenderer -->
+    </div>
+
+    <section class="hero-section">
+        <canvas id="hypercube-canvas"></canvas>
+        <div class="hero-content">
+            <h1 class="hero-title">TRUE FIASCO</h1>
+            <p class="hero-subtitle">taking event to the next dimension</p>
+            <a href="#tutorials" class="cta-button">Start Learning</a>
+        </div>
+    </section>
+
+    <section id="tutorials" class="section">
+        <h2>Featured Tutorials</h2>
+        <div class="tutorials-grid">
+            <div class="tutorial-card">
+                <h3>Tesseract in Touch Tutorial, using GLSL</h3>
+                <div class="hypercube-preview" onclick="openTesseractTutorial()" style="cursor: pointer; height: 200px; background-image: url('./tutorials/tesseract/assets/tutorial_thumbnail.png'); background-size: cover; background-position: center; border-radius: 10px; margin: 1rem 0; position: relative; overflow: hidden;">
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 1rem; text-align: center; color: #00ffff;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Interactive 4D Hypercube</p>
+                        <p style="opacity: 0.7; font-size: 0.9rem;">Click to start tutorial</p>
+                    </div>
+                </div>
+                <p>Deep dive into 4D geometry and visualization techniques. Learn how to project hypercubes into 3D space and create interactive mathematical visualizations using GLSL shaders and CHOP networks in TouchDesigner.</p>
+            </div>
+
+            <div class="tutorial-card" onclick="openAsciiTutorial()" style="cursor: pointer;">
+                <h3>ASCII Character Textures</h3>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/nu7sDfkBdVg?si=exStp1okvOVu3u88&autoplay=1&loop=1&playlist=nu7sDfkBdVg&mute=1" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                <p>Learn how to create ASCII character textures in TouchDesigner using Texture 3D instancing and Geometry COMP. Build dynamic interactive projects with real-time ASCII art generation and particle systems.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <h2>Get In Touch</h2>
+        <div class="contact-section">
+            <form class="contact-form" action="https://formspree.io/f/xdkzgqww" method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="What's this about?">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Tell me about your project or question..." required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Tutorial transition overlay -->
+    <div class="tutorial-transition" id="tutorialTransition"></div>
+
+    <!-- 🆕 FRAMEWORK CORE MODULES -->
+    <script src="framework/core/genericShader.js"></script>
+    <script src="framework/core/controlPanelRenderer.js"></script>
+    
+    <!-- 🆕 MOBILE COMPONENTS -->
+    <script src="shared/components/mobileMotionControl.js"></script>
+    
+    <!-- 🆕 HOMEPAGE CONTROL CONFIG -->
+    <script src="homepageControlConfig.js"></script>
+    
+    <!-- 🆕 BASE TESSERACT SHADER -->
+    <script src="tutorials/tesseract/shaders/shaderTesseract.js"></script>
+    
+    <!-- 🆕 HOMEPAGE CUSTOM SHADER -->
+    <script src="homepageShader.js"></script>
+
+    <script>
+        // Tutorial navigation state
+        let tutorialTransitioning = false;
+        
+        // 🆕 FRAMEWORK INSTANCES
+        let tesseractShader = null;
+        let controlPanelRenderer = null;
+        let mobileMotionControl = null;
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        // Tutorial functions (unchanged)
+        function openTesseractTutorial() {
+            if (tutorialTransitioning) return;
+            
+            tutorialTransitioning = true;
+            
+            const transition = document.getElementById('tutorialTransition');
+            transition.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = 'tutorials/tesseract/';
+            }, 250);
+        }
+
+        function openAsciiTutorial() {
+            if (tutorialTransitioning) return;
+            
+            tutorialTransitioning = true;
+            
+            const transition = document.getElementById('tutorialTransition');
+            transition.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = 'https://truefiasco.org/ascii-tutorial.html';
+            }, 250);
+        }
+
+        function onStartLearningClick() {
+            const target = document.querySelector('#tutorials');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 🆕 FRAMEWORK INITIALIZATION
+        async function init() {
+            try {
+                console.log('🚀 Initializing TRUE FIASCO homepage with framework...');
+                
+                // 1. Initialize enhanced homepage Tesseract shader with custom text
+                tesseractShader = new HomepageTesseractShader('hypercube-canvas', {
+                    title: 'TRUE FIASCO',
+                    subtitle: 'taking event to the next dimension',
+                    titleFont: 'Spy Agency',
+                    subtitleFont: 'Orbitron',
+                    onCanvasClick: onStartLearningClick,
+                    getTutorialState: () => tutorialTransitioning
+                });
+                
+                await tesseractShader.init();
+                console.log('✅ Homepage TesseractShader initialized with custom text');
+                
+                // 2. Initialize framework control panel
+                controlPanelRenderer = new ControlPanelRenderer(
+                    tesseractShader,
+                    window.HomepageControlConfig,
+                    {
+                        containerId: 'controls-panel',
+                        settingsButtonId: 'settings-toggle'
+                    }
+                );
+                
+                controlPanelRenderer.renderWithSettingsButton();
+                console.log('✅ Framework control panel initialized');
+                
+                // 3. Initialize mobile motion control (full experience)
+                if (isMobile) {
+                    mobileMotionControl = new MobileMotionControl(tesseractShader);
+                    window.mobileMotionControl = mobileMotionControl;
+                    console.log('✅ Mobile motion control initialized (glass-attached mode)');
+                }
+                
+                console.log('🎉 TRUE FIASCO homepage with framework complete!');
+                console.log('🎯 Features enabled:');
+                console.log('  • Enhanced text: TRUE FIASCO / taking event to the next dimension');
+                console.log('  • Framework control panel with automatic management');
+                console.log('  • Full mobile experience with glass-attached device orientation');
+                console.log('  • Desktop experience preserved and enhanced');
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize homepage framework:', error);
+                createFallbackExperience(error);
+            }
+        }
+
+        function createFallbackExperience(error) {
+            console.warn('⚠️ Using fallback experience due to framework error');
+            
+            // Fallback to basic shader if framework fails
+            const heroSection = document.getElementById('hero-section');
+            if (heroSection) {
+                heroSection.innerHTML += `
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                background: rgba(255, 0, 0, 0.8); color: white; padding: 1rem; border-radius: 10px;
+                                text-align: center; z-index: 9999; font-size: 0.9rem;">
+                        <p>Framework loading issue - refresh page</p>
+                        <button onclick="location.reload()" style="margin-top: 0.5rem; padding: 0.3rem 0.8rem; 
+                                background: white; color: black; border: none; border-radius: 5px; cursor: pointer;">
+                            Reload
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form handling
+        const form = document.querySelector('.contact-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                console.log('Form submitted');
+            });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (mobileMotionControl) {
+                mobileMotionControl.destroy();
+            }
+            if (tesseractShader) {
+                tesseractShader.destroy();
+            }
+            if (controlPanelRenderer) {
+                controlPanelRenderer.destroy();
+            }
+        });
+    </script>
+</body>
+</html>
