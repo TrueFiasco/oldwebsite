@@ -1,0 +1,45 @@
+/* ===================================================================
+   TESSERACT TUTORIAL - MAIN LAYOUT FILE
+   Imports framework styles, theme, and tutorial-specific styles
+   =================================================================== */
+
+/* === FRAMEWORK STYLES (Reusable across all tutorials) === */
+@import '../../framework/styles/tutorial-framework.css';
+
+/* === THEME (Cyber theme for tech tutorials) === */
+@import '../../framework/styles/themes/cyber-theme.css';
+
+/* === TUTORIAL-SPECIFIC STYLES (Only for Tesseract) === */
+@import 'tesseract-specific.css';
+
+/* ===================================================================
+   LAYOUT STRUCTURE SUMMARY:
+   
+   1. tutorial-framework.css (~70% of original code)
+      - All widget system components
+      - Tutorial container & navigation
+      - Mobile responsive layout
+      - Progress indicators
+      - Typography & base styles
+      - Content blocks & error handling
+      
+   2. cyber-theme.css (Color & visual theme)
+      - CSS custom properties for colors
+      - Glow effects and shadows
+      - Animation timing curves
+      - Themeable variables
+      
+   3. tesseract-specific.css (~30% of original code)
+      - Hero section with hypercube canvas
+      - 4D control panel
+      - Motion control UI (mobile)
+      - Click hints and interactions
+      - Hotspot system overrides
+      
+   BENEFITS:
+   - Widget system immediately available for new tutorials
+   - Consistent mobile responsiveness across all tutorials
+   - Easy theme swapping for different tutorial styles
+   - Clean separation of concerns
+   - Faster development of new tutorials
+   =================================================================== */

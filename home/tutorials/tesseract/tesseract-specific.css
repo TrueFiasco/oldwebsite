@@ -1,0 +1,642 @@
+/* ===================================================================
+   TESSERACT TUTORIAL - SPECIFIC STYLES - FIXED
+   4D Hypercube visualization specific components and interactions
+   REMOVED conflicting mobile positioning to allow framework control
+   =================================================================== */
+
+/* === HERO SECTION STYLES === */
+.hero-section {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hero-bg);
+  cursor: pointer; /* Desktop gets pointer cursor for click-anywhere */
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.hero-section:hover {
+  transform: scale(1.02);
+}
+
+.hypercube-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Canvas stays behind content */
+}
+
+.hero-content {
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-family: 'Spy Agency', 'Orbitron', Arial, sans-serif;
+  font-size: clamp(3rem, 8vw, 8rem);
+  color: var(--primary-color);
+  text-shadow: 0 0 30px var(--shadow-glow);
+  margin-bottom: 1rem;
+  letter-spacing: 0.2em;
+}
+
+.hero-subtitle {
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* === MOBILE START BUTTON === */
+.mobile-tutorial-button {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: none; /* Hidden by default, shown only on mobile hero section */
+  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+}
+
+.mobile-start-btn {
+  background: var(--hover-bg);
+  border: 2px solid var(--border-glow);
+  color: var(--primary-color);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+  pointer-events: auto;
+  position: relative;
+}
+
+.mobile-start-btn:hover {
+  background: var(--active-bg);
+  border-color: rgba(0, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+  color: var(--text-primary);
+}
+
+.mobile-start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.3);
+}
+
+/* === ENHANCED CONTROL PANEL (4D Specific) === */
+.controls-panel {
+  position: fixed;
+  top: var(--spacing-xl);
+  left: var(--spacing-xl);
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+  padding: var(--spacing-lg);
+  border-radius: 15px;
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--border-light);
+  font-size: 0.9rem;
+  min-width: 280px;
+  display: none;
+  pointer-events: auto;
+}
+
+.controls-panel h4 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.control-group {
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-group label {
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  min-width: 100px;
+}
+
+.control-group input {
+  background: var(--hover-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  color: var(--text-primary);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+  width: 80px;
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.control-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.button-group {
+  margin-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.button-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+}
+
+.control-button {
+  background: var(--hover-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.control-button:hover {
+  background: var(--active-bg);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.control-button:active {
+  transform: translateY(0);
+}
+
+.control-button.disabled {
+  background: rgba(255, 100, 100, 0.3);
+  border-color: rgba(255, 100, 100, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.control-button.disabled:hover {
+  background: rgba(255, 100, 100, 0.4);
+  border-color: rgba(255, 100, 100, 0.7);
+}
+
+.control-button.wide {
+  flex: 2;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+.info-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.info-section h4 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9rem;
+}
+
+.info-section p {
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* === SETTINGS TOGGLE === */
+.settings-toggle {
+  position: fixed;
+  top: var(--spacing-xl);
+  left: var(--spacing-xl);
+  z-index: 2001;
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-normal);
+}
+
+.settings-toggle:hover {
+  background: var(--hover-bg);
+  border-color: var(--border-glow);
+  transform: rotate(90deg);
+}
+
+.settings-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--text-primary);
+}
+
+/* === MOTION CONTROL UI (Mobile-specific) === */
+.motion-indicator {
+  position: fixed;
+  top: var(--spacing-xl);
+  right: 70px;
+  z-index: 150;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 255, 127, 0.2);
+  border: 2px solid rgba(0, 255, 127, 0.6);
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all var(--transition-normal);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.motion-indicator.active {
+  background: rgba(0, 255, 127, 0.4);
+  border-color: rgba(0, 255, 127, 0.9);
+  box-shadow: 0 0 15px rgba(0, 255, 127, 0.4);
+  animation: subtle-pulse 2s infinite ease-in-out;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 127, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(0, 255, 127, 0.6); }
+}
+
+.motion-indicator.calibrating {
+  background: rgba(255, 165, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.9);
+  animation: pulse-orange 1s infinite;
+}
+
+@keyframes pulse-orange {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.motion-permission-prompt {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--text-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 10px;
+  border: 1px solid var(--border-glow);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+  pointer-events: auto;
+  max-width: 280px;
+}
+
+.motion-permission-prompt.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.motion-permission-prompt h4 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9rem;
+}
+
+.motion-permission-prompt p {
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.motion-permission-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.motion-btn {
+  background: var(--active-bg);
+  border: 1px solid var(--border-glow);
+  color: var(--primary-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.motion-btn:hover {
+  background: rgba(0, 255, 255, 0.3);
+  border-color: rgba(0, 255, 255, 0.8);
+}
+
+.motion-btn.decline {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.5);
+  color: var(--error-color);
+}
+
+.motion-btn.decline:hover {
+  background: rgba(255, 107, 107, 0.3);
+  border-color: rgba(255, 107, 107, 0.8);
+}
+
+/* === CLICK HINT (Desktop Hero) === */
+.click-hint {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--hover-bg);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  color: var(--primary-color);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  font-weight: 400;
+  animation: pulse-hint 2s infinite ease-in-out;
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  pointer-events: none;
+  display: none;
+}
+
+@keyframes pulse-hint {
+  0%, 100% { 
+    transform: translateX(-50%) scale(1);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: translateX(-50%) scale(1.05);
+    opacity: 1;
+  }
+}
+
+.hero-section:hover .click-hint {
+  display: block;
+}
+
+/* === HOTSPOT SYSTEM OVERRIDES === */
+.hotspot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: var(--hotspot-default);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 22px var(--hotspot-glow-default);
+  animation: pulse 2s infinite;
+  border: 3px solid var(--border-light);
+  transition: all var(--transition-normal);
+  z-index: var(--z-hotspots);
+  pointer-events: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.hotspot:hover {
+  transform: scale(1.3);
+  background: var(--hotspot-hover);
+  box-shadow: 0 0 35px var(--hotspot-glow-hover);
+  animation: none;
+}
+
+.hotspot.sticky {
+  transform: scale(1.3);
+  background: var(--hotspot-selected);
+  box-shadow: 0 0 35px var(--hotspot-glow-selected);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.2); 
+    opacity: 0.7; 
+  }
+}
+
+/* === ENHANCED PARAMETER DIALOG === */
+.parameter-dialog {
+  position: fixed;
+  background: var(--dialog-bg);
+  border: 1px solid var(--dialog-border);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  max-width: 600px;
+  min-width: 300px;
+  box-shadow: 0 5px 20px var(--shadow-primary);
+  z-index: 5000 !important;
+  display: none;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.parameter-dialog.active {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.parameter-dialog h4 {
+  color: var(--dialog-accent);
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 1rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--bg-tertiary);
+  padding-bottom: var(--spacing-sm);
+}
+
+/* === HOTSPOT MANAGER OVERRIDES === */
+.hotspot-click-area {
+  z-index: var(--z-hotspots) !important;
+}
+
+.single-parameter-dialog {
+  z-index: var(--z-dialogs) !important;
+  border: 2px solid var(--dialog-border) !important;
+  background: var(--dialog-bg) !important;
+}
+
+.single-parameter-dialog.active {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+#singleDialogContainer {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: var(--z-dialogs) !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+#multiParameterDialog {
+  z-index: var(--z-dialogs) !important;
+  pointer-events: auto !important;
+}
+
+/* ===================================================================
+   MOBILE RESPONSIVE STYLES - FIXED: NO CONFLICTING POSITIONING
+   Framework CSS handles all positioning - this only adds mobile visibility
+   =================================================================== */
+
+@media (max-width: 768px) {
+  /* ===============================================================
+     FIXED: REMOVED ALL CONFLICTING POSITIONING CSS
+     Framework tutorial-framework.css now handles ALL positioning
+     =============================================================== */
+     
+  /* === MOBILE VISIBILITY CLASSES === */
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+
+  /* === MOBILE HERO ADJUSTMENTS === */
+  .hero-section {
+    cursor: default; /* Remove pointer cursor on mobile */
+  }
+  
+  .mobile-tutorial-button {
+    display: block !important; /* Show mobile button on mobile */
+  }
+
+  .controls-panel {
+    min-width: 300px;
+    max-width: calc(100vw - 4rem);
+  }
+
+  .button-row {
+    flex-wrap: wrap;
+  }
+
+  .control-button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 80px;
+  }
+
+  .control-group label {
+    min-width: 80px;
+    font-size: 0.8rem;
+  }
+
+  .click-hint {
+    display: none !important;
+  }
+
+  /* === MOBILE HOTSPOT HIDING === */
+  .hotspot {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .parameter-dialog {
+    display: none !important;
+  }
+
+  /* === MOBILE PARAMETER DISPLAY === */
+  .mobile-parameters {
+    display: block;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    z-index: 25;
+    position: relative;
+    clear: both;
+  }
+
+  .mobile-parameters img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .mobile-parameters:last-child {
+    margin-bottom: 3rem;
+  }
+
+  .mobile-parameters h4 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+  }
+}
+
+/* === DESKTOP SPECIFIC STYLES === */
+@media (min-width: 769px) {
+  /* === DESKTOP: HIDE MOBILE ELEMENTS === */
+  .mobile-tutorial-button {
+    display: none !important;
+  }
+
+  .mobile-parameters {
+    display: none !important;
+  }
+
+  /* === DESKTOP: ENSURE HOTSPOTS WORK === */
+  .hotspot {
+    display: block !important;
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  .parameter-dialog {
+    display: none; /* Hidden by default, shown on hover/click */
+  }
+
+  .parameter-dialog.active {
+    display: block !important;
+  }
+}
